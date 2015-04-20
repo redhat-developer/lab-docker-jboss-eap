@@ -38,6 +38,8 @@ https://gist.githubusercontent.com/goldmann/66e41f6a7badc23bfebe/raw/8f07c3f5302
 
 http://blog.arungupta.me/deploy-wildfly-docker-eclipse/
 
+## Cluster using Swarm or Kubernetes?
+
 ## OpenShift v3
 
 http://blog.arungupta.me/openshift-v3-getting-started-javaee7-wildfly-mysql/
