@@ -34,6 +34,8 @@ https://gist.githubusercontent.com/goldmann/66e41f6a7badc23bfebe/raw/8f07c3f5302
 
 ## Deploy Ticket Monster
 
+https://github.com/rafabene/devops-demo
+
 ## Deploy an application from JBoss Developer Studio
 
 http://blog.arungupta.me/deploy-wildfly-docker-eclipse/
