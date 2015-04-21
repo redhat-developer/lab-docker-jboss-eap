@@ -42,6 +42,8 @@ http://blog.arungupta.me/deploy-wildfly-docker-eclipse/
 
 ## Cluster using Swarm or Kubernetes?
 
+https://github.com/rafabene/devops-demo
+
 ## OpenShift v3
 
 http://blog.arungupta.me/openshift-v3-getting-started-javaee7-wildfly-mysql/
