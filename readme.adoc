@@ -12,10 +12,13 @@
 
 ### For Instructors
 
+
 . Install a private registry with all JBoss EAP images
 
 ### For Attendees
 
+. Install VirtualBox (Mac/Windows) or virt-manager (Linux)
+. Download RHEL Atomic Host
 . Install Docker client
 
 ## Use Docker Machine to Create Docker Host
