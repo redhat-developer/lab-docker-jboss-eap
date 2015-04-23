@@ -5,7 +5,7 @@
 . Docker 1.6
 .. Docker Machine 0.2.0
 .. Docker 
-. Operating System: ???
+. Operating System: RHEL Atomic Host
 . JBoss EAP 6.4
 
 ## Setup
