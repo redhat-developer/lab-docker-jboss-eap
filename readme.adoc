@@ -45,7 +45,8 @@ http://blog.arungupta.me/deploy-wildfly-docker-eclipse/
 
 ## Cluster using Swarm or Kubernetes?
 
-https://github.com/rafabene/devops-demo
+. https://github.com/rafabene/devops-demo
+. Docker Swarm: http://blog.arungupta.me/clustering-docker-swarm-techtip85/
 
 ## OpenShift v3
 
