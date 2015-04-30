@@ -20,19 +20,103 @@ As lab machine, but
 
 ## Setup (if BYO)
 
-### For Instructors
+### Summary
+
+#### For Instructors
 
 . Set up registry inside Vagrant
 . Stand up webserver to allow binaries to be downloaded (VirtualBox, Vagrant, RHEL Atomic Host, CDK)
 . Share on network
 
-### For Attendees
+#### For Attendees
 
 . Install VirtualBox (Mac/Windows) or virt-manager (Linux)
 . Install Vagrant
 . Install CDK
 . Run RHEL Atomic Host
 
+### Install Virtual Box or virt-manger
+
+### Install Vagrant
+
+### Install the Red Hat Container Development Kit
+
+You need to have installed your virtualization environment and Vagrant.
+
+First, download the CDK from the customer portal - https://access.redhat.com/downloads/content/293/ver=1/rhel---7/1.0.0/x86_64/product-downloads. You will need:
+. Red Hat Container Tools
+. Red Hat Atomic Vagrant box for VirtualBox or Red Hat Atomic Vagrant box for libvirt (choose based on your virtualization env)
+
+All of the remaining steps need to be performed using the command-line.
+
+. Unzip the cdk.zip file you downloaded in your home directory. This should create ~/cdk (/Users/username/cdk)
+  
+  ----
+  $ cd
+  $ unzip ~/Downloads/cdk.zip 
+  ----
+  
+  At this point, please view the included README files to familiarize yourself with the Red Hat Container Tools and to be notified if there are any changes since this install guide was published.
+
+. Install additional Vagrant plugins for using Red Hat Vagrant boxes
+  To install additional Vagrant plugins to support Red Hat subscription management and Red Hat Enterprise Linux Atomic Host use ‘vagrant plugin install’ to install the .gem files that were including in CDK.zip. Please note: the version number of the .gem may have changed. You should use the file name that matches your downloaded files.
+
+  The installation of the first plugin make take several minutes Vagrant may install some additional gem files as needed.
+
+    $ cd ~/cdk/plugins
+    $ ls -1 \*.gem
+    $ vagrant plugin install vagrant-registration-0.0.8.gem
+    $ vagrant plugin install vagrant-atomic-0.0.3.gem
+
+  Verify the plugins are installed:
+
+    $ vagrant plugin list
+  
+  Add the RHEL Server and Red Hat Atomic Host boxes to Vagrant.
+
+  These are the configured virtual machine images that you downloaded a previous step. You will be using these for container development and testing.
+
+    $ vagrant box add --name rhel-server-7 ~/Downloads/rhel-server-virtualbox-7.1-1.x86_64.box
+    $ vagrant box add --name rhel-atomic-7 ~/Downloads/rhel-atomic-virtualbox-7.1-1.x86_64.box
+  
+  Verify that the boxes got installed:
+
+    $ vagrant box list
+
+  The box image files will be stored in your home directory under ~/.vagrant.d. You will need adequate space there, approximately 2GB.
+
+. Start up the RHEL standalone CDK Vagrant Box
+
+    $ cd ~/cdk/components/rhel/rhel-standalone
+    $ vagrant up
+
+  At this point, if all is going well, you will be asked for a username and password for Red Hat subscription management in order to register the system and enable downloading from Red Hat repositories. Enter the username and password you use with the Red Hat Customer Portal.
+
+    ==> default: Registering box with vagrant-registration…
+    default: Would you like to register the system now (default: yes)? [y|n] y
+    default: Subscriber username: <username>
+    default: Subscriber password:
+
+  You can check whether your Vagrant box is running with vagrant status. Note: you must be in same the directory where your Vagrant file is located.
+
+    $ vagrant status
+  Now you can ssh into your Red Hat Enterprise Linux CDK Vagrant box:
+
+    $ vagrant ssh
+  When you are done, exit the ssh session. To stop the Vagrant box:
+
+    $ vagrant halt
+  To view the status of all Vagrant boxes on your system and verify that your box was properly stopped, use vagrant global-status:
+
+    $ vagrant global-status
+  If, at some point you want to delete the created VM and free up the KVM/libvirt resources, use vagrant destroy. Your Vagrantfile, and the box image in ~/.vagrant.d will remain allowing you to recreate a fresh version of the environment with a subsequent vagrant up.
+
+    $ vagrant destroy
+  Note: Do not delete the subdirectory .vagrant where Vagrant keeps per-machine state, without first using vagrant destroy to free up KVM/libvirt resources. If you no longer have the .vagrant subdirectory, you will need to use libvirt tools such as virt-manager (GUI) or virsh (command-line) to manually delete the resources that were created by Vagrant before you can bring a Vagrant box up with the same name.
+
+  After a vagrant destroy, you will be able to bring the Vagrant box up again in it’s original clean state.
+
+You now have the Red Hat CDK software components successfully installed and can begin exploring container development.
 
 ## Deploy Ticket Monster
 
