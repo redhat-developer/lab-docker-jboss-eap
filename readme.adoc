@@ -2,38 +2,37 @@
 
 ## Environment
 
-. Docker 1.6
-.. Docker Machine 0.2.0
-.. Docker 
-. Operating System: RHEL Atomic Host
-. JBoss EAP 6.4
+### Lab machine
+. RHEL 7.1
+. Vagrant 1.7.2
+. virt-manager
+. Red Hat CDK (Container Development Kit)
+.. RHEL Atomic Host 7.1 (with minor mods)
+... Docker (preinstalled)
+... Kubernetes (preinstalled)
+... Pre-configured to use instructor machine registry
+. Checkout of lab git repo
 
-## Setup
+### Instructor machine
+
+As lab machine, but 
+. Registry up and running inside Vagrant (see registry/)
+
+## Setup (if BYO)
 
 ### For Instructors
 
-
-. Install a private registry with all JBoss EAP images
+. Set up registry inside Vagrant
+. Stand up webserver to allow binaries to be downloaded (VirtualBox, Vagrant, RHEL Atomic Host, CDK)
+. Share on network
 
 ### For Attendees
 
 . Install VirtualBox (Mac/Windows) or virt-manager (Linux)
-. Download RHEL Atomic Host
-. Install Docker client
+. Install Vagrant
+. Install CDK
+. Run RHEL Atomic Host
 
-## Use Docker Machine to Create Docker Host
-
-http://blog.arungupta.me/docker-1-6-released-docker-machine-0-2-techtip84/
-
-## Install EAP 6.4 Image
-
-[src, text]
-----
-docker-machine ssh mydocker
-sudo mkdir -p /etc/docker/certs.d/ce-registry.usersys.redhat.com
-sudo curl -o /etc/docker/certs.d/ce-registry.usersys.redhat.com/ca.crt
-https://gist.githubusercontent.com/goldmann/66e41f6a7badc23bfebe/raw/8f07c3f5302ce45c4e3ebaadf3e2a09e9876b53f/ca.crt
-----
 
 ## Deploy Ticket Monster
 
