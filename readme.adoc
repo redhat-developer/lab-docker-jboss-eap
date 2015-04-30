@@ -83,7 +83,6 @@ Add the RHEL Server and Red Hat Atomic Host boxes to Vagrant.
 These are the configured virtual machine images that you downloaded a previous step. You will be using these for container development and testing.
 
 ----
-$ vagrant box add --name rhel-server-7 ~/Downloads/rhel-server-virtualbox-7.1-1.x86_64.box
 $ vagrant box add --name rhel-atomic-7 ~/Downloads/rhel-atomic-virtualbox-7.1-1.x86_64.box
 ----
   
