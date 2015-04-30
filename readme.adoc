@@ -146,6 +146,18 @@ After a vagrant destroy, you will be able to bring the Vagrant box up again in i
 
 You now have the Red Hat CDK software components successfully installed and can begin exploring container development.
 
+### Run the private registry and populate
+
+Having installed your virtualization environment, Vagrant and the CDK, setting up the registry is easy. The registry is packaged as a Vagrant box, which in turn runs the registry and UI inside Docker containers ochestrated using Kubernetes. Docker and Kubernetes are brought up automatically by systemd. The box exxposes the registry on localhost:5000 and the registry UI on locahost:5001.
+
+. Change to the registry directory `cd registry`.
+. Bring up the vagrant box `vagrant up`.
+. SSH in to the vagrant box `vagrant ssh`.
+. Wait for the registry to come up. This can take a while, as Docker needs to fetch the registry and registry-ui containers from the ce-registry. To check the status, run `kubectl get pods` - once the registry is up you will see the status change to Running.
+. Visit <http://localhost:5001> and check that the repository UI is available. There are no images in the registry at the moment!
+. Inside the vagrant box run `/mnt/vagrant/push_images.sh`. This will pull the necessary images for the lab from the ce-registry and push them to our local registry. This will take a while!
+.  Visit <http://localhost:5001> and verify the images are now in the repository
+
 ## Deploy Ticket Monster
 
 https://github.com/rafabene/devops-demo

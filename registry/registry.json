@@ -1,0 +1,79 @@
+{
+    "id": "registry",
+    "kind": "Pod",
+    "apiVersion": "v1beta1",
+    "desiredState": {
+        "manifest": {
+            "id": "registry",
+            "version": "v1beta1",
+            "containers": [
+                {
+                    "name": "registry",
+                    "image": "registry:0.9.1",
+                    "ports": [
+                        {
+                            "containerPort": 5000,
+                            "hostPort": 5000
+                        }
+                    ],
+                    "env": [
+                        {
+                            "name": "DISABLE_TOKEN_AUTH",
+                            "value": "true"
+                        },
+                        {
+                            "name": "SETTINGS_FLAVOUR",
+                            "value": "local"
+                        },
+                        {
+                            "name": "SEARCH_BACKEND",
+                            "value": "sqlalchemy"
+                        },
+                        {
+                            "name": "STORAGE_PATH",
+                            "value": "/mnt/registry"
+                        }
+                    ],
+                    "volumeMounts": [
+                        {
+                            "name": "docker-registry", 
+                            "mountPath": "/mnt/registry"
+                        }
+                    ]
+                },
+                {
+                    "name": "registry-ui",
+                    "image": "ce-registry.usersys.redhat.com/ce_ci/registry-ui:latest",
+                    "ports": [
+                        {
+                            "containerPort": 8080,
+                            "hostPort": 5001
+                        }
+                    ],
+                    "volumeMounts": [
+                        {
+                            "name": "docker-registry", 
+                            "mountPath": "/var/lib/docker-registry"
+                        }
+                    ],
+                    "command": [
+                        "/usr/bin/python", "registry-face/run.py", "-d", "-t", "0.0.0.0", "-p", "8080", "--path=/var/lib/docker-registry"
+                    ]
+                }
+            ],
+            "volumes": [
+                {
+                    "name": "docker-registry",
+                    "source": 
+                    {
+                        "hostDir": {
+                            "path": "/home/vagrant/store"
+                        }
+                    }
+                }
+            ]
+
+        }
+    }
+}
+
