@@ -1,3 +1,6 @@
 *.swp
 registry/.vagrant
+downloads/*.zip
+downloads/*.box
+tmp
 
