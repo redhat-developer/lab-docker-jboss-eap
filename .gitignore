@@ -1,5 +1,5 @@
 *.swp
-registry/.vagrant
+.vagrant
 downloads/*.zip
 downloads/*.box
 tmp
