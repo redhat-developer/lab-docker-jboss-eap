@@ -18,51 +18,30 @@ Vagrant.configure('2') do |config|
     vagrant_host.vm.provision 'shell', inline: "sudo chown root:docker /var/run/docker.sock"
     vagrant_host.vm.provision 'shell', inline: "sudo systemctl enable docker && sudo systemctl start docker"
 
-    # PLM additions
+    # Lab Registry additions (to CDK)
     # make sure that the Red Hat internal DNS is registered
     vagrant_host.vm.provision 'shell', inline: "sudo nmcli con mod 'Wired connection 1' ipv4.ignore-auto-dns yes && sudo nmcli con mod 'Wired connection 1' ipv4.dns '10.5.30.160 10.11.5.19 8.8.8.8' && sudo nmcli con up 'Wired connection 1'"
 
-    # END
-    
-    # PLM additions 
+    # start Kubernetes
+    vagrant_host.vm.provision 'shell', inline: "sudo systemctl enable etcd && sudo systemctl start etcd"
+    vagrant_host.vm.provision 'shell', inline: "sudo systemctl enable kube-apiserver && sudo systemctl start kube-apiserver"
+    vagrant_host.vm.provision 'shell', inline: "sudo systemctl enable kube-controller-manager && sudo systemctl start kube-controller-manager"
+    vagrant_host.vm.provision 'shell', inline: "sudo systemctl enable kube-scheduler && sudo systemctl start kube-scheduler"
+    vagrant_host.vm.provision 'shell', inline: "sudo systemctl enable kube-proxy.service && sudo systemctl start kube-proxy.service"
+    vagrant_host.vm.provision 'shell', inline: "sudo systemctl enable kubelet.service && sudo systemctl start kubelet.service"
+
     # allow access to CE (Kev's team) repo, to pull registry-ui
-    vagrant_host.vm.provision 'shell', inline: "echo \"ADD_REGISTRY='--add-registry ce-registry.usersys.redhat.com' \n DOCKER_NETWORK_OPTIONS='-H tcp://127.0.0.1:2375 -H unix:///var/run/docker.sock'\" | sudo tee --append /etc/sysconfig/docker > /dev/null"
-    vagrant_host.vm.provision 'shell', inline: "sudo systemctl enable docker && sudo systemctl start docker"
-    # END
-
-    # PLM additions
-    # Bring up Kubernetes
-    vagrant_host.vm.provision 'shell', inline: "echo '[Unit]
-Description=Kubernetes
-
-[Service]
-ExecStart=/mnt/vagrant/kube-cluster-up.sh
-User=vagrant
-
-[Install]
-WantedBy=multi-user.target ' | sudo tee /etc/systemd/system/kubernetes.service > /dev/null"
-    vagrant_host.vm.provision 'shell', inline: "sudo systemctl enable kubernetes && sudo systemctl start kubernetes"
-
-    # END
+    vagrant_host.vm.provision 'shell', inline: "echo \"ADD_REGISTRY='--add-registry ce-registry.usersys.redhat.com'\nINSECURE_REGISTRY='--insecure-registry ce-registry.usersys.redhat.com'\nDOCKER_NETWORK_OPTIONS='-H tcp://127.0.0.1:2375 -H unix:///var/run/docker.sock'\" | sudo tee --append /etc/sysconfig/docker > /dev/null"
+    vagrant_host.vm.provision 'shell', inline: "sudo systemctl enable docker && sudo systemctl restart docker"
     
-    # PLM additions
     # Bring up the registry pods inside Kubernetes and expose ports to bare metal
-    vagrant_host.vm.provision 'shell', inline: "echo '[Unit]
-Description=Registry
-
-[Service]
-ExecStart=/mnt/vagrant/kube-pods-up.sh
-User=vagrant
-
-[Install]
-WantedBy=multi-user.target ' | sudo tee /etc/systemd/system/registry.service > /dev/null"
-    #
-    vagrant_host.vm.provision 'shell', inline: "sudo systemctl enable registry && sudo systemctl start registry"
-    
+    # Create the store, and fix the SE Linux policy to allow the docker container to be able to access it
+    vagrant_host.vm.provision 'shell', inline: "mkdir -p /home/vagrant/store/repositories && sudo chcon -Rt svirt_sandbox_file_t /home/vagrant/store/"
+    # Add the pod
+    vagrant_host.vm.provision 'shell', inline: "/usr/bin/kubectl create -f /mnt/vagrant/registry.json"
 
     config.vm.network "forwarded_port", guest: 5000, host: 5000
     config.vm.network "forwarded_port", guest: 5001, host: 5001
-    #config.vm.network "forwarded_port", guest: 2375, host: 2375
 
     # END
   end
