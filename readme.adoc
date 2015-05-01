@@ -156,7 +156,7 @@ Having installed your virtualization environment, Vagrant and the CDK, setting u
 . Wait for the registry to come up. This can take a while, as Docker needs to fetch the registry and registry-ui containers from the ce-registry. To check the status, run `kubectl get pods` - once the registry is up you will see the status change to Running.
 . Visit <http://localhost:5001> and check that the repository UI is available. There are no images in the registry at the moment!
 . Inside the vagrant box run `/mnt/vagrant/push_images.sh`. This will pull the necessary images for the lab from the ce-registry and push them to our local registry. This will take a while!
-.  Visit <http://localhost:5001> and verify the images are now in the repository
+.  Visit <http://localhost:5001> and verify the images are now in the repository.
 
 ## Deploy Ticket Monster
 
