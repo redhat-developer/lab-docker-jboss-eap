@@ -96,7 +96,7 @@ $ vagrant box list
 
 The box image files will be stored in your home directory under ~/.vagrant.d. You will need adequate space there, approximately 2GB.
 
-. Start up the RHEL standalone CDK Vagrant Box
+. Start up the RHEL Atomic CDK Vagrant Box
 
 ----
 $ cd ~/cdk/components//rhel/rhel-with-docker/atomic-docker-host
