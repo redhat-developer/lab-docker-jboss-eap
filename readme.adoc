@@ -47,7 +47,7 @@ First, download the CDK from the customer portal - https://access.redhat.com/dow
 . Red Hat Container Tools
 . Red Hat Atomic Vagrant box for VirtualBox or Red Hat Atomic Vagrant box for libvirt (choose based on your virtualization env)
 
-TIP: If you are on Mac, the `util/install-cdk-mac.sh` script will set up the CDK for you. Place both the cdk `zip` file and the RHEL Atomic `box` in the downloads directory.
+TIP: If you are on Mac, the `util/cdk-install-mac` script will set up the CDK for you. Place both the cdk `zip` file and the RHEL Atomic `box` in the downloads directory.
 
 All of the remaining steps need to be performed using the command-line.
 
