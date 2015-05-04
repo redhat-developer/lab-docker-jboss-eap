@@ -55,7 +55,7 @@ All of the remaining steps need to be performed using the command-line.
 
 ----
 $ cd
-$ unzip ~/Downloads/cdk.zip 
+$ unzip ~/Downloads/cdk-1.0-0.zip 
 ----
 
 At this point, please view the included README files to familiarize yourself with the Red Hat Container Tools and to be notified if there are any changes since this install guide was published.
