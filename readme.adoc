@@ -84,7 +84,8 @@ Add the RHEL Server and Red Hat Atomic Host boxes to Vagrant.
 These are the configured virtual machine images that you downloaded a previous step. You will be using these for container development and testing.
 
 ----
-$ vagrant box add --name rhel-atomic-7 ~/Downloads/rhel-atomic-virtualbox-7.1-1.x86_64.box
+WRONG: $ vagrant box add --name rhel-atomic-7 ~/Downloads/rhel-atomic-virtualbox-7.1-1.x86_64.box
+$ vagrant box add --name rhel-atomic-7 ~/Downloads/rhel-atomic-virtualbox-7.1-0.x86_64.box
 ----
   
 Verify that the boxes got installed:
@@ -98,7 +99,7 @@ The box image files will be stored in your home directory under ~/.vagrant.d. Yo
 . Start up the RHEL standalone CDK Vagrant Box
 
 ----
-$ cd ~/cdk/components/rhel/rhel-standalone
+$ cd ~/cdk/components//rhel/rhel-with-docker/atomic-docker-host
 $ vagrant up
 ----
 
