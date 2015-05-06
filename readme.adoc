@@ -172,6 +172,24 @@ TIP: If you are running this outside of the lab, and don't have `classroom.examp
 
 You are now running inside a docker and kubernetes environment.
 
+### Use the Docker host on your local box
+
+Having brought up your Docker host, you may want to use Docker on your local machine:
+
+
+. Allow the local Docker client to connect to the Docker host by running:
+
+---
+$ export DOCKER_HOST=127.0.0.1:2375 && unset DOCKER_CERT_PATH && unset DOCKER_TLS_VERIFY
+---
+
+. Check that you can access the Docker host by running `docker ps`.
+. Connect your local filesystem to Docker. Open a new shell window, change to the lab directory, and run:
+
+---
+$ vagrant rsync-auto
+---
+
 ## Deploy Ticket Monster
 
 https://github.com/rafabene/devops-demo

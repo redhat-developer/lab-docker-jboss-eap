@@ -35,8 +35,11 @@ Vagrant.configure('2') do |config|
     vagrant_host.vm.provision 'shell', inline: "sudo systemctl enable docker && sudo systemctl restart docker"
 
     # enable docker TCP access 
-    #vagrant_host.vm.provision 'shell', inline: "echo \"DOCKER_NETWORK_OPTIONS='-H tcp://127.0.0.1:2375 -H unix:///var/run/docker.sock'\" | sudo tee --append /etc/sysconfig/docker > /dev/null"
-    #vagrant_host.vm.provision 'shell', inline: "sudo systemctl enable docker && sudo systemctl restart docker"
+    vagrant_host.vm.provision 'shell', inline: "echo \"DOCKER_NETWORK_OPTIONS='-H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock'\" | sudo tee /etc/sysconfig/docker-network > /dev/null"
+    vagrant_host.vm.provision 'shell', inline: "sudo systemctl enable docker && sudo systemctl restart docker"
+    vagrant_host.vm.provision 'shell', inline: "echo 'Run:\n  export DOCKER_HOST=127.0.0.1:2375 && unset DOCKER_CERT_PATH && unset DOCKER_TLS_VERIFY\nto use docker on the host machine'"
+
+    config.vm.network "forwarded_port", guest: 2375, host: 2375
     
     # END
   end
