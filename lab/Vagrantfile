@@ -31,7 +31,7 @@ Vagrant.configure('2') do |config|
     vagrant_host.vm.provision 'shell', inline: ENV['CLASSROOM_IP'] == nil ? "" : "echo \"#{ENV['CLASSROOM_IP']} classroom.example.com\" | sudo tee --append /etc/hosts > /dev/null"
 
     # allow access to our private repo 
-    vagrant_host.vm.provision 'shell', inline: "echo \"ADD_REGISTRY='--add-registry classroom.example.com'\nINSECURE_REGISTRY='--insecure-registry classroom.example.com'\" | sudo tee --append /etc/sysconfig/docker > /dev/null"
+    vagrant_host.vm.provision 'shell', inline: "echo \"ADD_REGISTRY='--add-registry classroom.example.com:5000'\nINSECURE_REGISTRY='--insecure-registry classroom.example.com:5000'\" | sudo tee --append /etc/sysconfig/docker > /dev/null"
     vagrant_host.vm.provision 'shell', inline: "sudo systemctl enable docker && sudo systemctl restart docker"
 
     # enable docker TCP access 

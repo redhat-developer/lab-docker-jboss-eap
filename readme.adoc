@@ -190,6 +190,14 @@ $ export DOCKER_HOST=127.0.0.1:2375 && unset DOCKER_CERT_PATH && unset DOCKER_TL
 $ vagrant rsync-auto
 ---
 
+### Start writing your Dockerfile
+
+The basic `Dockerfile` is located in the `lab/` directory. To build it, change in to the `lab` directory, then run:
+
+---
+docker build .
+---
+
 ## Deploy Ticket Monster
 
 https://github.com/rafabene/devops-demo
