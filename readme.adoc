@@ -1,34 +1,44 @@
 # Docker for JBoss EAP Developers
 
-## Environment
+## Environments
 
 ### Lab machine
-. RHEL 7.1
-. Vagrant 1.7.2
-. virt-manager
-. Red Hat CDK (Container Development Kit)
-.. RHEL Atomic Host 7.1 (with minor mods)
-... Docker (preinstalled)
-... Kubernetes (preinstalled)
-... Pre-configured to use instructor machine registry
-. Checkout of lab git repo
+* RHEL 7.1
+* Vagrant 1.7.2
+* virt-manager
+* Red Hat CDK (Container Development Kit)
+** RHEL Atomic Host 7.1
+*** Docker (preinstalled)
+*** Kubernetes (preinstalled)
+*** Pre-configured to use instructor machine registry
+* Checkout of lab git repo
 
 ### Instructor machine
 
-As lab machine, but 
-. Registry up and running inside Vagrant (see registry/)
+The instructor machine is a lab machine, with the `instructor` Vagrantbox running. It serves:
 
-## Setup (if BYO)
+* A docker registry on port `5000`
+* A docker registry UI on port `5001`
+* A nexus repository, which caches all requests, on port `80`
+* An HTTP webserver providing the lab instructions and any binaries needed on port `5080`
 
-### Summary
+### Bring your own laptop
 
-#### For Instructors
+TODO
 
-. Set up registry inside Vagrant
-. Stand up webserver to allow binaries to be downloaded (VirtualBox, Vagrant, RHEL Atomic Host, CDK)
-. Share on network
+## Setup
 
-#### For Attendees
+### Overview
+
+#### Lab machine
+
+No setup is required, you are ready to go.
+
+#### Instructor machine
+
+Run the instructor Vagrantbox, and ensure that all the services are available on the lab machines and any BYO laptops.
+
+#### BYO laptop
 
 . Install VirtualBox (Mac/Windows) or virt-manager (Linux)
 . Install Vagrant
@@ -42,120 +52,115 @@ As lab machine, but
 ### Install the Red Hat Container Development Kit
 You need to have installed your virtualization environment and Vagrant.
 
-First, download the CDK from the customer portal - https://access.redhat.com/downloads/content/293/ver=1/rhel---7/1.0.0/x86_64/product-downloads. You will need:
+First, download the CDK from the instructor machine:
 
-. Red Hat Container Tools
-. Red Hat Atomic Vagrant box for VirtualBox or Red Hat Atomic Vagrant box for libvirt (choose based on your virtualization env)
-
+. Red Hat Container Tools <TODO>
+. Red Hat Atomic Vagrant box for VirtualBox or Red Hat Atomic Vagrant box for libvirt (choose based on your virtualization env) <TODO>
++
 TIP: If you are on Mac, the `util/cdk-install-mac` script will set up the CDK for you. Place both the cdk `zip` file and the RHEL Atomic `box` in the downloads directory.
-
++
 All of the remaining steps need to be performed using the command-line.
 
-. Unzip the cdk.zip file you downloaded in your home directory. This should create ~/cdk (/Users/username/cdk)
-
+. Unzip the `cdk.zip` file you downloaded in your home directory. This should create `~/cdk` (`/Users/username/cdk`)
++
 ----
 $ cd
-$ unzip ~/Downloads/cdk-1.0-0.zip 
+$ unzip ~/Downloads/cdk-1.0-0.zip
 ----
-
-At this point, please view the included README files to familiarize yourself with the Red Hat Container Tools and to be notified if there are any changes since this install guide was published.
-
++
 . Install additional Vagrant plugins for using Red Hat Vagrant boxes
-
-To install additional Vagrant plugins to support Red Hat subscription management and Red Hat Enterprise Linux Atomic Host use ‘vagrant plugin install’ to install the .gem files that were including in CDK.zip. Please note: the version number of the .gem may have changed. You should use the file name that matches your downloaded files.
-
++
 The installation of the first plugin make take several minutes Vagrant may install some additional gem files as needed.
-
++
 ----
 $ cd ~/cdk/plugins
 $ ls -1 \*.gem
 $ vagrant plugin install vagrant-registration-0.0.8.gem
 $ vagrant plugin install vagrant-atomic-0.0.3.gem
 ----
-
++
 Verify the plugins are installed:
-
++
 ----
 $ vagrant plugin list
 ----
-
++
 Add the RHEL Server and Red Hat Atomic Host boxes to Vagrant.
-
++
 These are the configured virtual machine images that you downloaded a previous step. You will be using these for container development and testing.
-
++
 ----
-WRONG: $ vagrant box add --name rhel-atomic-7 ~/Downloads/rhel-atomic-virtualbox-7.1-1.x86_64.box
 $ vagrant box add --name rhel-atomic-7 ~/Downloads/rhel-atomic-virtualbox-7.1-0.x86_64.box
 ----
-  
++
 Verify that the boxes got installed:
-
++
 ----
 $ vagrant box list
 ----
-
-The box image files will be stored in your home directory under ~/.vagrant.d. You will need adequate space there, approximately 2GB.
-
++
+The box image files will be stored in your home directory under `~/.vagrant.d`. You will need adequate space there, approximately 2GB.
++
 . Start up the RHEL Atomic CDK Vagrant Box
-
++
 ----
 $ cd ~/cdk/components//rhel/rhel-with-docker/atomic-docker-host
 $ vagrant up
 ----
-
++
 At this point, if all is going well, you will be asked for a username and password for Red Hat subscription management in order to register the system and enable downloading from Red Hat repositories. Enter the username and password you use with the Red Hat Customer Portal.
-
++
 ----
 ==> default: Registering box with vagrant-registration…
 default: Would you like to register the system now (default: yes)? [y|n] y
 default: Subscriber username: <username>
 default: Subscriber password:
 ----
-
++
 You can check whether your Vagrant box is running with vagrant status. Note: you must be in same the directory where your Vagrant file is located.
-
++
 ----
 $ vagrant status
 ----
-
++
 Now you can ssh into your Red Hat Enterprise Linux CDK Vagrant box:
-
++
 ----
 $ vagrant ssh
 ----
-
++
 When you are done, exit the ssh session. To stop the Vagrant box:
-
++
 ----
 $ vagrant halt
 ----
-
++
 To view the status of all Vagrant boxes on your system and verify that your box was properly stopped, use vagrant global-status:
-
++
 ----
 $ vagrant global-status
 ----
-  
-If, at some point you want to delete the created VM and free up the KVM/libvirt resources, use vagrant destroy. Your Vagrantfile, and the box image in ~/.vagrant.d will remain allowing you to recreate a fresh version of the environment with a subsequent vagrant up.
-
++
+If, at some point you want to delete the created VM and free up the KVM/libvirt resources, use vagrant destroy. Your `Vagrantfile`, and the box image in `~/.vagrant.d` will remain allowing you to recreate a fresh version of the environment with a subsequent vagrant up.
++
 ----
 $ vagrant destroy
 ----
-
-Note: Do not delete the subdirectory .vagrant where Vagrant keeps per-machine state, without first using vagrant destroy to free up KVM/libvirt resources. If you no longer have the .vagrant subdirectory, you will need to use libvirt tools such as virt-manager (GUI) or virsh (command-line) to manually delete the resources that were created by Vagrant before you can bring a Vagrant box up with the same name.
-
++
+Note: Do not delete the subdirectory `.vagrant` where Vagrant keeps per-machine state, without first using vagrant destroy to free up KVM/libvirt resources. If you no longer have the .vagrant subdirectory, you will need to use libvirt tools such as virt-manager (GUI) or virsh (command-line) to manually delete the resources that were created by Vagrant before you can bring a Vagrant box up with the same name.
++
 After a vagrant destroy, you will be able to bring the Vagrant box up again in it’s original clean state.
-
++
 You now have the Red Hat CDK software components successfully installed and can begin exploring container development.
 
-### Run the private registry and populate
+### Start the `instructor` Vagrantbox
 
-Having installed your virtualization environment, Vagrant and the CDK, setting up the registry is easy. The registry is packaged as a Vagrant box, which in turn runs the registry and UI inside Docker containers ochestrated using Kubernetes. Docker and Kubernetes are brought up automatically by systemd. The box exxposes the registry on localhost:5000 and the registry UI on locahost:5001.
+Having installed your virtualization environment, Vagrant and the CDK, setting up the registry is easy. The registry is packaged as a Vagrantbox, which in turn runs the Docker Registry, Docker Registry UI, Nexus proxy and HTTP server inside Docker containers orchestrated using Kubernetes. Docker and Kubernetes are brought up automatically by the Vagrantfile definition. The box exposes the Docker Registry on <http://0.0.0.0:5000>, the Docker Registry UI on <http://0.0.0.0:5001>, Nexus on <http://0.0.0.0:80> and the HTTP server with lab assets on <http://0.0.0.0:5080>.
 
-. Change to the registry directory `cd registry`.
+. Change to the registry directory `cd instructor`.
 . Bring up the vagrant box `vagrant up`.
 . SSH in to the vagrant box `vagrant ssh`.
-. Wait for the registry to come up. This can take a while, as Docker needs to fetch the registry and registry-ui containers from the ce-registry. To check the status, run `kubectl get pods` - once the registry is up you will see the status change to Running.
+. Wait for the Docker registry to come up. This can take a while, as Docker needs to fetch the registry and registry-ui containers from the ce-registry. To check the status, run `kubectl get pods` - once the registry is up you will see the status change to Running.
 . Visit <http://localhost:5001> and check that the repository UI is available. There are no images in the registry at the moment!
 . Inside the vagrant box run `/mnt/vagrant/push_images.sh`. This will pull the necessary images for the lab from the ce-registry and push them to our local registry. This will take a while!
 .  Visit <http://localhost:5001> and verify the images are now in the repository.
@@ -178,27 +183,27 @@ Having brought up your Docker host, you may want to use Docker on your local mac
 
 
 . Allow the local Docker client to connect to the Docker host by running:
-
----
++
+----
 $ export DOCKER_HOST=127.0.0.1:2375 && unset DOCKER_CERT_PATH && unset DOCKER_TLS_VERIFY
----
-
+----
++
 . Check that you can access the Docker host by running `docker ps`.
 . Connect your local filesystem to Docker. Open a new shell window, change to the lab directory, and run:
-
----
++
+----
 $ vagrant rsync-auto
----
+----
 
-### Start writing your Dockerfile
+## Exercise 1: Your first `Dockerfile`
 
 The basic `Dockerfile` is located in the `lab/` directory. To build it, change in to the `lab` directory, then run:
-
----
++
+----
 docker build .
----
+----
 
-## Deploy Ticket Monster
+## Exercise 2: Deploy Ticket Monster
 
 https://github.com/rafabene/devops-demo
 
@@ -206,17 +211,22 @@ https://github.com/rafabene/devops-demo
 
 http://blog.arungupta.me/deploy-wildfly-docker-eclipse/
 
-## Cluster using Swarm or Kubernetes?
+## Exercise 3: Cluster Ticket Monster using Kubernetes
 
 . https://github.com/rafabene/devops-demo
 . Docker Swarm: http://blog.arungupta.me/clustering-docker-swarm-techtip85/
 
-## OpenShift v3
+## Exercise 4: Understand and try OpenShift v3
 
 http://blog.arungupta.me/openshift-v3-getting-started-javaee7-wildfly-mysql/
+
+## Exercise 5: Get this working on your own machine
+
+# Appendix
+
+## Run this lab yourself
 
 ## References
 
 . Docker EAP Images Registry
 . http://www.jboss.org/ticket-monster/[Ticket Monster]
-
