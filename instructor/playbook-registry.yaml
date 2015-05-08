@@ -1,0 +1,62 @@
+---
+- hosts: default
+  sudo: yes
+  tasks:
+   - name: Ensure docker is stopped
+     service:
+       name=docker
+       state=stopped
+   - name: Ensure that docker group is present
+     group:
+       name=docker
+       state=present
+   - name: Add user Vagrant to Docker group
+     user:
+       name=vagrant
+       groups=docker
+       append=yes
+   - name: Change owner of /var/run/docker.sock
+     file:
+       path=/var/run/docker.sock
+       owner=root
+       group=docker
+   - name: Make sure that the Red Hat internal DNS is registered
+     shell: nmcli con mod 'Wired connection 1' ipv4.ignore-auto-dns yes && sudo nmcli con mod 'Wired connection 1' ipv4.dns '10.5.30.160 10.11.5.19 8.8.8.8' && sudo nmcli con up 'Wired connection 1'
+   - name: Allow access to CE (Kev's team) repo, to pull registry-ui
+     lineinfile:
+         dest=/etc/sysconfig/docker
+         state=present
+         insertafter=EOF
+         regexp="{{ item.regexp }}"
+         line="{{ item.line }}"
+     with_items:
+       - { regexp: "^ADD_REGISTRY='--add-registry ce-registry.usersys.redhat.com'", line: "ADD_REGISTRY='--add-registry ce-registry.usersys.redhat.com'" }
+       - { regexp: '^INSECURE_REGISTRY', line: "INSECURE_REGISTRY='--insecure-registry ce-registry.usersys.redhat.com'" }
+       - { regexp: '^DOCKER_NETWORK_OPTIONS', line: "DOCKER_NETWORK_OPTIONS='-H tcp://127.0.0.1:2375 -H unix:///var/run/docker.sock'" }
+   - name: Ensure docker was restarted
+     service:
+       name=docker
+       state=restarted
+   - name: Restart Kubernetes services
+     service:
+       name="{{ item.name }}"
+       state=started
+       enabled=yes
+     with_items:
+       - { name: etcd }
+       - { name: kube-apiserver }
+       - { name: kube-controller-manager }
+       - { name: kube-scheduler }
+       - { name: docker }
+       - { name: kube-proxy}
+       - { name: kubelet }
+   - name: Create the registry store
+     file:
+       path=/home/vagrant/store/repositories
+       state=directory
+       recurse=yes
+   - name: Fix the SE Linux policy to allow the docker container to be able to access it
+     shell: chcon -Rt svirt_sandbox_file_t /home/vagrant/store/
+   - name: Add the POD to Kubernetes
+     shell: /usr/bin/kubectl create -f /mnt/vagrant/instructor.json
+

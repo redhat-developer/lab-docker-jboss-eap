@@ -1,0 +1,51 @@
+---
+- hosts: default
+  sudo: yes
+  tasks:
+   - name: Ensure docker is stopped
+     service:
+       name=docker
+       state=stopped
+   - name: Ensure that docker group is present
+     group:
+       name=docker
+       state=present
+   - name: Add user Vagrant to Docker group
+     user:
+       name=vagrant
+       groups=docker
+       append=yes
+   - name: Change owner of /var/run/docker.sock
+     file:
+       path=/var/run/docker.sock
+       owner=root
+       group=docker
+   - name: Hack the DNS to work
+     lineinfile:
+         dest=/etc/hosts
+         state=present
+         insertafter=EOF
+         regexp="ˆ{{ lookup('env','CLASSROOM_IP') }}"
+         line="{{ lookup('env','CLASSROOM_IP') }} classroom.example.com"
+   - name: Allow access to our private repo
+     lineinfile:
+         dest=/etc/sysconfig/docker
+         state=present
+         insertafter=EOF
+         regexp="{{ item.regexp }}"
+         line="{{ item.line }}"
+     with_items:
+       - { regexp: "^ADD_REGISTRY='--add-registry classroom.example.com:5000", line: "ADD_REGISTRY='--add-registry classroom.example.com:5000" }
+       - { regexp: '^INSECURE_REGISTRY', line: "INSECURE_REGISTRY='--insecure-registry classroom.example.com:5000" }
+   - name: Enable docker TCP access
+     lineinfile:
+         dest=/etc/sysconfig/docker-network
+         state=present
+         insertafter=EOF
+         regexp=ˆDOCKER_NETWORK_OPTIONS
+         line="DOCKER_NETWORK_OPTIONS='-H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock'"
+   - name: Ensure docker was restarted
+     service:
+       name=docker
+       state=restarted
+
