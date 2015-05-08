@@ -9,6 +9,7 @@ Vagrant.configure('2') do |config|
     vagrant_host.vm.hostname = "rhel-atomic-7-docker-host"
     config.vm.synced_folder './', '/vagrant', type: 'rsync', disabled: true
     config.vm.synced_folder './', '/mnt/vagrant', type: 'rsync'
+    config.vm.synced_folder '../', '/mnt/lab', type: 'rsync'
     config.nfs.functional = false
 
     vagrant_host.vm.provision 'shell', inline: "sudo systemctl stop docker > /dev/null 2>&1 || :" #in case this isn't first run
@@ -38,7 +39,7 @@ Vagrant.configure('2') do |config|
     # Create the store, and fix the SE Linux policy to allow the docker container to be able to access it
     vagrant_host.vm.provision 'shell', inline: "mkdir -p /home/vagrant/store/repositories && sudo chcon -Rt svirt_sandbox_file_t /home/vagrant/store/"
     # Add the pod
-    vagrant_host.vm.provision 'shell', inline: "/usr/bin/kubectl create -f /mnt/vagrant/registry.json"
+    vagrant_host.vm.provision 'shell', inline: "/usr/bin/kubectl create -f /mnt/vagrant/instructor.json"
 
     config.vm.network "forwarded_port", guest: 5000, host: 5000
     config.vm.network "forwarded_port", guest: 5001, host: 5001
