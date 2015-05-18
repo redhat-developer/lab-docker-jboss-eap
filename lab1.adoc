@@ -15,9 +15,11 @@ TODO: Add reference to BYOD setup
 1. Create lab directory in your home directory and go into the directory
 
 `$ mkdir ~/lab && cd ~/lab`
+
 1. Download the Vagrant file for the labs to the `lab` directory
 
 `$ wget -O Vagrantfile http:// classroom.example.com/lab-setup/Vagrantfile`
+
 1. Start the Vagrant container
 
 `$ vagrant up`
