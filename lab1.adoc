@@ -18,7 +18,7 @@ TODO: Add reference to BYOD setup
  
 . Download the Vagrant file for the labs to the `lab` directory
 
- $ wget -O Vagrantfile http:// classroom.example.com/lab-setup/Vagrantfile
+ $ wget -O Vagrantfile http://classroom.example.com/lab-setup/Vagrantfile
 
 . Start the Vagrant container
  
