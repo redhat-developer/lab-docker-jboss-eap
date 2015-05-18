@@ -1,3 +1,5 @@
+:source-highlighter: highlightjs
+
 # Lab1 Instructions
 This is an introduction lab to Docker CLI, Docker Repository and RHEL Container Development Kit
 
@@ -13,15 +15,19 @@ Red Hat CDK comes with a virtual machine that are optimized for running containe
 TODO: Add reference to BYOD setup
 
 1. Create lab directory in your home directory and go into the directory
-
+[source,bash]
+----
 `$ mkdir ~/lab && cd ~/lab`
-
+----
 1. Download the Vagrant file for the labs to the `lab` directory
-
+[source,bash]
+----
 `$ wget -O Vagrantfile http:// classroom.example.com/lab-setup/Vagrantfile`
-
+----
 1. Start the Vagrant container
-
+[source,bash]
+----
 `$ vagrant up`
+----
 
 ### Get familar with Docker CLI
