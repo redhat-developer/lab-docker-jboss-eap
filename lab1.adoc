@@ -1,0 +1,28 @@
+# Lab1 Instructions
+This is an introduction lab to Docker CLI, Docker Repository and RHEL Container Development Kit
+
+## What you will learn
+You will learn how to start using Red Hat Container Development Kit (CDK) to start developing Red Hat Enterprise Linux based containers. 
+You will also learn how to use the docker CLI to manage containers in a development environment. 
+Finally you will learn the basis of using a local container repository for speed and security.
+
+
+### How to start your Red Hat CDK environment
+Red Hat CDK comes with a virtual machine that are optimized for running containers, called Red Hat Atomic. It uses Vagrant to manage the virtual machine and included boxes for VirtualBox and KVM (libvirt). If you are using a lab machine we could have run this directly on the machine since Red Hat Enterprise Linux 7.1 includes support for containers. However many of you are not using Red Hat Enterprise Linux as a Desktop so therefor the we will use Red Hat CDK even on the lab machines. 
+
+TODO: Add reference to BYOD setup
+
+. Create lab directory in your home directory and go into the directory
+ 
+ $ mkdir ~/lab && cd ~/lab
+ 
+. Download the Vagrant file for the labs to the `lab` directory
+
+ $ wget -O Vagrantfile http://classroom.example.com/lab-setup/Vagrantfile
+
+. Start the Vagrant container
+ 
+ $ vagrant up
+
+
+### Get familar with Docker CLI
