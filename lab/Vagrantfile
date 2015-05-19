@@ -7,6 +7,12 @@ Vagrant.configure('2') do |config|
     # Box name
     vagrant_host.vm.box = 'rhel-atomic-7'
     vagrant_host.vm.hostname = "rhel-atomic-7-docker-host"
+    
+    config.vm.provider "virtualbox" do |v|
+      v.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
+      v.memory = 2048
+    end
+    
     config.vm.synced_folder './', '/vagrant', type: 'rsync', disabled: true
     config.vm.synced_folder './', '/mnt/vagrant', type: 'rsync'
     config.nfs.functional = false
