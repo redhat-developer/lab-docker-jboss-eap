@@ -195,6 +195,16 @@ $ export DOCKER_HOST=127.0.0.1:2375 && unset DOCKER_CERT_PATH && unset DOCKER_TL
 $ vagrant rsync-auto
 ----
 
+## Exercises:
+
+. link:lab1.adoc[Getting familar with containers]
+. link:lab2.adoc[Deploy a Java EE application in a container]
+. link:lab3.adoc[Java EE Clustering using containers]
+. link:lab4.adoc[Orchestrating containers in OpenShift V3]
+
+
+# Extra material (This material is the base to the Exercises above)
+
 ## Exercise 1: Your first `Dockerfile`
 
 The basic `Dockerfile` is located in the `lab/` directory. To build it, change in to the `lab` directory, then run:
