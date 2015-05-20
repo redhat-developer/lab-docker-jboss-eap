@@ -3,7 +3,9 @@
 regex='^([^\/]*)/(.*):(.*)$'
 repo="localhost:5000"
 
-for IMAGE in 'ce-registry.usersys.redhat.com/jboss-eap-6/eap:6.4'; do 
+PULL_IMAGES='registry.access.redhat.com/rhel7.1:latest ce-registry.usersys.redhat.com/jboss-eap-6/eap:6.4 ce-registry.usersys.redhat.com/jboss-webserver-3/httpd:3.0'
+
+for IMAGE in ${PULL_IMAGES}; do 
     if [[ $IMAGE =~ $regex ]]; then
         server=${BASH_REMATCH[1]}
         name=${BASH_REMATCH[2]}
