@@ -29,9 +29,7 @@ Before we start implementing the cluster, let's review the Kubernetes concepts.
 kubernetes.io describes Kubernetes as:
 
 [quote]
-----
 Kubernetes is an open source orchestration system for Docker containers. It handles scheduling onto nodes in a compute cluster and actively manages workloads to ensure that their state matches the users declared intentions. Using the concepts of "labels" and "pods", it groups the containers which make up an application into logical units for easy management and discovery.
-----
 
 While Docker defines the container format and builds and manages individual containers, an orchestration tool is needed to deploy and manage sets of containers. Kubernetes is a tool designed to orchestrate Docker containers. After building the container images you want, you can use a Kubernetes Master to deploy one or more containers in what is referred to as a pod. The Master pushes the containers in that pod to a Kubernetes Minion where the containers run.
 
@@ -60,7 +58,7 @@ Everything runs locally:: Because each container is running with its port expose
 
 The following steps show how to launch and test the pod:
 
-. Create a Web server pod file. Create a jboss-eap.yaml file that you will use to deploy the application server pod. Here is what it should contain:
+. Create a Web server pod file. Create a `jboss-eap.yaml` file that you will use to deploy the application server pod. Here is what it should contain:
 [source,yaml]
 ----
 apiVersion: v1beta1
@@ -262,7 +260,7 @@ cluster/kubectl.sh get pods
 ---- 
 .Check that mod_cluster is running by opening <http://localhost/mod_cluster_manager> in your web browser
 
-## 3.3 Create a pod for JBoss EAP
+## 3.3 Modify the JBoss EAP Dockerfile to use Postgres
 
 We'll reuse the Dockerfile you created for Ticket Monster in Exercise 2, and modify it to support Postgres. We have provided a CLI batch script, the postgres JDBC driver, and a bash script that you can execute when the Docker container is being built. The bash script will copy the Postgres JDBC driver, bring up the JBoss EAP server, execute the CLI script, and then shut the server down.
 
@@ -283,5 +281,21 @@ docker build -t jboss-eap-ticketmonster .
 ----
 [source,yaml]
 ----
-.Now, restart the JBoss EAP pod, so that it picks up the changes we've made to the docker container. You should see Postgres being used **TODO - how**.
+.Now, restart the JBoss EAP pod, so that it picks up the changes we've made to the docker container.
+----
+kubectl update -f jboss-eap.yaml
+----
+You should see Postgres being used **TODO - how**.
+
+# 3.4 Cluster JBoss EAP
+
+Managing replicas of any container is very easy in Kubernetes.
+
+.Edit your `jboss-eap.yaml` file and change the number of `replicas` to 2.
+.Now, restart the JBoss EAP pod, so that it picks up the changes we've made to the number of replicas.
+----
+kubectl update -f jboss-eap.yaml
+----
+. You can now navigate to <http://127.0.0.1/ticket-monster/> and see the application running! You can check that both replicas are available by looking at mod_cluster_manager (TODO).
+. Let's try killing one of the replicas and make sure everything stays up (TODO)
 
