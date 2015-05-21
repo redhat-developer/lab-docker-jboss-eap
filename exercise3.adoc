@@ -1,4 +1,5 @@
-# Exercise 3 Instructions
+# Exercise 3
+
 This is an intermediate exercise in which you will learn how to create an EAP cluster using Kubernetes and Docker.
 
 ## What you will learn
@@ -59,6 +60,7 @@ Everything runs locally:: Because each container is running with its port expose
 The following steps show how to launch and test the pod:
 
 . Create a Web server pod file. Create a `jboss-eap.yaml` file that you will use to deploy the application server pod. Here is what it should contain:
++
 [source,yaml]
 ----
 apiVersion: v1beta1
@@ -92,15 +94,19 @@ desiredState:
 ----
 +
 . Orchestrate the container with kubectl. With the yaml file in the current directory, run the following command to start the pod to begin running the container:
++
 ----
-# kubectl create -f jboss-eap.yaml
+$ kubectl create -f jboss-eap.yaml
 jboss-eap
 ----
 +
-.Check container. If the container is running you should be able to see the pods with the kubectl command:
+. Check the container. If the container is running you should be able to see the pods with the kubectl command:
++
 ----
-# kubectl get pods
+$ kubectl get pods
 ----
++
+You should also be able to see the container using `docker ps`
 +
 . Check the application is working by visiting <http://localhost:8080>
 
@@ -108,33 +114,35 @@ jboss-eap
 
 Run the following commands to see the state of your Kubernetes services, pods and containers:
 
-. Check Kubernetes information: Run the following commands to list information about the minion, replication controllers and running pods:
+. Check out Kubernetes: Run the following commands to list information about the minion, replication controllers and running pods:
++
 ----
-# kubectl get minions
+$ kubectl get minions
 NAME                LABELS              STATUS
 127.0.0.1           <none>              Ready
-# kubectl get pods
+$ kubectl get pods
 POD      IP          CONTAINER(S)    IMAGE(S)  HOST        LABELS                                         STATUS
 02f2...  172.17.0.2  apache-frontend webwithdb 127.0.0.1/  name=webserver,selectorname=webserver,uses=db  Running
 9c34...  172.17.0.3  db              dbforweb  127.0.0.1/  name=db,selectorname=db                        Running
-# kubectl get replicationControllers
+$ kubectl get replicationControllers
 CONTROLLER             CONTAINER(S)     IMAGE(S)  SELECTOR               REPLICAS
 webserver-controller   apache-frontend  webwithdb selectorname=webserver 1
 db-controller          db               dbforweb  selectorname=db        1
-# kubectl get services
+$ kubectl get services
 NAME            LABELS                                   SELECTOR    IP               PORT       
 kubernetes-ro   component=apiserver,provider=kubernetes  <none>      10.254.47.161    80
 kubernetes      component=apiserver,provider=kubernetes  <none>      10.254.153.242   443
 ----
 +
-.Check container logs: Run the following command (replacing the last argument with the pod ID of your pods).
+. Check the container logs: Run the following command (replacing the last argument with the pod ID of your pods).
++
 ----
-# kubectl log 9c344f76-a71a-11e4-9fb3-525400374aa7
+$ kubectl log 9c344f76-a71a-11e4-9fb3-525400374aa7
 2015-01-28T18:22:33.140266438Z 150128 13:22:33 mysqld_safe Logging to
    '/var/log/mariadb/mariadb.log'.
 2015-01-28T18:22:33.397684509Z 150128 13:22:33 mysqld_safe 
    Starting mysqld daemon with databases from /var/lib/mysql
-# kubectl log 02f2115b-a71a-11e4-9fb3-525400374aa7
+$ kubectl log 02f2115b-a71a-11e4-9fb3-525400374aa7
 2015-01-28T18:18:20.410816032Z AH00558: httpd: Could not reliably determine
 the server's fully qualified domain name, using 172.17.0.2. Set the
 'ServerName' directive globally to suppress this message
@@ -145,8 +153,9 @@ the server's fully qualified domain name, using 172.17.0.2. Set the
 Now that we've got the hang of using Kubernetes, lets go ahead and create a pod for Postgres, configure the Ticket Monster application container to use it, and create a pod for the Apache HTTPD load balancer.
 
 . Create the Postgres pod. The docker community has created a Postgres docker image, so we can just reuse that. Create a postgres.yaml file that you will use to deploy the application server pod. Here is what it should contain:
++
 [source,yaml]
----
+----
   apiVersion: "v1beta1"
   id: "postgres-rc"
   kind: "ReplicationController"
@@ -187,6 +196,7 @@ Now that we've got the hang of using Kubernetes, lets go ahead and create a pod 
 ----
 +
 . Create the Postgres service. Create a postgres.yaml file that you will use to deploy the database pod. Here is what it should contain:
++
 [source,yaml]
 ----
   apiVersion: "v1beta1"
@@ -202,7 +212,9 @@ Now that we've got the hang of using Kubernetes, lets go ahead and create a pod 
 ----
 +
 . Create the Apache HTTPD load balancer pod. Create a modcluster.yaml file that you will use to deploy the load balancer pod. Here is what it should contain:
++
 [source,yaml]
+----
   apiVersion: "v1beta1"
   id: "modcluster-rc"
   kind: "ReplicationController"
@@ -230,6 +242,7 @@ Now that we've got the hang of using Kubernetes, lets go ahead and create a pod 
 ----
 +
 . Create the Postgres service. Create a postgres.yaml file that you will use to deploy the database pod. Here is what it should contain:
++
 [source,yaml]
 ----
   apiVersion: "v1beta1"
@@ -243,28 +256,36 @@ Now that we've got the hang of using Kubernetes, lets go ahead and create a pod 
   selector: 
     name: "modcluster"
 ----
++
 . Orchestrate the container with kubectl. Make sure you are in the directory you created the yaml files:
-..With the yaml files in the current directory, run the following commands to start postgres:
+.. With the yaml files in the current directory, run the following commands to start postgres:
++
 ----
-cluster/kubectl.sh create -f postgres.json
-cluster/kubectl.sh create -f postgres-service.json
+$ cluster/kubectl.sh create -f postgres.json
+$ cluster/kubectl.sh create -f postgres-service.json
 ----
-.., run the following commands to start modcluster:
++
+.. run the following commands to start modcluster:
++
 ----
-cluster/kubectl.sh create -f modcluster.json
-cluster/kubectl.sh create -f modcluster-service.json
+$ cluster/kubectl.sh create -f modcluster.json
+$ cluster/kubectl.sh create -f modcluster-service.json
 ----
-.Check that the postgres and modcluster pods have come up. If they show `Pending`, the images are still downloading or starting up. If they show `Running` then they are up
++
+. Check that the postgres and modcluster pods have come up. If they show `Pending`, the images are still downloading or starting up. If they show `Running` then they are up.
++
 ----
-cluster/kubectl.sh get pods
+$ cluster/kubectl.sh get pods
 ---- 
-.Check that mod_cluster is running by opening <http://localhost/mod_cluster_manager> in your web browser
++
+. Check that mod_cluster is running by opening <http://localhost/mod_cluster_manager> in your web browser
 
 ## 3.3 Modify the JBoss EAP Dockerfile to use Postgres
 
 We'll reuse the Dockerfile you created for Ticket Monster in Exercise 2, and modify it to support Postgres. We have provided a CLI batch script, the postgres JDBC driver, and a bash script that you can execute when the Docker container is being built. The bash script will copy the Postgres JDBC driver, bring up the JBoss EAP server, execute the CLI script, and then shut the server down.
 
-.Edit the `Dockerfile` you created in Exercise 2, and add the following lines after the `MAINTAINER` line:
+. Edit the `Dockerfile` you created in Exercise 2, and add the following lines after the `MAINTAINER` line:
++
 ----
 # Add customization folder
 COPY customization /opt/jboss/wildfly/customization/
@@ -275,27 +296,33 @@ USER root
 RUN chmod +x /opt/jboss/wildfly/customization/execute.sh
 RUN /opt/jboss/wildfly/customization/execute.sh standalone standalone-ha.xml
 ----
-.Now rebuild the Dockerfile
++
+. Now rebuild the Dockerfile
++
 ----
 docker build -t jboss-eap-ticketmonster .
 ----
-[source,yaml]
-----
-.Now, restart the JBoss EAP pod, so that it picks up the changes we've made to the docker container.
++
+. Now, restart the JBoss EAP pod, so that it picks up the changes we've made to the docker container.
++
 ----
 kubectl update -f jboss-eap.yaml
 ----
-You should see Postgres being used **TODO - how**.
++
+. You should see Postgres being used **TODO - how**.
 
 # 3.4 Cluster JBoss EAP
 
 Managing replicas of any container is very easy in Kubernetes.
 
-.Edit your `jboss-eap.yaml` file and change the number of `replicas` to 2.
-.Now, restart the JBoss EAP pod, so that it picks up the changes we've made to the number of replicas.
+. Edit your `jboss-eap.yaml` file and change the number of `replicas` to 2.
+. Now, restart the JBoss EAP pod, so that it picks up the changes we've made to the number of replicas.
++
 ----
 kubectl update -f jboss-eap.yaml
 ----
++
 . You can now navigate to <http://127.0.0.1/ticket-monster/> and see the application running! You can check that both replicas are available by looking at mod_cluster_manager (TODO).
++
 . Let's try killing one of the replicas and make sure everything stays up (TODO)
 
