@@ -208,7 +208,7 @@ $ vagrant rsync-auto
 ## Exercise 1: Your first `Dockerfile`
 
 The basic `Dockerfile` is located in the `lab/` directory. To build it, change in to the `lab` directory, then run:
-+
+
 ----
 docker build .
 ----
