@@ -1,0 +1,14 @@
+# Instructor machine
+
+# Start the `instructor` Vagrantbox
+
+Having installed your virtualization environment, Vagrant and the CDK, setting up the registry is easy. The registry is packaged as a Vagrantbox, which in turn runs the Docker Registry, Docker Registry UI, Nexus proxy and HTTP server inside Docker containers orchestrated using Kubernetes. Docker and Kubernetes are brought up automatically by the Vagrantfile definition. The box exposes the Docker Registry on <http://0.0.0.0:5000>, the Docker Registry UI on <http://0.0.0.0:5001>, Nexus on <http://0.0.0.0:80> and the HTTP server with lab assets on <http://0.0.0.0:5080>.
+
+. Change to the registry directory `cd instructor`.
+. Bring up the vagrant box `vagrant up`.
+. SSH in to the vagrant box `vagrant ssh`.
+. Wait for the Docker registry to come up. This can take a while, as Docker needs to fetch the registry and registry-ui containers from the ce-registry. To check the status, run `kubectl get pods` - once the registry is up you will see the status change to Running.
+. Visit <http://localhost:5001> and check that the repository UI is available. There are no images in the registry at the moment!
+. Inside the vagrant box run `/mnt/vagrant/push_images.sh`. This will pull the necessary images for the lab from the ce-registry and push them to our local registry. This will take a while!
+.  Visit <http://localhost:5001> and verify the images are now in the repository.
+
