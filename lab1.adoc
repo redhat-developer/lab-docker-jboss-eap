@@ -2,27 +2,208 @@
 This is an introduction lab to Docker CLI, Docker Repository and RHEL Container Development Kit
 
 ## What you will learn
-You will learn how to start using Red Hat Container Development Kit (CDK) to start developing Red Hat Enterprise Linux based containers. 
-You will also learn how to use the docker CLI to manage containers in a development environment. 
-Finally you will learn the basis of using a local container repository for speed and security.
+Particpants will learn how to use Red Hat Container Development Kit (CDK) and to start developing Red Hat Enterprise Linux based containers.
 
+Participants will also learn how to use the Docker CLI to manage containers in a development environment.
 
-### How to start your Red Hat CDK environment
-Red Hat CDK comes with a virtual machine that are optimized for running containers, called Red Hat Atomic. It uses Vagrant to manage the virtual machine and included boxes for VirtualBox and KVM (libvirt). If you are using a lab machine we could have run this directly on the machine since Red Hat Enterprise Linux 7.1 includes support for containers. However many of you are not using Red Hat Enterprise Linux as a Desktop so therefor the we will use Red Hat CDK even on the lab machines. 
+### Starting Red Hat CDK environment
+Red Hat CDK comes with a virtual machine that are optimized for running containers, called Red Hat Atomic. It uses Vagrant to manage the virtual machine and included boxes for VirtualBox and KVM (libvirt). The participants that uses a lab machine can run the labs without a virtual machine, since Red Hat Enterprise Linux 7.1 includes support for containers. However probably not all of the participants are using Red Hat Enterprise Linux as a Desktop at their workplace, so to give particpants as true real life experience as possible, they will use the same setup on the lab machines.
 
-TODO: Add reference to BYOD setup
+See <<boyd-setup.adoc#,Bring Your Own Device Setup Guide>> for information on how to install the software on your Mac OS X(R), Windows(R) or Linux(R) desktop.
+
 
 . Create lab directory in your home directory and go into the directory
- 
- $ mkdir ~/lab && cd ~/lab
- 
++
+[source,shell,numbered]
+----
+$ mkdir ~/lab && cd ~/lab
+----
++
 . Download the Vagrant file for the labs to the `lab` directory
-
++
+[source,shell,numbered]
+----
  $ wget -O Vagrantfile http://classroom.example.com/lab-setup/Vagrantfile
-
+----
++
 . Start the Vagrant container
- 
- $ vagrant up
++
+[source,shell,numbered]
+----
+$ vagrant up
+----
 
 
 ### Get familar with Docker CLI
+In this section you will learn the basic commands of the docker CLI so that you can manage and build containers
+
+Step 1 - Start an interactive container::
+The command for starting a container is **run** and it has a couple of important options. For example:
++
+-i or --interactive=true::: Will start the container with an interactive terminal so that we can open even if we disconnect
+-t::: Tells the run cammnd to allocate a pseudo TTY session
+-d or --detach=true::: Detached mode: run the container in the background and print the new container ID. This option can not be combined with **-i** or **-t**.
+-P or --publish-all=true::: Publish all exposed ports to random ports on the host interfaces
+-p or --publish=[]::: Publish a container's port to the host
++
+::
+For more information on available options for the **run** command type *docker run --help* in a terminal.
++
+Start a clean RHEL 7.1 container like this:
++
+[source,shell,numbered]
+----
+$ docker run -it rhel7.1 bash
+Unable to find image 'rhel7.1:latest' locally
+Pulling repository classroom.example.com:5000/rhel7.1
+10acc31def5d: Download complete
+Status: Downloaded newer image for classroom.example.com:5000/rhel7.1:latest
+[root@d67ea0f4a238 /]#
+----
++
+NOTE: The output from the docker run command may differ and your hostname will differ from the example above
++
+Congratulations! you have succesfully started a container using Red Hat Enterprise Linux. This container has it's own file system, own process tree, own IP address and it's own hostname
++
+[source,shell,numbered]
+----
+[root@d67ea0f4a238 /]# uname -a
+Linux d67ea0f4a238 3.10.0-229.el7.x86_64 #1 SMP Thu Jan 29 18:37:38 EST 2015 x86_64 x86_64 x86_64 GNU/Linux
+[root@d67ea0f4a238 /]# cat /etc/redhat-release
+Red Hat Enterprise Linux Server release 7.1 (Maipo)
+[root@d67ea0f4a238 /]# ps aux
+bash: /usr/bin/ps: No such file or directory
+----
++
+As you can see the tool ps (used to list running processes) is not available. The RHEL container is on purpose kept very minimal, instead each service based on a container will have to specify and install the packages it depends on. For example we can easily install the ps tool like this:
++
+[source,shell,numbered]
+----
+[root@d67ea0f4a238 /]# yum -y install procps
+Loaded plugins: product-id, subscription-manager
+rhel-7-server-eus-rpms                             | 2.9 kB  00:00:00
+rhel-7-server-htb-rpms                             | 3.4 kB  00:00:00
+rhel-7-server-rpms                                 | 3.7 kB  00:00:00
+...
+...
+...
+Installed:
+  procps-ng.x86_64 0:3.3.10-3.el7
+
+Complete!
+[root@d67ea0f4a238 /]# ps aux
+USER        PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root          1  0.0  0.1  11744  1896 ?        Ss   16:04   0:00 bash
+root         51  0.0  0.0  19764  1224 ?        R+   16:07   0:00 ps aux
+[root@d67ea0f4a238 /]#
+----
++
+Go a head and stop the container by either pressing CTRL-D or by typing exit in the container prompt.
++
+ [root@d67ea0f4a238 /]# exit
++
+Using the above commands we started a bash shell in a container using Red Hat Enterprise Linux 7.1. From the prompt we can see that it is using a different hostname. From uname -a and /etc/redhat-release we can see that this is not an Red Hat Atomic, but actually a full blown RHEL7.1 container.
++
+When we list the process of the container we can see that it has almost no processes running.
++
+IMPORTANT: Installing packaged and changing configurations using the interactive console is strongly discouraged, since maintaining containers that requires manual setup is much harder thank maintaining containers that are automated.
++
+TIP: The container that we stopped are not deleted. Using `docker ps -a` you can see the container and using `docker start -a <container-id>` you can start an reconnect to the container.
+
+Step 2 - Start a daemon container::
+Often it's more usefull to start a container as a daemon process. For example when a container is built to provide a service, like an application server or a database.
++
+Run the following to start JBoss EAP 6.4 as a daemon process:
++
+[source,shell,numbered]
+----
+$ docker run -dP jboss-eap-6/eap:6.4
+3e336d31ce25cab777cf8ffd9c8779fbe0751455fa1e9c80cb30be69810ab8ae
+$ docker ps
+CONTAINER ID  IMAGE                 COMMAND                CREATED             STATUS              PORTS                     NAMES
+3e336d31ce25  jboss-eap-6/eap:6.4   "/opt/eap/bin/standa   16 seconds ago      Up 14 seconds       0.0.0.0:49154->8080/tcp   pensive_euclid
+----
++
+The container running JBoss EAP is started add default public port 8080 is mapped to 49154 (mapped port may differ). Verify that the server responds by opening a browser to http://localhost:49154
++
+NOTE: Using -P option all the exposes port (for JBoss EAP 8080) are automatically mapped to an available port on the server.
++
+The browser should now show the JBoss EAP Welcome Page.
++
+image::images/jboss-eap-welcome.png["JBoss EAP Welcome Page"]
+
+Step 3 - List, stop and delete containers::
+When starting containers in deamon mode they are running in the backgrund untill the main process stops or until someone manually stops its. Let's stop the JBoss EAP container that we started in Step2.
++
+[source,shell,numbered]
+----
+$ docker ps
+CONTAINER ID  IMAGE                 COMMAND                CREATED             STATUS              PORTS                     NAMES
+3e336d31ce25  jboss-eap-6/eap:6.4   "/opt/eap/bin/standa   16 seconds ago      Up 14 seconds       0.0.0.0:49154->8080/tcp   pensive_euclid
+$ docker stop 3e336d31ce25
+3e336d31ce25
+----
++
+Let's start a a couple of containers
++
+[source,shell,numbered]
+----
+$ for x in {0..9}; do docker run -d --name="container-$x" rhel7.1 sleep 30; done
+e17a6426595b9daa91fda4573ecd7a58b1949e3343cd2b90db4720baf33e0afc
+4c97f6461d8eafd360c4d9f139584e1fcf9f56099b049eb6f0b6efa759a0217b
+8a70ba2679717bbacb565520ee1f17ebcd65112288a5f0f1901bd2c931ad9b2a
+fe32249ffb31cb3189dcc9581cb0958358fb8a466c84d0e4caed79514f348b59
+03e14b9e6e7e3b525aba46e5c2da32a0388c1f03568253f806bd24a46c538a21
+e55c1beaf565085b8221ca0192df7a1f9791419673876a0695d1d68cccbd09e0
+a5a1c45cbeb3222e154c58bef975508757f50da55d6d8e0347ffa848d9ec3ffd
+b001c6cf360b56eee532b3931a67465c6e203dac889ad1e905afc9648c9d7140
+2d185826f86644996a553b22576c55a536b70720da6576cdf4d53529b6c08a1c
+6637273d947043d3cd7f5c777fd668b5746c6d08699bbd907f70c1eca1424918
+$ docker ps
+CONTAINER ID        IMAGE                                       COMMAND             CREATED             STATUS              PORTS               NAMES
+6637273d9470        classroom.example.com:5000/rhel7.1:latest   "sleep 30"         5 seconds ago       Up 4 seconds                            container-9
+2d185826f866        classroom.example.com:5000/rhel7.1:latest   "sleep 30"         6 seconds ago       Up 5 seconds                            container-8
+b001c6cf360b        classroom.example.com:5000/rhel7.1:latest   "sleep 30"         8 seconds ago       Up 6 seconds                            container-7
+a5a1c45cbeb3        classroom.example.com:5000/rhel7.1:latest   "sleep 30"         9 seconds ago       Up 7 seconds                            container-6
+e55c1beaf565        classroom.example.com:5000/rhel7.1:latest   "sleep 30"         10 seconds ago      Up 8 seconds                            container-5
+03e14b9e6e7e        classroom.example.com:5000/rhel7.1:latest   "sleep 30"         11 seconds ago      Up 9 seconds                            container-4
+fe32249ffb31        classroom.example.com:5000/rhel7.1:latest   "sleep 30"         12 seconds ago      Up 10 seconds                           container-3
+8a70ba267971        classroom.example.com:5000/rhel7.1:latest   "sleep 30"         13 seconds ago      Up 12 seconds                           container-2
+4c97f6461d8e        classroom.example.com:5000/rhel7.1:latest   "sleep 30"         14 seconds ago      Up 13 seconds                           container-1
+e17a6426595b        classroom.example.com:5000/rhel7.1:latest   "sleep 30"         15 seconds ago      Up 14 seconds                           container-0
+----
++
+Wait 30 sec and then run `docker ps` again. This time no containers should be displayed. Now run `docker ps -a` and you should see the containers, but this time with STATUS Exited.
++
+TIP: To remove the all the containers and free up the storage it's using excute the following command `docker rm $(docker ps -aq)`.
+
+Step 4 - Override the command::
+A container typically has a default command, for example the `jboss-eap-6/eap:6.4` container has a default command that looks like this `/opt/eap/bin/standalone.sh -b 0.0.0.0`. To override that command to for example to enable access to the administration console one have to add the option `-bmanagement 0.0.0.0`. This could look like this.
++
+[source,shell,numbered]
+----
+$ docker run -d -p 9990:9990 jboss-eap-6/eap:6.4 /opt/eap/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0
+----
++
+Now open a browser to http://localhost:9990, which should give you the followig error page because we haven't added a admin user yet.
++
+image::images/jboss-eap-error.png["JBoss EAP Error Page"]
+
+Step 5 - Executing commands in a runing container::
+We can execute commands directly to a running container using the `docker exec` command. To for example add a user one can run the following command.
++
+[source,shell,numbered]
+----
+$ docker exec <container-id_or_name> /opt/eap/bin/add-user.sh -g admin -u admin -p admin-123 -s
+----
++
+Go back to the browser and click on the "Try Again" link. User username: admin and password: admin-123 to authenticate to the admin console and you should now see the admin console.
++
+TIP: Use the following command to get shell access to a running contianer `docker exec -it <container-id> bash`. This will open bash shell in the running container so that you can check log files, investigate file permissions etc.
+
+Step 6 - Customize a container::
+All the commands in the previous steps are useful to know and great for development etc, but in a production environment you will most likely have a orchestration layer to manage start, stop, etc of containers.
++
+TODO: Add instruction how to build the custom-jboss-eap container.
+
+Step 7 - Deploy a real application to JBoss EAP::
