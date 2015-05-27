@@ -215,6 +215,8 @@ All the commands in the previous steps are useful to know and great for developm
 * Versioning of containers
 * Patching of containers
 +
+::
++
 Customization is done in a specification file called Dockerfile. It contains a set of instructions on how to build an images. Below is an example of such a docker file, study it and make sure you understand the meaning of each line:
 +
 [source,shell]
