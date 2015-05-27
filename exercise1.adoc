@@ -39,7 +39,7 @@ $ vagrant up
 In this section you will learn the basic commands of the docker CLI so that you can manage and build containers
 
 Step 1 - Start an interactive container::
-The command for starting a container is `docker run` and it has a couple of important options. below the most important ones are listed:
+The command for starting a container is `docker run` and it has a couple of important options. below are the most important options:
 +
 -i or --interactive=true::: Will start the container with an interactive terminal so that we can open even if we disconnect
 -t::: Tells the run cammnd to allocate a pseudo TTY session
@@ -206,6 +206,69 @@ Go back to the browser and click on the "Try Again" link. User username: admin a
 TIP: Use the following command to get shell access to a running contianer `docker exec -it <container-id> bash`. This will open bash shell in the running container so that you can check log files, investigate file permissions etc.
 
 Step 6 - Customize a container::
-All the commands in the previous steps are useful to know and great for development etc, but in a production environment you will most likely have a orchestration layer to manage start, stop, etc of containers.
+All the commands in the previous steps are useful to know and great for development etc, but in a production environment you will most likely have a orchestration layer to manage start, stop, etc of containers. The build model of Docker allows us to extend existing containers and build our own customized versions. The benefits of build customized containers are:
 +
-TODO: Add instruction how to build the custom-jboss-eap container.
+* Standardization of:
+** Tools
+** 3rd party libraries
+** Monitoring
+* Versioning of containers
+* Patching of containers
++
+Customization is done in a specification file called Dockerfile. It contains a set of instructions on how to build an images. Below is an example of such a docker file, study it and make sure you understand the meaning of each line:
++
+[source,shell]
+----
+FROM jboss-eap-6/eap:6.4  #<1>
+
+RUN $JBOSS_HOME/bin/add-user.sh -g admin -u admin -p admin-123 -s #<2>
+
+ENV JAVA_OPTS -client -XX:+TieredCompilation -XX:TieredStopAtLevel=1 -Xverify:none -Xms64m -Xmx256m -Dorg.apache.tomcat.util.LOW_MEMORY=true -XX:+UseCompressedOops -XX:+AggressiveOpts -XX:+DisableExplicitGC -Djava.net.preferIPv4Stack=true  #<3>
+
+ENV PRESERVE_JAVA_OPTS true #<4>
+
+CMD $JBOSS_HOME/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0 #<5>
+
+EXPOSE 8080 9990 9999 #<6>
+----
++
+<1> Extending the JBoss EAP image that Red Hat provides
+<2> Adding and admin user to the container
+<3> Setting the JAVA_OPTS much lower than the original image for development purposes
+<4> Needed to override the memory options in JBoss EAP
+<5> The default start command
+<6> Expose Web, Admin Web and Remote Admin API.
++
+Such a specification file are provided to you as part of the lab content and standing in the `lab` directory you can build the image by executing the following command (replace your-alias with a unique identifier):
++
+[source,shell]
+----
+$ docker build -t <your-alias>/jboss-eap:1.0 -f custom-jboss-eap/Dockerfile .
+$ docker images
+REPOSITORY                                   TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
+tqvarnst/jboss-eap                           1.0                 db4848085173        44 seconds ago      530.6 MB
+classroom.example.com:5000/jboss-eap-6/eap   6.4                 7a89f0810450        12 days ago         530.6 MB
+classroom.example.com:5000/rhel7.1           latest              10acc31def5d        3 months ago        154.1 MB
+----
++
+Now we have build our customized version of JBoss EAP container so then we can much easier start container that have the configuration that we want.
++
+[source,shell]
+----
+$ docker run -dP <your-alias>/jboss-eap:1.0
+$ docker run -dP <your-alias>/jboss-eap:1.0
+----
++
+Use `docker ps` to indentify which ports are mapped and make sure that both the web (8080 in the container) and the admin web (9990 in the container) port are responding on localhost.
+
+### Clean up and prepare for next exercise
+Before we move on to the next exercise the participant should stop any running containers and remove any stopped containers. This can be done with two simple commands:
+
+[source,shell]
+----
+$ docker stop $(docker ps -q)
+$ docker rm $(docker ps -aq)
+----
+
+## Summary
+After this exercise the participant should feel comfortalbe with starting, stoping and manage containers. The participant should be able to access a running container to check it's state, also should have basic understanding of networking (mapping ports etc). Further more the participant should gained an elementary knowledge on how to create custom images.
