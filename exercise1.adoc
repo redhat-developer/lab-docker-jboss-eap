@@ -48,7 +48,7 @@ The command for starting a container is `docker run` and it has a couple of impo
 -p or --publish=[]::: Publish a container's port to the host
 +
 ::
-For more information on available options for the **run** command type *docker run --help* in a terminal.
+For more information on available options for the `run` command type `docker run --help` in a terminal.
 +
 Start a clean RHEL 7.1 container like this:
 +
