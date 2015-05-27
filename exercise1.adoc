@@ -1,5 +1,6 @@
-# Lab1 Instructions
-This is an introduction lab to Docker CLI, Docker Repository and RHEL Container Development Kit
+# Exercise 1
+
+This is exercise is an introduction to Docker CLI and RHEL Container Development Kit.
 
 ## What you will learn
 Particpants will learn how to use Red Hat Container Development Kit (CDK) and to start developing Red Hat Enterprise Linux based containers.
