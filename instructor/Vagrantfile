@@ -49,11 +49,14 @@ Vagrant.configure('2') do |config|
     vagrant_host.vm.provision 'shell', inline: "/usr/bin/kubectl create -f /mnt/vagrant/instructor.json"
 
     # Build and Start Nexus
-    vagrant_host.vm.provision 'shell', inline: "docker build -t nexus /mnt/vagrant/nexus/ && docker run -h nexus --name=nexus -p 8888:8081 -d nexus"
+    #vagrant_host.vm.provision 'shell', inline: "docker build -t instructor/nexus /mnt/vagrant/nexus/ && docker run -h nexus.classroom.example.com --name=nexus -p 8081:8081 -d instructor/nexus"
+    #vagrant_host.vm.provision 'shell', inline: "docker build -t instructor/www /mnt/vagrant/www/ && docker run -h www.classroom.example.com --name=www -p 80:80 -d instructor/www"
 
     config.vm.network "forwarded_port", guest: 5000, host: 5000
     config.vm.network "forwarded_port", guest: 5001, host: 5001
-    config.vm.network "forwarded_port", guest: 8081, host: 8081, auto_correct: true
+    config.vm.network "forwarded_port", guest: 8081, host: 8888, host_ip: "127.0.0.1", auto_correct: true
+    config.vm.network "forwarded_port", guest: 80, host: 1024, host_ip: "127.0.0.1", auto_correct: true
+
     # END
   end
 end

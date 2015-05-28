@@ -1,10 +1,3 @@
-#######################################################################
-#                                                                     #
-# Creates a image with Nexus							  			  #
-#                                                                     #
-#######################################################################
-
-# Use the centos base image
 FROM rhel7.1
 MAINTAINER Thomas Qvarnstrom <tqvarnst@redhat.com>
 
@@ -24,7 +17,7 @@ RUN mkdir -p /opt/sonatype-nexus /opt/sonatype-work; \
 	wget -O /tmp/nexus-latest-bundle.tar.gz http://www.sonatype.org/downloads/nexus-latest-bundle.tar.gz; \
 	tar xzvf /tmp/nexus-latest-bundle.tar.gz -C /opt/sonatype-nexus --strip-components=1; \
 	rm -f /tmp/nexus-latest-bundle.tar*
- 
+
 RUN useradd --user-group --system --home-dir /opt/sonatype-nexus nexus
 
 ADD nexus.xml /opt/sonatype-work/nexus/conf/nexus.xml
