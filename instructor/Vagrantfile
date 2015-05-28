@@ -8,9 +8,14 @@ Vagrant.configure('2') do |config|
     vagrant_host.vm.box = 'rhel-atomic-7'
     vagrant_host.vm.hostname = "rhel-atomic-7-docker-host"
 
-    config.vm.provider "virtualbox" do |v|
-      v.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
-      v.memory = 2048
+    config.vm.provider "virtualbox" do |virtualbox|
+      virtualbox.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
+      virtualbox.memory = 2048
+    end
+
+    config.vm.provider :libvirt do |libvirt|
+      libvirt.memory = 8192
+      libvirt.cpus = 4
     end
 
     config.vm.synced_folder './', '/vagrant', type: 'rsync', disabled: true
@@ -28,7 +33,8 @@ Vagrant.configure('2') do |config|
 
     # Lab Registry additions (to CDK)
     # make sure that the Red Hat internal DNS is registered
-    vagrant_host.vm.provision 'shell', inline: "sudo nmcli con mod 'Wired connection 1' ipv4.ignore-auto-dns yes && sudo nmcli con mod 'Wired connection 1' ipv4.dns '10.5.30.160 10.11.5.19 8.8.8.8' && sudo nmcli con up 'Wired connection 1'"
+    # Not needed if the server is runing in Red Hat network and have Red Hat DNS already enabled.
+    # vagrant_host.vm.provision 'shell', inline: "sudo nmcli con mod 'System eth0' ipv4.ignore-auto-dns yes && sudo nmcli con mod 'System eth0' ipv4.dns '10.5.30.160 10.11.5.19 8.8.8.8' && sudo nmcli con up 'System eth0'"
 
     # start Kubernetes
     vagrant_host.vm.provision 'shell', inline: "sudo systemctl enable etcd && sudo systemctl start etcd"
@@ -39,23 +45,25 @@ Vagrant.configure('2') do |config|
     vagrant_host.vm.provision 'shell', inline: "sudo systemctl enable kubelet.service && sudo systemctl start kubelet.service"
 
     # allow access to CE (Kev's team) repo, to pull registry-ui
-    vagrant_host.vm.provision 'shell', inline: "echo \"ADD_REGISTRY='--add-registry ce-registry.usersys.redhat.com'\nINSECURE_REGISTRY='--insecure-registry ce-registry.usersys.redhat.com'\nDOCKER_NETWORK_OPTIONS='-H tcp://127.0.0.1:2375 -H unix:///var/run/docker.sock'\" | sudo tee --append /etc/sysconfig/docker > /dev/null"
+    vagrant_host.vm.provision 'shell', inline: "grep -q \"add-registry ce-registry.usersys.redhat.com\" /etc/sysconfig/docker || echo \"ADD_REGISTRY='--add-registry ce-registry.usersys.redhat.com'\" | sudo tee --append /etc/sysconfig/docker > /dev/null"
+    vagrant_host.vm.provision 'shell', inline: "grep -q \"insecure-registry ce-registry.usersys.redhat.com\" /etc/sysconfig/docker || echo \"INSECURE_REGISTRY='--insecure-registry ce-registry.usersys.redhat.com'\" | sudo tee --append /etc/sysconfig/docker > /dev/null"
+    vagrant_host.vm.provision 'shell', inline: "grep -q \"H tcp://127.0.0.1:2375\" /etc/sysconfig/docker || echo \"DOCKER_NETWORK_OPTIONS='-H tcp://127.0.0.1:2375 -H unix:///var/run/docker.sock'\" | sudo tee --append /etc/sysconfig/docker > /dev/null"
     vagrant_host.vm.provision 'shell', inline: "sudo systemctl enable docker && sudo systemctl restart docker"
+
+    # The internal DNS in boston lab points to an unsecure registry which causes issues. Add ing a fixed entry in /etc/hosts as a workaround
+    vagrant_host.vm.provision 'shell', inline: "grep -q \"registry.access.redhat.com\" /etc/hosts || echo '209.132.182.63 registry.access.redhat.com' | sudo tee --append /etc/hosts > /dev/null"
 
     # Bring up the registry pods inside Kubernetes and expose ports to bare metal
     # Create the store, and fix the SE Linux policy to allow the docker container to be able to access it
     vagrant_host.vm.provision 'shell', inline: "mkdir -p /home/vagrant/store/repositories && sudo chcon -Rt svirt_sandbox_file_t /home/vagrant/store/"
     # Add the pod
-    vagrant_host.vm.provision 'shell', inline: "/usr/bin/kubectl create -f /mnt/vagrant/instructor.json"
+    vagrant_host.vm.provision 'shell', inline: "/usr/bin/kubectl get pods | grep -q registry || /usr/bin/kubectl create -f /mnt/vagrant/instructor.json"
 
-    # Build and Start Nexus
-    #vagrant_host.vm.provision 'shell', inline: "docker build -t instructor/nexus /mnt/vagrant/nexus/ && docker run -h nexus.classroom.example.com --name=nexus -p 8081:8081 -d instructor/nexus"
-    #vagrant_host.vm.provision 'shell', inline: "docker build -t instructor/www /mnt/vagrant/www/ && docker run -h www.classroom.example.com --name=www -p 80:80 -d instructor/www"
 
-    config.vm.network "forwarded_port", guest: 5000, host: 5000
-    config.vm.network "forwarded_port", guest: 5001, host: 5001
-    config.vm.network "forwarded_port", guest: 8081, host: 8888, host_ip: "127.0.0.1", auto_correct: true
-    config.vm.network "forwarded_port", guest: 80, host: 1024, host_ip: "127.0.0.1", auto_correct: true
+    config.vm.network "forwarded_port", guest: 5000, host: 5000, host_ip: "0.0.0.0"
+    config.vm.network "forwarded_port", guest: 5001, host: 5001, host_ip: "0.0.0.0"
+    config.vm.network "forwarded_port", guest: 8081, host: 8081, host_ip: "0.0.0.0", auto_correct: true
+    config.vm.network "forwarded_port", guest: 80, host: 80, host_ip: "0.0.0.0", auto_correct: true
 
     # END
   end

@@ -1,0 +1,34 @@
+{
+    "id": "tools",
+    "kind": "Pod",
+    "apiVersion": "v1beta1",
+    "desiredState": {
+        "manifest": {
+            "id": "registry",
+            "version": "v1beta1",
+            "containers": [
+                {
+                    "name": "nexus",
+                    "image": "instructor/nexus",
+                    "ports": [
+                        {
+                            "containerPort": 8081,
+                            "hostPort": 8081
+                        }
+                    ]
+                },
+                {
+                    "name": "www",
+                    "image": "instructor/www",
+                    "ports": [
+                        {
+                            "containerPort": 80,
+                            "hostPort": 80 
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
+
