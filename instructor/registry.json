@@ -67,7 +67,7 @@
                     "source": 
                     {
                         "hostDir": {
-                            "path": "/home/vagrant/store"
+                            "path": "/home/vagrant/store/registry"
                         }
                     }
                 }

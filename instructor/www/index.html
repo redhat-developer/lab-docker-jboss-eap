@@ -1,10 +1,27 @@
 <html>
+<head>
+<script>
+// delegate event for performance, and save attaching a million events to each anchor
+document.addEventListener('click', function(event) {
+  var target = event.target;
+  if (target.tagName.toLowerCase() == 'a')
+  {
+      var port = target.getAttribute('href').match(/^:(\d+)(.*)/);
+      if (port)
+      {
+         target.href = port[2];
+         target.port = port[1];
+      }
+  }
+}, false);
+</script>
+</head>
 <body>
   <h1>Docker for Java Developers - Instructor Web Server</h1>
   Links:
   <ul>
-    <li><a href="http://classroom.example.com:8081/nexus">Nexus Repo</a></li>
-    <li><a href="http://classroom.example.com/ticket-monster.git">Ticket Monster Git Repo (Not browseble)</a></li>
+    <li><a href=":5003/nexus">Nexus Repo</a></li>
+    <li><a href="/ticket-monster.git">Ticket Monster Git Repo (Not browseble)</a></li>
   </ul>
 </bodu>
 </html>

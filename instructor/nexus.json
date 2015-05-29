@@ -1,0 +1,41 @@
+{
+    "id": "nexus",
+    "kind": "Pod",
+    "apiVersion": "v1beta1",
+    "desiredState": {
+        "manifest": {
+            "id": "nexus",
+            "version": "v1beta1",
+            "containers": [
+                {
+                    "name": "nexus",
+                    "image": "instructor/nexus",
+                    "privileged": true,
+                    "ports": [
+                        {
+                            "containerPort": 8081,
+                            "hostPort": 5003 
+                        }
+                    ],
+                    "volumeMounts": [
+                        {
+                            "name": "nexus", 
+                            "mountPath": "/opt/sonatype-work/storage"
+                        }
+                    ]
+                }
+            ],
+            "volumes": [
+                {
+                    "name": "nexus",
+                    "source": 
+                    {
+                        "hostDir": {
+                            "path": "/home/vagrant/store/nexus"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}
