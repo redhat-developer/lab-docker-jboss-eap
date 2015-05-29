@@ -121,7 +121,7 @@ Run the following to start JBoss EAP 6.4 as a daemon process:
 +
 [source,shell,numbered]
 ----
-$ docker run -dP jboss-eap-6/eap:6.4
+$ docker run -d -p 8080:8080 -p 9990:9990 -p 9999:9999  jboss-eap-6/eap:6.4
 3e336d31ce25cab777cf8ffd9c8779fbe0751455fa1e9c80cb30be69810ab8ae
 $ docker ps
 CONTAINER ID  IMAGE                 COMMAND                CREATED             STATUS              PORTS                     NAMES
@@ -257,8 +257,7 @@ Now we have build our customized version of JBoss EAP container so then we can m
 +
 [source,shell]
 ----
-$ docker run -dP <your-alias>/jboss-eap:1.0
-$ docker run -dP <your-alias>/jboss-eap:1.0
+$ docker run -d -p 8080:8080 -p 9990:9990 -p 9999:9999 <your-alias>/jboss-eap:1.0
 ----
 +
 Use `docker ps` to indentify which ports are mapped and make sure that both the web (8080 in the container) and the admin web (9990 in the container) port are responding on localhost.
