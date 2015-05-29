@@ -32,10 +32,7 @@ Vagrant.configure('2') do |config|
     vagrant_host.vm.provision 'shell', inline: "sudo systemctl enable docker && sudo systemctl start docker"
 
     # Lab Registry additions (to CDK)
-    # make sure that the Red Hat internal DNS is registered
-    # Not needed if the server is runing in Red Hat network and have Red Hat DNS already enabled.
-    # vagrant_host.vm.provision 'shell', inline: "sudo nmcli con mod 'System eth0' ipv4.ignore-auto-dns yes && sudo nmcli con mod 'System eth0' ipv4.dns '10.5.30.160 10.11.5.19 8.8.8.8' && sudo nmcli con up 'System eth0'"
-
+    
     # start Kubernetes
     vagrant_host.vm.provision 'shell', inline: "sudo sed -i \"s/allow_privileged=false/allow_privileged=true/g\" /etc/kubernetes/config"
     vagrant_host.vm.provision 'shell', inline: "sudo systemctl enable etcd && sudo systemctl start etcd"
