@@ -13,21 +13,21 @@ Red Hat CDK comes with a virtual machine that are optimized for running containe
 See <<boyd-setup.adoc#,Bring Your Own Device Setup Guide>> for information on how to install the software on your Mac OS X(R), Windows(R) or Linux(R) desktop.
 
 
-. Create lab directory in your home directory and go into the directory
+Step 1 - Create lab directory in your home directory and go into the directory::
 +
 [source,shell,numbered]
 ----
 $ mkdir ~/lab && cd ~/lab
 ----
 +
-. Download the Vagrant file for the labs to the `lab` directory
+Step 2 - Download the Vagrant file for the labs to the `lab` directory::
 +
 [source,shell,numbered]
 ----
  $ wget -O Vagrantfile http://classroom.example.com/lab-setup/Vagrantfile
 ----
 +
-. Start the Vagrant container
+Step 3 - Start the Vagrant container::
 +
 [source,shell,numbered]
 ----
