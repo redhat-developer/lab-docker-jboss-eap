@@ -15,7 +15,8 @@ RUN chown -R apache:apache .
 
 ADD index.html /var/www/html/
 
-
+RUN mkdir -p /var/www/html/lab-setup
+ADD Vagrantfile /var/www/html/lab-setup/
 
 CMD ["httpd","-DFOREGROUND"]
 

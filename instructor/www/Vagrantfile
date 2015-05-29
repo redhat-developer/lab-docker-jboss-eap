@@ -1,0 +1,62 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure('2') do |config|
+  # it is important that the name of this box is "default"
+  config.vm.define :default do |vagrant_host|
+    # Box name
+    vagrant_host.vm.box = 'rhel-atomic-7'
+    vagrant_host.vm.hostname = "rhel-atomic-7-docker-host"
+
+    config.vm.provider "virtualbox" do |v|
+      v.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
+      v.memory = 2048
+    end
+
+    config.vm.provider :libvirt do |libvirt|
+      libvirt.memory = 2048
+      libvirt.cpus = 1
+    end
+
+    config.vm.synced_folder './', '/vagrant', type: 'rsync', disabled: true
+    config.vm.synced_folder './', '/mnt/vagrant', type: 'rsync'
+    config.nfs.functional = false
+
+    vagrant_host.vm.provision 'shell', inline: "sudo systemctl stop docker > /dev/null 2>&1 || :" #in case this isn't first run
+    vagrant_host.vm.provision 'shell', inline: "sudo groupadd docker > /dev/null 2>&1 || : "
+    vagrant_host.vm.provision 'shell', inline: "sudo usermod -a -G docker vagrant"
+    vagrant_host.vm.provision 'shell', inline: "sudo chown root:docker /var/run/docker.sock"
+    vagrant_host.vm.provision 'shell', inline: "sudo systemctl enable docker && sudo systemctl start docker"
+
+    # Lab additions
+    # start Kubernetes
+    vagrant_host.vm.provision 'shell', inline: "sudo systemctl enable etcd && sudo systemctl start etcd"
+    vagrant_host.vm.provision 'shell', inline: "sudo systemctl enable kube-apiserver && sudo systemctl start kube-apiserver"
+    vagrant_host.vm.provision 'shell', inline: "sudo systemctl enable kube-controller-manager && sudo systemctl start kube-controller-manager"
+    vagrant_host.vm.provision 'shell', inline: "sudo systemctl enable kube-scheduler && sudo systemctl start kube-scheduler"
+    vagrant_host.vm.provision 'shell', inline: "sudo systemctl enable kube-proxy.service && sudo systemctl start kube-proxy.service"
+    vagrant_host.vm.provision 'shell', inline: "sudo systemctl enable kubelet.service && sudo systemctl start kubelet.service"
+
+    # Hack the DNS to work
+    vagrant_host.vm.provision 'shell', inline: ENV['CLASSROOM_IP'] == nil ? "" : "echo \"#{ENV['CLASSROOM_IP']} classroom.example.com\" | sudo tee --append /etc/hosts > /dev/null"
+
+    # allow access to our private repo
+    vagrant_host.vm.provision 'shell', inline: "echo \"ADD_REGISTRY='--add-registry classroom.example.com:5000'\nINSECURE_REGISTRY='--insecure-registry classroom.example.com:5000'\" | sudo tee --append /etc/sysconfig/docker > /dev/null"
+    vagrant_host.vm.provision 'shell', inline: "sudo systemctl enable docker && sudo systemctl restart docker"
+
+    # enable docker TCP access
+    vagrant_host.vm.provision 'shell', inline: "echo \"DOCKER_NETWORK_OPTIONS='-H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock'\" | sudo tee /etc/sysconfig/docker-network > /dev/null"
+    vagrant_host.vm.provision 'shell', inline: "sudo systemctl enable docker && sudo systemctl restart docker"
+    vagrant_host.vm.provision 'shell', inline: "echo 'Run:\n  export DOCKER_HOST=127.0.0.1:2375 && unset DOCKER_CERT_PATH && unset DOCKER_TLS_VERIFY\nto use docker on the host machine'"
+
+    config.vm.network "forwarded_port", guest: 2375, host: 2375
+    config.vm.network "forwarded_port", guest: 9080, host: 9080, auto_correct: true
+    config.vm.network "forwarded_port", guest: 9990, host: 9990, auto_correct: true
+    config.vm.network "forwarded_port", guest: 9999, host: 9999, auto_correct: true
+
+    for i in 49150..49500
+        config.vm.network :forwarded_port, guest: i, host: i, auto_correct: true
+    end
+    # END
+  end
+end
