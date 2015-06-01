@@ -1,0 +1,50 @@
+{
+    "id": "www-populate",
+    "kind": "Pod",
+    "apiVersion": "v1beta1",
+    "labels": {
+        "name": "www-populate"
+    },
+    "desiredState": {
+        "manifest": {
+            "id": "www-populate",
+            "version": "v1beta1",
+            "restartPolicy": { "onFailure": {} },
+            "containers": [
+                {
+                    "name": "www-populate",
+                    "image": "instructor/www-populate",
+                    "privileged": true,
+                    "volumeMounts": [
+                        {
+                            "name": "www-store", 
+                            "mountPath": "/mnt/store"
+                        },{
+                            "name": "lab", 
+                            "mountPath": "/mnt/lab"
+                        }
+                    ]
+                }
+            ],"volumes": [
+                {
+                    "name": "www-store",
+                    "source": 
+                    {
+                        "hostDir": {
+                            "path": "/home/vagrant/store"
+                        }
+                    }
+                },{
+                    "name": "lab",
+                    "source": 
+                    {
+                        "hostDir": {
+                            "path": "/mnt/lab"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}
+

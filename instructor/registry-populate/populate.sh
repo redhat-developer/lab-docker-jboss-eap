@@ -1,9 +1,13 @@
 #!/bin/bash
 
 regex='^([^\/]*)/(.*):(.*)$'
-repo="localhost:5000"
+repo="${REGISTRY_SERVICE_HOST}:${REGISTRY_SERVICE_PORT}"
 
-PULL_IMAGES='registry.access.redhat.com/rhel7.1:latest ce-registry.usersys.redhat.com/jboss-eap-6/eap:6.4 ce-registry.usersys.redhat.com/jboss-webserver-3/httpd:3.0 postgres'
+PULL_IMAGES='registry.access.redhat.com/rhel7.1:latest ce-registry.usersys.redhat.com/jboss-eap-6/eap:6.4 ce-registry.usersys.redhat.com/jboss-webserver-3/httpd:3.0 docker.io/postgres:9.4'
+
+export DOCKER_HOST=${DOCKER_PORT} 
+unset DOCKER_CERT_PATH 
+unset DOCKER_TLS_VERIFY
 
 # Pull all the images first
 for IMAGE in ${PULL_IMAGES}; do

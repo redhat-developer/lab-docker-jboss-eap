@@ -28,4 +28,5 @@ mvn clean package
 mvn clean package -Parq-jbossas-remote -Dmaven.test.failure.ignore=true
 ! mvn clean package jboss-as:deploy
 echo "Nexus cache should now be primed"
+exit 0
 

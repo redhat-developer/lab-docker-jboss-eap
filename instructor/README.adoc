@@ -2,13 +2,15 @@
 
 # Start the `instructor` Vagrantbox
 
-Having installed your virtualization environment, Vagrant and the CDK, setting up the registry is easy. The registry is packaged as a Vagrantbox, which in turn runs the Docker Registry, Docker Registry UI, Nexus proxy and HTTP server inside Docker containers orchestrated using Kubernetes. Docker and Kubernetes are brought up automatically by the Vagrantfile definition. The box exposes the Docker Registry on <http://0.0.0.0:5000>, the Docker Registry UI on <http://0.0.0.0:5001>, Nexus on <http://0.0.0.0:80> and the HTTP server with lab assets on <http://0.0.0.0:5080>.
+Having installed your virtualization environment, Vagrant and the CDK, setting up the registry is easy. The registry is packaged as a Vagrantbox, which in turn runs the Docker Registry, Docker Registry UI, Nexus proxy and HTTP server inside Docker containers orchestrated using Kubernetes. Docker and Kubernetes are brought up automatically by the Vagrantfile definition. The box exposes the Docker Registry on <http://0.0.0.0:5000>, the Docker Registry UI on <http://0.0.0.0:5001>, Nexus on <http://0.0.0.0:5003> and the HTTP server with lab assets on <http://0.0.0.0:5002>.
 
+. Connect to the VPN or be on a Red Hat internal network.
+. Install the `vagrant-reload` plugin:
++
+----
+vagrant plugin install vagrant-reload
+----
 . Change to the registry directory `cd instructor`.
 . Bring up the vagrant box `vagrant up`.
-. SSH in to the vagrant box `vagrant ssh`.
-. Wait for the Docker registry to come up. This can take a while, as Docker needs to fetch the registry and registry-ui containers from the ce-registry. To check the status, run `kubectl get pods` - once the registry is up you will see the status change to Running.
-. Visit <http://localhost:5001> and check that the repository UI is available. There are no images in the registry at the moment!
-. Inside the vagrant box run `/mnt/vagrant/push_images.sh`. This will pull the necessary images for the lab from the ce-registry and push them to our local registry. This will take a while!
-.  Visit <http://localhost:5001> and verify the images are now in the repository.
-
+. Wait for all the pods to come up and to populate. This can take a long while, as images need to be got from servers, neuxs needs to be populated with maven artifacts, git repos need to be cloned, and various images need adding to the docker registry. To check the status, run `kubectl get pods`: the `registry`, `nexus` and `www` pods should show `Running` and the `registry-populate`, `nexus-populate` and `www-populate` pods should show `Suceeded`.
+. Visit <http://localhost:5002> and explore the services and assets.

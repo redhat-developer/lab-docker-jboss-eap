@@ -1,0 +1,23 @@
+{
+    "id": "registry-populate",
+    "kind": "Pod",
+    "apiVersion": "v1beta1",
+    "labels": {
+        "name": "registry-populate"
+    },
+    "desiredState": {
+        "manifest": {
+            "id": "registry-populate",
+            "version": "v1beta1",
+            "restartPolicy": { "onFailure": {} },
+            "containers": [
+                {
+                    "name": "registry-populate",
+                    "image": "instructor/registry-populate",
+                    "privileged": true
+                }
+            ]
+        }
+    }
+}
+

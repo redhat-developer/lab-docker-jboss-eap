@@ -1,0 +1,16 @@
+{
+    "kind": "Service",
+    "apiVersion": "v1beta3",
+    "metadata": {
+        "name": "docker"
+    },
+    "spec": {
+        "ports": [
+            {
+                "protocol": "TCP",
+                "port": 2375,
+                "targetPort": 2375
+            }
+        ]
+    }
+}
