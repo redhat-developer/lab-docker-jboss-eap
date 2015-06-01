@@ -35,9 +35,8 @@ Vagrant.configure('2') do |config|
     vagrant_host.vm.provision 'shell', inline: "sudo atomic host upgrade"
     vagrant_host.vm.provision :reload
     
-    # Enable RH Software Collections, so we can yum install things like maven
-    vagrant_host.vm.provision 'shell', inline: "sudo subscription-manager repos --enable rhel-server-rhscl-7-rpms"
-    vagrant_host.vm.provision 'shell', inline: "subscription-manager repos --enable=rhel-7-server-extras-rpms"
+    # Enable RH Software Collections and Extras, so we can yum install things like maven and docker
+    vagrant_host.vm.provision 'shell', inline: "sudo subscription-manager repos --enable rhel-server-rhscl-7-rpms --enable=rhel-7-server-extras-rpms"
     
     # start Kubernetes
     vagrant_host.vm.provision 'shell', inline: "sudo sed -i \"s/allow_privileged=false/allow_privileged=true/g\" /etc/kubernetes/config"
