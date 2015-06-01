@@ -1,0 +1,13 @@
+= Docker for Java Developers
+Pete Muir, Thomas Qvarnstrom, Arun Gupta, Burr Sutter
+
+A lab for Java Developers who want to use Docker and Kubernetes.
+
+include::exercise1.adoc[]
+include::exercise2.adoc[]
+include::exercise3.adoc[]
+include::exercise4.adoc[]
+include::summary.adoc[]
+
+[appendix]
+include::byo.adoc[]

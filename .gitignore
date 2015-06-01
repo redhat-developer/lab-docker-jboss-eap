@@ -1,4 +1,5 @@
 *.swp
+render
 .vagrant
 downloads/*.zip
 downloads/*.box

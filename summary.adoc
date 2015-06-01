@@ -1,0 +1,10 @@
+== Summary
+
+In this lab you have learnt to...
+
+=== Bring your own
+
+If you still have remaining time and want to replicate the setup on your laptop, the Appendix includes instructions to set this up on your laptop. Altertnatively, you may want to try this at home!
+
+Thank you for attending!
+

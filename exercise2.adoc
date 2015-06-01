@@ -18,7 +18,7 @@ These steps are all done on the particpants desktop.
 Step 1 - Clone the project from the instructor git::
 The instructor has a GIT repository running on classroom.example.com.
 +
-[source,shell,numbered]
+[source,bash,numbered]
 ----
 $ cd $HOME
 $ git clone http://classroom.example.com:5002/ticket-monster.git
@@ -27,7 +27,7 @@ $ cd ticket-monster
 
 Step 2 - Build the application::
 +
-[source,shell,numbered]
+[source,bash,numbered]
 ----
 $ mkdir -p ~/.m2
 $ cp settings.xml ~/.m2
@@ -39,7 +39,7 @@ Make sure that everything build correctly.
 Step 3 - Start the customized jboss eap container::
 This step requires that the custom-jboss-eap container was built as part of exercise 1.
 +
-[source,shell]
+[source,bash]
 ----
 $ docker run -i -p 9080:8080 -p 9990:9990 -p 9999:9999 <your-alias>/jboss-eap:1.0
 ----
@@ -55,7 +55,7 @@ image::images/jboss-eap-admin-deploy-empty.png["JBoss EAP Welcome Page"]
 
 Step 5 - Deploy an application from command line::
 +
-[source,shell]
+[source,bash]
 ----
 $ mvn clean package jboss-as:deploy
 ----
@@ -76,14 +76,14 @@ As we have seen in this steps it's we can use the containerized application almo
 
 Step 1 - Run Arquillian tests::
 +
-[source,shell]
+[source,bash]
 ----
 $ mvn clean package -Parq-jbossas-remote
 ----
 +
 The test report should look like this:
 +
-[source,shell]
+[source,bash]
 ----
 -------------------------------------------------------
  T E S T S
@@ -119,14 +119,14 @@ Open `src/test/java/org/jboss/examples/ticketmonster/test/rest/ShowServiceTest.j
 +
 Run the test again, and this time it should **FAIL**.
 +
-[source,shell]
+[source,bash]
 ----
 $ mvn clean package -Parq-jbossas-remote
 ----
 +
 Resulsts in :
 +
-[source,shell]
+[source,bash]
 ----
 -------------------------------------------------------
  T E S T S
@@ -164,7 +164,7 @@ Open `src/test/java/org/jboss/examples/ticketmonster/test/rest/ShowServiceand ch
 +
 Run the test again to verify
 +
-[source,shell]
+[source,bash]
 ----
 $ mvn clean package -Parq-jbossas-remote
 ----
@@ -174,7 +174,7 @@ This time we should have **SUCCESS**.
 ### Clean up and prepare for next exercise
 Before we move on to the next exercise the participant should stop any running containers and remove any stopped containers. This can be done with two simple commands:
 
-[source,shell]
+[source,bash]
 ----
 $ docker stop $(docker ps -q)
 $ docker rm $(docker ps -aq)

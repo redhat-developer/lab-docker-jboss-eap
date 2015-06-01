@@ -1,0 +1,10 @@
+## generate-guide.sh
+
+The `generate-guide.sh` script can be used to build the lab documents to PDF, EPUB, HTML and HTML-single formats. You will need to install:
+
+* asciidoctor ( e.g. `sudo gem install asciidoctor`)
+* asciidoc (e.g. `sudo port install asciidoc`)
+* dblatex (e.g. `sudo port install dblatex`)
+* highlightjs (e.g. `sudo port install highlightjs`)
+* pygments (?)
+

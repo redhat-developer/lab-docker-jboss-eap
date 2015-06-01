@@ -1,14 +1,14 @@
-# Exercise 4
+## Exercise 4
 
 Orchestrate your containers using Kubernetes
 
 This is an advanced exercise.
 
-## What you will learn
+### What you will learn
 Participants will learn how to orchestrate a cluster of EAP containers from your Docker image using Kubernetes. 
 Participants will also learn how to control how many replicas are created, and Kubernetes manages replication.
 
-## Prerequisites
+### Prerequisites
 
 * Participants should successfully have executed exercise 2
 * Participatns should have cleaned up any running containers
@@ -16,7 +16,7 @@ Participants will also learn how to control how many replicas are created, and K
 [NOTE]
 ====
 To clean up all the running container run the following command:
-[source,shell]
+[source,bash]
 ----
 docker stop $(docker ps -q) && docker rm $(docker ps -aq)`.
 ----
@@ -79,7 +79,6 @@ The following steps show how to launch and test the pod:
 +
 . Create a Web server pod file. Create a `jboss-eap.yaml` file that you will use to deploy the application server pod. Here is what it should contain:
 +
-[source,yaml]
 ----
 apiVersion: v1beta1
 id: "jboss-eap-server-rc"
@@ -113,6 +112,7 @@ desiredState:
 +
 . Orchestrate the container with kubectl. With the yaml file in the current directory, run the following command to start the pod to begin running the container:
 +
+[source,bash,numbered]
 ----
 $ kubectl create -f jboss-eap.yaml
 jboss-eap
@@ -120,6 +120,7 @@ jboss-eap
 +
 . Check the container. If the container is running you should be able to see the pods with the kubectl command:
 +
+[source,bash,numbered]
 ----
 $ kubectl get pods
 ----
@@ -134,18 +135,31 @@ Run the following commands to see the state of your Kubernetes services, pods an
 +
 . Check out Kubernetes: Run the following commands to list information about the minion, replication controllers and running pods:
 +
+[source,bash,numbered]
 ----
 $ kubectl get minions
 NAME                LABELS              STATUS
 127.0.0.1           <none>              Ready
+----
++
+[source,bash,numbered]
+----
 $ kubectl get pods
 POD      IP          CONTAINER(S)    IMAGE(S)  HOST        LABELS                                         STATUS
 02f2...  172.17.0.2  apache-frontend webwithdb 127.0.0.1/  name=webserver,selectorname=webserver,uses=db  Running
 9c34...  172.17.0.3  db              dbforweb  127.0.0.1/  name=db,selectorname=db                        Running
+----
++
+[source,bash,numbered]
+----
 $ kubectl get replicationControllers
 CONTROLLER             CONTAINER(S)     IMAGE(S)  SELECTOR               REPLICAS
 webserver-controller   apache-frontend  webwithdb selectorname=webserver 1
 db-controller          db               dbforweb  selectorname=db        1
+----
++
+[source,bash,numbered]
+----
 $ kubectl get services
 NAME            LABELS                                   SELECTOR    IP               PORT       
 kubernetes-ro   component=apiserver,provider=kubernetes  <none>      10.254.47.161    80
@@ -166,13 +180,12 @@ the server's fully qualified domain name, using 172.17.0.2. Set the
 'ServerName' directive globally to suppress this message
 ----
 
-# 3.2 Create pods for Postgres and the Apache HTTPD load balancer
+Step 3 - Create pods for Postgres and the Apache HTTPD load balancer::
 
 Now that we've got the hang of using Kubernetes, lets go ahead and create a pod for Postgres, configure the Ticket Monster application container to use it, and create a pod for the Apache HTTPD load balancer.
-
++
 . Create the Postgres pod. The docker community has created a Postgres docker image, so we can just reuse that. Create a postgres.yaml file that you will use to deploy the application server pod. Here is what it should contain:
 +
-[source,yaml]
 ----
   apiVersion: "v1beta1"
   id: "postgres-rc"
@@ -215,7 +228,6 @@ Now that we've got the hang of using Kubernetes, lets go ahead and create a pod 
 +
 . Create the Postgres service. Create a postgres.yaml file that you will use to deploy the database pod. Here is what it should contain:
 +
-[source,yaml]
 ----
   apiVersion: "v1beta1"
   id: "postgres"
@@ -231,7 +243,6 @@ Now that we've got the hang of using Kubernetes, lets go ahead and create a pod 
 +
 . Create the Apache HTTPD load balancer pod. Create a modcluster.yaml file that you will use to deploy the load balancer pod. Here is what it should contain:
 +
-[source,yaml]
 ----
   apiVersion: "v1beta1"
   id: "modcluster-rc"
@@ -261,7 +272,6 @@ Now that we've got the hang of using Kubernetes, lets go ahead and create a pod 
 +
 . Create the Postgres service. Create a postgres.yaml file that you will use to deploy the database pod. Here is what it should contain:
 +
-[source,yaml]
 ----
   apiVersion: "v1beta1"
   id: "modcluster"
@@ -278,6 +288,7 @@ Now that we've got the hang of using Kubernetes, lets go ahead and create a pod 
 . Orchestrate the container with kubectl. Make sure you are in the directory you created the yaml files:
 .. With the yaml files in the current directory, run the following commands to start postgres:
 +
+[source,bash,numbered]
 ----
 $ cluster/kubectl.sh create -f postgres.json
 $ cluster/kubectl.sh create -f postgres-service.json
@@ -285,6 +296,7 @@ $ cluster/kubectl.sh create -f postgres-service.json
 +
 .. run the following commands to start modcluster:
 +
+[source,bash,numbered]
 ----
 $ cluster/kubectl.sh create -f modcluster.json
 $ cluster/kubectl.sh create -f modcluster-service.json
@@ -292,19 +304,21 @@ $ cluster/kubectl.sh create -f modcluster-service.json
 +
 . Check that the postgres and modcluster pods have come up. If they show `Pending`, the images are still downloading or starting up. If they show `Running` then they are up.
 +
+[source,bash,numbered]
 ----
 $ cluster/kubectl.sh get pods
 ---- 
 +
 . Check that mod_cluster is running by opening <http://localhost/mod_cluster_manager> in your web browser
 
-# 3.4 Cluster JBoss EAP
+Step 4 - Cluster JBoss EAP::
 
 Managing replicas of any container is very easy in Kubernetes.
-
++
 . Edit your `jboss-eap.yaml` file and change the number of `replicas` to 2.
 . Now, restart the JBoss EAP pod, so that it picks up the changes we've made to the number of replicas.
 +
+[source,bash,numbered]
 ----
 kubectl update -f jboss-eap.yaml
 ----

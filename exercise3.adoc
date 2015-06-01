@@ -1,13 +1,13 @@
-# Exercise 3
+## Exercise 3
 
 This is an intermediate exercise.
 
-## What you will learn
+### What you will learn
 Particpants will learn how to switch to a production database such as Postgres. Participants will learn how to package their applications inside their container.
 
 One of the biggest benefits of a Docker container is that it allows you to work in an environment much closer to your production environment. Up until now we've been using the H2 in memory database, and deploying our application to the container from the command line. Of course, this isn't what happens for real projects, where you need to use a RDBMS, and you want to build your application in a reproducible fashion, tagging source and binaries as you go.
 
-## Prerequisites
+### Prerequisites
 
 * Participants should successfully have executed exercise 2
 * Participatns should have cleaned up any running containers
@@ -15,7 +15,7 @@ One of the biggest benefits of a Docker container is that it allows you to work 
 [NOTE]
 ====
 To clean up all the running container run the following command:
-[source,shell]
+[source,bash]
 ----
 docker stop $(docker ps -q) && docker rm $(docker ps -aq)`.
 ----
@@ -27,7 +27,7 @@ These steps are all done on the particpants desktop.
 Step 1 - Run the PostgreSQL container::
 We're going to use the PostgreSQL container from the Docker registry. Launch the container in the background as a daemon using the `-d` flag:
 +
-[source,shell,numbered]
+[source,bash,numbered]
 ----
 docker run --name ticket-monster-db -e POSTGRES_PASSWORD=UsW4fznqLmGRh6 -d docker.io/postgres:9.4
 ----
@@ -45,7 +45,7 @@ The first concept we need to understand is how Docker allows linking containers.
 +
 The magic switch to enable link is, intuitively, `--link`. So for example, if the PostgreSQL and the psql containers are run as shown above, then `--link ticket-monster-db:postgres` links the PostgreSQL container named `ticket-monster-db` with an alias `postgres` to the psql target container. This defines some environment variables, following the defined protocol, in the target container which can then be used to access information about the source container. For example, IP address, exposed ports, username, passwords, etc. The complete list of environment variables can be seen as:
 +
-[source,shell,numbered]
+[source,bash,numbered]
 ----
 $ docker run -it --link ticket-monster-db:postgres --rm postgres:9.4 env
 POSTGRES_PORT=tcp://172.17.0.12:5432
@@ -78,14 +78,14 @@ Linking only works if all the containers are running on the same host.
 +
 Let's try it out. Run the following command to execute `psql` against the PostgreSQL server:
 +
-[source,shell,numbered]
+[source,bash,numbered]
 ----
 docker run -it --link ticket-monster-db:postgres --rm postgres:9.4 sh -c 'exec psql -h "$POSTGRES_PORT_5432_TCP_ADDR" -p "$POSTGRES_PORT_5432_TCP_PORT" -U postgres'
 ----
 +
 When asked for a password enter `UsW4fznqLmGRh6`. You should now see the psql console:
 +
-[source,shell,numbered]
+[source,bash,numbered]
 ----
 $ docker run -it --link ticket-monster-db:postgres --rm postgres:9.4 sh -c 'exec psql -h "$POSTGRES_PORT_5432_TCP_ADDR" -p "$POSTGRES_PORT_5432_TCP_PORT" -U postgres'
 Password for user postgres: 
@@ -97,7 +97,6 @@ postgres=#
 +
 Let's check what's in the (currently empty) database:
 +
-[source,numbered]
 ----
 postgres=# \l
                                  List of databases
@@ -163,5 +162,5 @@ The application seeds lots of dummy data when it starts; let's check the databas
 ----
 
 
-## Summary
+### Summary
 After the third exercise participant should start to feel comfortable with layering containers, linking containers, and understanding when, how and why you package your application in the container.
