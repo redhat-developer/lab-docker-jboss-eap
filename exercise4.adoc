@@ -1,15 +1,32 @@
 # Exercise 4
 
-This is an advanced exercise in which you will learn how to create an EAP cluster using Kubernetes and Docker.
+Orchestrate your containers using Kubernetes
+
+This is an advanced exercise.
 
 ## What you will learn
-You will learn how to create a cluster of EAP containers from your Docker image using Kubernetes. 
-You will also learn how to control how many replicas are created, and Kubernetes manages replication.
-Finally you will learn how to cluster your application state using session replication when running in Kubernetes and Docker.
+Participants will learn how to orchestrate a cluster of EAP containers from your Docker image using Kubernetes. 
+Participants will also learn how to control how many replicas are created, and Kubernetes manages replication.
 
-## Architecture
+## Prerequisites
 
-The cluster contains a number of Docker containers:
+* Participants should successfully have executed exercise 2
+* Participatns should have cleaned up any running containers
+
+[NOTE]
+====
+To clean up all the running container run the following command:
+[source,shell]
+----
+docker stop $(docker ps -q) && docker rm $(docker ps -aq)`.
+----
+====
+
+### Motivation
+
+Docker containers are very powerful, especially when you link them together. However all those shell commands can get tiring to remember and and hard to maintain in a script. Additionally, you'll need to worry about getting the right docker containers on the right host, replicating containers and linking between containers on different hosts.
+
+Luckily Kubernetes solves all of those problems. In this exercise we will create a cluster of Docker containers which are orchestrated by Kubernetes:
 
 * Load balancer container
 ** Apache HTTPD 
@@ -19,13 +36,13 @@ The cluster contains a number of Docker containers:
 * Application Server container
 ** Red Hat JBoss Enterprise Application Platform + Ticket Monster application
 
-In Exercise 2 you have started the Docker container for JBoss EAP, and deployed Ticket Monster to it. In Exercise 3 we will build on this, and add two more docker containers - one for your RDBMS (Postgres) and one for the Apache HTTPD load balancer.
+In Exercise 2 you have started the Docker container for JBoss EAP, and deployed Ticket Monster to it. In Exercise 3 you built on this, and added a container for PostgresSQL.
 
-The Docker containers will be orchestrated by Kubernetes. Each Docker container will be contained in a Kubernetes pod. Each pod can have multiple replicas. The pods talk to each other, and to the outside world using services.
+In Exercise 4 we'll add the load balancer and then orchestrate all the container using Kubernetes. Each Docker container will be contained in a Kubernetes pod. Each pod can have multiple replicas. The pods talk to each other, and to the outside world using services.
 
 Before we start implementing the cluster, let's review the Kubernetes concepts.
 
-## Kubernetes
+### Kubernetes
 
 kubernetes.io describes Kubernetes as:
 
@@ -49,16 +66,17 @@ Pods:: A pod loads one or more containers, along with options associated with ru
 
 The VM you are using has Kubernetes started by default, so you can just go ahead and use it!
 
-## 3.1 Create a pod to run Ticket Monster in JBoss EAP
+
+Step 1 - Create a pod to run Ticket Monster in JBoss EAP::
 
 With master and minion services running on the local system and the JBoss EAP container ready, you can now launch the containers using Kubernetes pods. Here are a few things you should know about that:
-
-Separate pods:: Although you can launch multiple containers in a single pod, by having them in separate pods each container can replicate multiple instances as demands require, without having to launch the other container.
-
-Everything runs locally:: Because each container is running with its port exposed on the local system, the containers don't need special service or networking configurations to be set up (e.g. for the application server to find the database server).
-
++
+*Separate pods* - Although you can launch multiple containers in a single pod, by having them in separate pods each container can replicate multiple instances as demands require, without having to launch the other container.
++
+*Everything runs locally* - Because each container is running with its port exposed on the local system, the containers don't need special service or networking configurations to be set up (e.g. for the application server to find the database server).
++
 The following steps show how to launch and test the pod:
-
++
 . Create a Web server pod file. Create a `jboss-eap.yaml` file that you will use to deploy the application server pod. Here is what it should contain:
 +
 [source,yaml]
@@ -110,10 +128,10 @@ You should also be able to see the container using `docker ps`
 +
 . Check the application is working by visiting <http://localhost:8080>
 
-### 3.1.1 Exploring Kubernetes
+Step 2 - Exploring Kubernetes::
 
 Run the following commands to see the state of your Kubernetes services, pods and containers:
-
++
 . Check out Kubernetes: Run the following commands to list information about the minion, replication controllers and running pods:
 +
 ----
