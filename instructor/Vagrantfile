@@ -20,9 +20,8 @@ Vagrant.configure('2') do |config|
 
     config.vm.synced_folder './', '/vagrant', type: 'rsync', disabled: true
     config.vm.synced_folder './', '/mnt/vagrant', type: 'rsync'
+    config.vm.synced_folder '../', '/mnt/lab', type: 'rsync'
     config.nfs.functional = false
-
-
 
     vagrant_host.vm.provision 'shell', inline: "sudo systemctl stop docker > /dev/null 2>&1 || :" #in case this isn't first run
     vagrant_host.vm.provision 'shell', inline: "sudo groupadd docker > /dev/null 2>&1 || : "
@@ -32,6 +31,9 @@ Vagrant.configure('2') do |config|
     vagrant_host.vm.provision 'shell', inline: "sudo systemctl enable docker && sudo systemctl start docker"
 
     # Lab Registry additions (to CDK)
+    
+    # Enable RH Software Collections, so we can yum install things like maven
+    vagrant_host.vm.provision 'shell', inline: "sudo subscription-manager repos --enable rhel-server-rhscl-7-rpms"
     
     # start Kubernetes
     vagrant_host.vm.provision 'shell', inline: "sudo sed -i \"s/allow_privileged=false/allow_privileged=true/g\" /etc/kubernetes/config"
@@ -61,24 +63,30 @@ Vagrant.configure('2') do |config|
     # Create the store, and fix the SE Linux policy to allow the docker container to be able to access it
     vagrant_host.vm.provision 'shell', inline: "mkdir -p /home/vagrant/store/registry/repositories && sudo chcon -Rt svirt_sandbox_file_t /home/vagrant/store/registry"
     # Add the pods
-    vagrant_host.vm.provision 'shell', inline: "/usr/bin/kubectl get pods | grep -q registry || /usr/bin/kubectl create -f /mnt/vagrant/registry.json"
+    vagrant_host.vm.provision 'shell', inline: "cat /mnt/vagrant/registry.json | /usr/bin/kubectl delete -f - && /usr/bin/kubectl create -f /mnt/vagrant/registry.json"
     
     # Bring up the www and nexus pods inside Kubernetes and expose the ports to bare metal
     # Create the store, and fix the SE Linux policy to allow the docker container to be able to access it
-    vagrant_host.vm.provision 'shell', inline: "mkdir -p /home/vagrant/store/nexus && sudo chcon -Rt svirt_sandbox_file_t /home/vagrant/store/nexus"
+    vagrant_host.vm.provision 'shell', inline: "mkdir -p /home/vagrant/store/nexus && sudo chcon -Rt svirt_sandbox_file_t /home/vagrant/store/nexus && sudo chmod a+rw /home/vagrant/store/nexus"
 
     # Build the docker images
     vagrant_host.vm.provision 'shell', inline: "docker build -t instructor/www /mnt/vagrant/www"
     vagrant_host.vm.provision 'shell', inline: "docker build -t instructor/nexus /mnt/vagrant/nexus"
+    vagrant_host.vm.provision 'shell', inline: "docker build -t instructor/nexus-populate /mnt/vagrant/nexus-populate"
     
     # Create the store, and fix the SE Linux policy to allow the docker container to be able to access it
     vagrant_host.vm.provision 'shell', inline: "mkdir -p /home/vagrant/store/htdocs && sudo chcon -Rt svirt_sandbox_file_t /home/vagrant/store/htdocs"
-    # Bring up the pods
-    vagrant_host.vm.provision 'shell', inline: "/usr/bin/kubectl get pods | grep -q www || /usr/bin/kubectl create -f /mnt/vagrant/www.json"
-    vagrant_host.vm.provision 'shell', inline: "/usr/bin/kubectl get pods | grep -q nexus || /usr/bin/kubectl create -f /mnt/vagrant/nexus.json"
+    # Bring up the pods and services
+    vagrant_host.vm.provision 'shell', inline: "cat /mnt/vagrant/www.json | /usr/bin/kubectl delete -f - && /usr/bin/kubectl create -f /mnt/vagrant/www.json"
+    vagrant_host.vm.provision 'shell', inline: "cat /mnt/vagrant/www-service.json | /usr/bin/kubectl delete -f - && /usr/bin/kubectl create -f /mnt/vagrant/www-service.json"
+    vagrant_host.vm.provision 'shell', inline: "cat /mnt/vagrant/nexus-service.json | /usr/bin/kubectl delete -f - && /usr/bin/kubectl create -f /mnt/vagrant/nexus-service.json"
+    vagrant_host.vm.provision 'shell', inline: "cat /mnt/vagrant/nexus.json | /usr/bin/kubectl delete -f - && /usr/bin/kubectl create -f /mnt/vagrant/nexus.json"
+    vagrant_host.vm.provision 'shell', inline: "cat /mnt/vagrant/nexus-populate.json | /usr/bin/kubectl delete -f - && /usr/bin/kubectl create -f /mnt/vagrant/nexus-populate.json"
     # Run the ticket-monster container to ensure that we have a local clone
-    vagrant_host.vm.provision 'shell', inline: "docker build -t instructor/www-ticket-monster /mnt/vagrant/www/ticket-monster"
-    vagrant_host.vm.provision 'shell', inline: "docker run -v /home/vagrant/store:/mnt/store -t instructor/www-ticket-monster"
+    vagrant_host.vm.provision 'shell', inline: "docker build -t instructor/git-repos /mnt/vagrant/git-repos"
+    # Create the store, and fix the SE Linux policy to allow the docker container to be able to access it
+    vagrant_host.vm.provision 'shell', inline: "sudo chcon -Rt svirt_sandbox_file_t /mnt/lab"
+    vagrant_host.vm.provision 'shell', inline: "docker run -v /home/vagrant/store:/mnt/store -v /mnt/lab:/mnt/lab -t instructor/git-repos"
 
     # Copy in the nice index.html file
     vagrant_host.vm.provision 'shell', inline: "sudo cp /mnt/vagrant/www/index.html /home/vagrant/store/htdocs"

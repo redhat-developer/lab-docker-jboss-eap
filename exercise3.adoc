@@ -280,37 +280,6 @@ $ cluster/kubectl.sh get pods
 +
 . Check that mod_cluster is running by opening <http://localhost/mod_cluster_manager> in your web browser
 
-## 3.3 Modify the JBoss EAP Dockerfile to use Postgres
-
-We'll reuse the Dockerfile you created for Ticket Monster in Exercise 2, and modify it to support Postgres. We have provided a CLI batch script, the postgres JDBC driver, and a bash script that you can execute when the Docker container is being built. The bash script will copy the Postgres JDBC driver, bring up the JBoss EAP server, execute the CLI script, and then shut the server down.
-
-. Edit the `Dockerfile` you created in Exercise 2, and add the following lines after the `MAINTAINER` line:
-+
-----
-# Add customization folder
-COPY customization /opt/jboss/wildfly/customization/
-
-USER root
-
-# Run customization scripts as root
-RUN chmod +x /opt/jboss/wildfly/customization/execute.sh
-RUN /opt/jboss/wildfly/customization/execute.sh standalone standalone-ha.xml
-----
-+
-. Now rebuild the Dockerfile
-+
-----
-docker build -t jboss-eap-ticketmonster .
-----
-+
-. Now, restart the JBoss EAP pod, so that it picks up the changes we've made to the docker container.
-+
-----
-kubectl update -f jboss-eap.yaml
-----
-+
-. You should see Postgres being used **TODO - how**.
-
 # 3.4 Cluster JBoss EAP
 
 Managing replicas of any container is very easy in Kubernetes.

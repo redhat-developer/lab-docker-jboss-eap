@@ -2,6 +2,9 @@
     "id": "nexus",
     "kind": "Pod",
     "apiVersion": "v1beta1",
+    "labels": {
+        "name": "nexus"
+    },
     "desiredState": {
         "manifest": {
             "id": "nexus",
@@ -19,15 +22,15 @@
                     ],
                     "volumeMounts": [
                         {
-                            "name": "nexus", 
-                            "mountPath": "/opt/sonatype-work/storage"
+                            "name": "nexus-store", 
+                            "mountPath": "/opt/sonatype-work/nexus/storage"
                         }
                     ]
                 }
             ],
             "volumes": [
                 {
-                    "name": "nexus",
+                    "name": "nexus-store",
                     "source": 
                     {
                         "hostDir": {

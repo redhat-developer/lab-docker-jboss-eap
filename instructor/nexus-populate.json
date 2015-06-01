@@ -1,0 +1,22 @@
+{
+    "id": "nexus-populate",
+    "kind": "Pod",
+    "apiVersion": "v1beta1",
+    "labels": {
+        "name": "nexus-populate"
+    },
+    "desiredState": {
+        "manifest": {
+            "id": "nexus-populate",
+            "version": "v1beta1",
+            "restartPolicy": { "onFailure": {} },
+            "containers": [
+                {
+                    "name": "nexus-populate",
+                    "image": "instructor/nexus-populate",
+                    "privileged": true
+                }
+            ]
+        }
+    }
+}

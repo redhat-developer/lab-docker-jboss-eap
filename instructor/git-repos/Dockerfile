@@ -3,8 +3,9 @@ MAINTAINER Pete Muir <pmuir@redhat.com>
 
 USER root
 
-RUN yum update; yum clean all; yum -y install git; yum clean all
+RUN yum -y install git; yum clean all
 VOLUME /mnt/store
+VOLUME /mnt/lab
 ADD clone.sh .
 
 CMD ["./clone.sh"]

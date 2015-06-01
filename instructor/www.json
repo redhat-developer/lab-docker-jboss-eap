@@ -2,6 +2,9 @@
     "id": "www",
     "kind": "Pod",
     "apiVersion": "v1beta1",
+    "labels": {
+        "name": "www"
+    },
     "desiredState": {
         "manifest": {
             "id": "www",

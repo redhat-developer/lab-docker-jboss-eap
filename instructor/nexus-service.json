@@ -1,0 +1,13 @@
+{
+    "apiVersion": "v1beta1",
+    "id": "nexus",
+    "kind": "Service",
+    "containerPort": 8081,
+    "labels": {
+        "name": "nexus"
+    },
+    "port": 5003,
+    "selector": {
+        "name": "nexus"
+    }
+}

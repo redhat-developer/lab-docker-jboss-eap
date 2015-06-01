@@ -3,7 +3,7 @@
 regex='^([^\/]*)/(.*):(.*)$'
 repo="localhost:5000"
 
-PULL_IMAGES='registry.access.redhat.com/rhel7.1:latest ce-registry.usersys.redhat.com/jboss-eap-6/eap:6.4 ce-registry.usersys.redhat.com/jboss-webserver-3/httpd:3.0'
+PULL_IMAGES='registry.access.redhat.com/rhel7.1:latest ce-registry.usersys.redhat.com/jboss-eap-6/eap:6.4 ce-registry.usersys.redhat.com/jboss-webserver-3/httpd:3.0 postgres'
 
 # Pull all the images first
 for IMAGE in ${PULL_IMAGES}; do
@@ -21,7 +21,7 @@ done
 
 # Wait for the registry to be available
 
-echo "Checking for registry on http://$repo. Press Ctrl-C to abort at any time."
+echo "Checking for registry on http://$repo. Press Ctrl-C twice to abort at any time."
 until $(curl --output /dev/null --silent --head --fail http://$repo); do printf '.'; sleep 5; done
 echo "Registry is available."
 
