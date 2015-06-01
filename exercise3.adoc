@@ -1,297 +1,158 @@
 # Exercise 3
 
-This is an intermediate exercise in which you will learn how to create an EAP cluster using Kubernetes and Docker.
+Java EE Development with Docker containers
 
 ## What you will learn
-You will learn how to create a cluster of EAP containers from your Docker image using Kubernetes. 
-You will also learn how to control how many replicas are created, and Kubernetes manages replication.
-Finally you will learn how to cluster your application state using session replication when running in Kubernetes and Docker.
+Particpants will learn how to switch to a production database such as Postgres. Participants will learn how to package their applications inside their container.
 
-## Architecture
+One of the biggest benefits of a Docker container is that it allows you to work in an environment much closer to your production environment. Up until now we've been using the H2 in memory database, and deploying our application to the container from the command line. Of course, this isn't what happens for real projects, where you need to use a RDBMS, and you want to build your application in a reproducible fashion, tagging source and binaries as you go.
 
-The cluster contains a number of Docker containers:
+## Prerequisites
 
-* Load balancer container
-** Apache HTTPD 
-** mod_cluster
-* Database container
-** Postgres 9.x Database Server
-* Application Server container
-** Red Hat JBoss Enterprise Application Platform + Ticket Monster application
+* Participants should successfully have executed exercise 2
+* Participatns should have cleaned up any running containers
 
-In Exercise 2 you have started the Docker container for JBoss EAP, and deployed Ticket Monster to it. In Exercise 3 we will build on this, and add two more docker containers - one for your RDBMS (Postgres) and one for the Apache HTTPD load balancer.
+NOTE: To clean up all the running container run the following command `docker stop $(docker ps -q) && docker rm $(docker ps -aq)`.
 
-The Docker containers will be orchestrated by Kubernetes. Each Docker container will be contained in a Kubernetes pod. Each pod can have multiple replicas. The pods talk to each other, and to the outside world using services.
+### Switching to postgres
+These steps are all done on the particpants desktop.
 
-Before we start implementing the cluster, let's review the Kubernetes concepts.
-
-## Kubernetes
-
-kubernetes.io describes Kubernetes as:
-
-[quote]
-Kubernetes is an open source orchestration system for Docker containers. It handles scheduling onto nodes in a compute cluster and actively manages workloads to ensure that their state matches the users declared intentions. Using the concepts of "labels" and "pods", it groups the containers which make up an application into logical units for easy management and discovery.
-
-While Docker defines the container format and builds and manages individual containers, an orchestration tool is needed to deploy and manage sets of containers. Kubernetes is a tool designed to orchestrate Docker containers. After building the container images you want, you can use a Kubernetes Master to deploy one or more containers in what is referred to as a pod. The Master pushes the containers in that pod to a Kubernetes Minion where the containers run.
-
-For this example, both the Kubernetes Master and Minion are on the same VM which is running RHEL 7 Atomic host. Kubernetes relies on a set of service daemons to implement features of the Kubernetes Master and Minion. You need to understand the following about Kubernetes Masters and Minions:
-
-Master: A Kubernetes Master is where you run kubectl commands to launch and manage containers. From the Master, containers are deployed to run on Minions.
-Minion: A minion is a system providing the run-time environments for the containers.
-
-Pod definitions are stored in configuration files (in yaml or json formats). Using the following procedure, you will set up a single RHEL 7 or RHEL Atomic system, configure it as a Kubernetes Master and Minion, use yaml files to define each container in a pod, and deploy those containers using Kubernetes (kubectl command).
-
-Pods are the key thing you will define Kubernetes. Here's a complete list of the elements you define:
-
-Services:: Creating a Kubernetes service lets you assign a specific IP address and port number to a label. Because pods and IP addresses can come and go with Kubernetes, that label can be used within a pod to find the location of the services it needs.
-Replication Controllers:: By defining a replication controller, you can set not only which pods to start, but how many replicas of each pod should start. If a pod stops, the replication controller starts another to replace it.
-Pods:: A pod loads one or more containers, along with options associated with running the containers.
-
-The VM you are using has Kubernetes started by default, so you can just go ahead and use it!
-
-## 3.1 Create a pod to run Ticket Monster in JBoss EAP
-
-With master and minion services running on the local system and the JBoss EAP container ready, you can now launch the containers using Kubernetes pods. Here are a few things you should know about that:
-
-Separate pods:: Although you can launch multiple containers in a single pod, by having them in separate pods each container can replicate multiple instances as demands require, without having to launch the other container.
-
-Everything runs locally:: Because each container is running with its port exposed on the local system, the containers don't need special service or networking configurations to be set up (e.g. for the application server to find the database server).
-
-The following steps show how to launch and test the pod:
-
-. Create a Web server pod file. Create a `jboss-eap.yaml` file that you will use to deploy the application server pod. Here is what it should contain:
+Step 1 - Run the postgres container::
+We're going to use the postgres container from the docker registry.
 +
-[source,yaml]
+[source,shell,numbered]
 ----
-apiVersion: v1beta1
-id: "jboss-eap-server-rc"
-kind: ReplicationController
-labels: 
-  name: "jboss-eap-server"
-  context: docker-jboss-eap-lab
-desiredState: 
-  replicas: 1
-  replicaSelector: 
-    name: "jboss-eap-server"
-  podTemplate: 
-    labels: 
-      name: "jboss-eap-server"
-      context: docker-jboss-eap-lab
-    desiredState: 
-      manifest: 
-        id: "jboss-eap-server-rc"
-        version: v1beta1
-        containers: 
-          - name: "jboss-eap-server"
-            image: "jboss-eap-ticketmonster"
-            imagePullPolicy: PullAlways
-            ports: 
-              - containerPort: 9990
-            command: 
-              - sh
-              - "-c"
-              - "/opt/jboss-eap/bin/standalone.sh -c standalone-ha.xml  -b `hostname --ip-address` -Dpostgres.host=$POSTGRES_SERVICE_HOST -Dmodcluster.host=$MODCLUSTER_SERVICE_HOST"
+docker run --name ticket-monster-db -e POSTGRES_PASSWORD=UsW4fznqLmGRh6 -d docker.io/postgres:9.4
 ----
 +
-. Orchestrate the container with kubectl. With the yaml file in the current directory, run the following command to start the pod to begin running the container:
+The PostgreSQL Docker container comes with a couple of handy shortcuts. We can specify the password on the `docker run` command, and the container will then automatically create a database called `postgres`, using the `postgres` user, and the specified password.
 +
-----
-$ kubectl create -f jboss-eap.yaml
-jboss-eap
-----
+If you've been paying attention, you'll notice that in addition to the usual port mappings, environment variables and container tag, we've specified a container name `ticket-monster-db`. We'll use this in just a minute to *link* the application server to the database server. We'll also use it just a minute when we verify the PostgreSQL server is working. 
 +
-. Check the container. If the container is running you should be able to see the pods with the kubectl command:
-+
-----
-$ kubectl get pods
-----
-+
-You should also be able to see the container using `docker ps`
-+
-. Check the application is working by visiting <http://localhost:8080>
+You may also be wondering why we don't just put the database server in the same container as the application server. Whilst you might be tempted to do this with a VM, containers are so lightweight there really is no need. The benefits of the isolation you get from using multiple containers vastly outweighs any complexity incurred.
 
-### 3.1.1 Exploring Kubernetes
+Step 2 - Verify PostgreSQL container::
+We'll use the `psql` command to interrogate the PostgreSQL container, and make sure it's working. Psql isn't installed on your workstation; instead, we'll use another docker container to run it, linking to the Postgres container.
++
+The first concept we need to understand is how Docker allows linking containers. Creating a link between two containers creates a conduit between a source container and a target container and securely transfer information about source container to target container. In our case, the target container (psql) can see information about source container (PostgreSQL server). The important part to understand here is that none of this information needs to be publicly exposed by the source container, and is only made available to the target container.
++
+The magic switch to enable link is, intuitively, `--link`. So for example, if the PostgreqL and the psql containers are run as shown above, then --link ticket-monster-db:postgres links the PostgreSQL container named ticket-monster-db with an alias postgres to the psql target container. This defines some environment variables, following the defined protocol, in the target container which can then be used to access information about the source container. For example, IP address, exposed ports, username, passwords, etc. The complete list of environment variables can be seen as:
++
+----
+$ docker run -it --link ticket-monster-db:postgres --rm postgres:9.4 env
+POSTGRES_PORT=tcp://172.17.0.12:5432
+POSTGRES_ENV_POSTGRES_PASSWORD=UsW4fznqLmGRh6
+HOSTNAME=63fb3ba7f993
+TERM=xterm
+PG_MAJOR=9.4
+POSTGRES_ENV_LANG=en_US.utf8
+POSTGRES_ENV_PG_MAJOR=9.4
+POSTGRES_PORT_5432_TCP_PORT=5432
+POSTGRES_PORT_5432_TCP_ADDR=172.17.0.12
+PATH=/usr/lib/postgresql/9.4/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+POSTGRES_ENV_PGDATA=/var/lib/postgresql/data
+PWD=/
+LANG=en_US.utf8
+container_uuid=63fb3ba7-f993-0863-6d12-daafe7763ef0
+POSTGRES_NAME=/loving_jones/postgres
+SHLVL=0
+HOME=/root
+PG_VERSION=9.4.2-1.pgdg70+1
+PGDATA=/var/lib/postgresql/data
+POSTGRES_PORT_5432_TCP=tcp://172.17.0.12:5432
+POSTGRES_PORT_5432_TCP_PROTO=tcp
+POSTGRES_ENV_PG_VERSION=9.4.2-1.pgdg70+1
+----
++
+So you can see there are POSTGRES_* environment variables providing plenty of information about source container.
++
+Linking only works if all the containers are running on the same host.
++
+Let's try it out. Run the following command to execute psql against the PostgreSQL server:
++
+----
+docker run -it --link ticket-monster-db:postgres --rm postgres:9.4 sh -c 'exec psql -h "$POSTGRES_PORT_5432_TCP_ADDR" -p "$POSTGRES_PORT_5432_TCP_PORT" -U postgres'
+----
++
+When asked for a assword enter `UsW4fznqLmGRh6`. You should now see the psql console:
+----
+$ docker run -it --link ticket-monster-db:postgres --rm postgres:9.4 sh -c 'exec psql -h "$POSTGRES_PORT_5432_TCP_ADDR" -p "$POSTGRES_PORT_5432_TCP_PORT" -U postgres'
+Password for user postgres: 
+psql (9.4.2)
+Type "help" for help.
 
-Run the following commands to see the state of your Kubernetes services, pods and containers:
+postgres=#
+----
++
+Let's check what's in the (currently empty) database:
+----
+postgres=# \l
+                                 List of databases
+   Name    |  Owner   | Encoding |  Collate   |   Ctype    |   Access privileges   
+-----------+----------+----------+------------+------------+-----------------------
+ postgres  | postgres | UTF8     | en_US.utf8 | en_US.utf8 | 
+ template0 | postgres | UTF8     | en_US.utf8 | en_US.utf8 | =c/postgres          +
+           |          |          |            |            | postgres=CTc/postgres
+ template1 | postgres | UTF8     | en_US.utf8 | en_US.utf8 | =c/postgres          +
+           |          |          |            |            | postgres=CTc/postgres
+(3 rows)
 
-. Check out Kubernetes: Run the following commands to list information about the minion, replication controllers and running pods:
-+
-----
-$ kubectl get minions
-NAME                LABELS              STATUS
-127.0.0.1           <none>              Ready
-$ kubectl get pods
-POD      IP          CONTAINER(S)    IMAGE(S)  HOST        LABELS                                         STATUS
-02f2...  172.17.0.2  apache-frontend webwithdb 127.0.0.1/  name=webserver,selectorname=webserver,uses=db  Running
-9c34...  172.17.0.3  db              dbforweb  127.0.0.1/  name=db,selectorname=db                        Running
-$ kubectl get replicationControllers
-CONTROLLER             CONTAINER(S)     IMAGE(S)  SELECTOR               REPLICAS
-webserver-controller   apache-frontend  webwithdb selectorname=webserver 1
-db-controller          db               dbforweb  selectorname=db        1
-$ kubectl get services
-NAME            LABELS                                   SELECTOR    IP               PORT       
-kubernetes-ro   component=apiserver,provider=kubernetes  <none>      10.254.47.161    80
-kubernetes      component=apiserver,provider=kubernetes  <none>      10.254.153.242   443
+postgres=# \connect postgres
+You are now connected to database "postgres" as user "postgres".
+postgres=# \dt
+No relations found.
+postgres=# 
 ----
 +
-. Check the container logs: Run the following command (replacing the last argument with the pod ID of your pods).
+Leave this terminal running, and use another for the next steps - we'll want to use the psql console again in just a minute.
+
+Step 3 - Modify the application server to use Postgres::
+
+We'll reuse the Dockerfile you created for Ticket Monster in Exercise 2, and modify it to support Postgres. We have provided a bash script that will modify JBoss EAP on start to add the PostgreSQL driver and datasource. The script waits for EAP to start, runs some JBoss EAP CLI commands, and the restarts the server.
++
+Now's a great time to introduce you to one of the core concepts in Docker - layering. A Docker image is made up of multiple layers where each layer provides some functionality, and a higher layer can add functionality on top of it. For example, Docker mounts the root filesystem as read-only layer and then adds a read-write layer on top of it. All these layers are combined together using Union Mount to provide application operating environment.
++
+We'll use the concept of layering to extend the `Dockerfile` you created in Exercise 2 to execute the bash script that adds Postgres.
++
+Create a new directory called `custom-jboss-eap-postgres/`, and add a `Dockerfile` that looks like:
 +
 ----
-$ kubectl log 9c344f76-a71a-11e4-9fb3-525400374aa7
-2015-01-28T18:22:33.140266438Z 150128 13:22:33 mysqld_safe Logging to
-   '/var/log/mariadb/mariadb.log'.
-2015-01-28T18:22:33.397684509Z 150128 13:22:33 mysqld_safe 
-   Starting mysqld daemon with databases from /var/lib/mysql
-$ kubectl log 02f2115b-a71a-11e4-9fb3-525400374aa7
-2015-01-28T18:18:20.410816032Z AH00558: httpd: Could not reliably determine
-the server's fully qualified domain name, using 172.17.0.2. Set the
-'ServerName' directive globally to suppress this message
+# The layer on which we will build
+FROM <your-alias>/jboss-eap:1.0
+
+# Get the custom start script, which will install PostgreSQL. You can view this URL in your web browser if you are curious
+RUN mkdir -p /opt/jboss/eap/customization/
+RUN curl -L http://classroom.example.com/docker-jboss-eap/lab/postgres/execute.sh > /opt/jboss/eap/customization/
+
+# Start JBoss EAP using the custom script
+CMD ["/opt/jboss/eap/customization/execute.sh"]
+----
++
+Of course, you need to replace <your-alias> with your name. Now, build your new docker container
++
+----
+docker build -t <your-alias>/jboss-eap-postgres:1.0 -f custom-jboss-eap-postgres/Dockerfile .
+----
++
+Now, we'll use the customized JBoss EAP container, together with container linking, to make TicketMonster using Postgres.
+
+Step 4 - Include your application in the Docker container::
+
+During development it's handy to deploy
+
+Step 5 - Start the application server and verify data is stored in Postgres::
+
+First, bring up JBoss EAP. Add a `--link` option to allow the PostgreSQL container to be accessed:
++
+----
+docker run -i -p 8080:8080 -p 9990:9990 -p 9999:9999 --link ticket-monster-db:postgres <your-alias>/jboss-eap-postgres:1.0
+----
++
+The application seeds lots of dummy data when it starts; let's check the database and make sure it was used
++
+----
 ----
 
-# 3.2 Create pods for Postgres and the Apache HTTPD load balancer
 
-Now that we've got the hang of using Kubernetes, lets go ahead and create a pod for Postgres, configure the Ticket Monster application container to use it, and create a pod for the Apache HTTPD load balancer.
-
-. Create the Postgres pod. The docker community has created a Postgres docker image, so we can just reuse that. Create a postgres.yaml file that you will use to deploy the application server pod. Here is what it should contain:
-+
-[source,yaml]
-----
-  apiVersion: "v1beta1"
-  id: "postgres-rc"
-  kind: "ReplicationController"
-  labels: 
-    name: "postgres"
-    context: "docker-jboss-eap-lab"
-  desiredState: 
-    replicas: 1
-    replicaSelector: 
-      name: "postgres"
-    podTemplate: 
-      labels: 
-        name: "postgres"
-        context: "docker-jboss-eap-lab"
-      desiredState: 
-        manifest: 
-          id: "postgres-rc"
-          version: "v1beta1"
-          volumes: 
-            - name: "pgdata"
-              source: 
-                hostDir: 
-                  path: "/var/lib/postgresql/data"
-          containers: 
-            - name: "postgres"
-              image: "postgres"
-              env: 
-                - name: "POSTGRES_USER"
-                  value: "ticketmonster"
-                - name: "POSTGRES_PASSWORD"
-                  value: "ticketmonster-docker"
-              ports: 
-                - containerPort: 5432
-                  hostPort: 5432
-              volumeMounts: 
-                - name: "pgdata"
-                  mountPath: "/var/lib/postgresql/data"
-----
-+
-. Create the Postgres service. Create a postgres.yaml file that you will use to deploy the database pod. Here is what it should contain:
-+
-[source,yaml]
-----
-  apiVersion: "v1beta1"
-  id: "postgres"
-  kind: "Service"
-  containerPort: 5432
-  labels: 
-    name: "postgres"
-    context: "docker-jboss-eap-lab"
-  port: 5432
-  selector: 
-    name: "postgres"
-----
-+
-. Create the Apache HTTPD load balancer pod. Create a modcluster.yaml file that you will use to deploy the load balancer pod. Here is what it should contain:
-+
-[source,yaml]
-----
-  apiVersion: "v1beta1"
-  id: "modcluster-rc"
-  kind: "ReplicationController"
-  labels: 
-    name: "modcluster"
-    context: "docker-jboss-eap-lab"
-  desiredState: 
-    replicas: 1
-    replicaSelector: 
-      name: "modcluster"
-    podTemplate: 
-      labels: 
-        name: "modcluster"
-        context: "docker-jboss-eap-lab"
-      desiredState: 
-        manifest: 
-          id: "modcluster-rc"
-          version: "v1beta1"
-          continers: 
-            - name: "modcluster"
-              image: "goldmann/mod_cluster"
-              ports: 
-                - containerPort: 80
-                  hostPort: 80
-----
-+
-. Create the Postgres service. Create a postgres.yaml file that you will use to deploy the database pod. Here is what it should contain:
-+
-[source,yaml]
-----
-  apiVersion: "v1beta1"
-  id: "modcluster"
-  kind: "Service"
-  containerPort: 80
-  labels: 
-    name: "modcluster"
-    context: "docker-jboss-eap-lab"
-  port: 80
-  selector: 
-    name: "modcluster"
-----
-+
-. Orchestrate the container with kubectl. Make sure you are in the directory you created the yaml files:
-.. With the yaml files in the current directory, run the following commands to start postgres:
-+
-----
-$ cluster/kubectl.sh create -f postgres.json
-$ cluster/kubectl.sh create -f postgres-service.json
-----
-+
-.. run the following commands to start modcluster:
-+
-----
-$ cluster/kubectl.sh create -f modcluster.json
-$ cluster/kubectl.sh create -f modcluster-service.json
-----
-+
-. Check that the postgres and modcluster pods have come up. If they show `Pending`, the images are still downloading or starting up. If they show `Running` then they are up.
-+
-----
-$ cluster/kubectl.sh get pods
----- 
-+
-. Check that mod_cluster is running by opening <http://localhost/mod_cluster_manager> in your web browser
-
-# 3.4 Cluster JBoss EAP
-
-Managing replicas of any container is very easy in Kubernetes.
-
-. Edit your `jboss-eap.yaml` file and change the number of `replicas` to 2.
-. Now, restart the JBoss EAP pod, so that it picks up the changes we've made to the number of replicas.
-+
-----
-kubectl update -f jboss-eap.yaml
-----
-+
-. You can now navigate to <http://127.0.0.1/ticket-monster/> and see the application running! You can check that both replicas are available by looking at mod_cluster_manager (TODO).
-+
-. Let's try killing one of the replicas and make sure everything stays up (TODO)
-
+## Summary
+After the third exercise participant should start to feel comfortable with layering containers, linking containers, and understanding when, how and why you package your application in the container.

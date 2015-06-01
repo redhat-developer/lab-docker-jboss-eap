@@ -1,0 +1,3 @@
+module add --name=org.postgresql --resources=main/postgresql.jar --dependencies=javax.api,javax.transaction.api  
+/subsystem=datasources/jdbc-driver=postgresql:add(driver-module-name=org.postgresql,driver-name=postgresql-jdbc4,driver-class-name=org.postgresql.Driver) 
+/subsystem=datasources/data-source=PostgresDS:add(jndi-name=java:jboss/datasources/TicketMonsterPostgreSQLDS, driver-name=postgresql-jdbc4, connection-url=jdbc:postgresql://localhost:5432/postgres,user-name=postgres,password=UsW4fznqLmGRh6)

@@ -47,10 +47,10 @@ See link:byo.adoc for more details.
 
 ## Exercises:
 
-. link:lab1.adoc[Getting familar with containers]
-. link:lab2.adoc[Deploy a Java EE application in a container]
-. link:lab3.adoc[Java EE Clustering using containers]
-. link:lab4.adoc[Orchestrating containers in OpenShift V3]
+. link:exercise1.adoc[Getting familar with containers]
+. link:exercise2.adoc[Deploy a Java EE application in a container]
+. link:exercise3.adoc[Understand layering and linking]
+. link:exercise4.adoc[Orchestration using containers and Kubernetes]
 
 
 # Extra material (This material is the base to the Exercises above)
