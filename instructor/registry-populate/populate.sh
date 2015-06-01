@@ -2,13 +2,10 @@
 
 set -e
 regex='^([^\/]*)/(.*):(.*)$'
-repo="${REGISTRYSERVER_SERVICE_HOST}:${REGISTRYSERVER_SERVICE_PORT}"
+remote_repo="${REGISTRYSERVER_SERVICE_HOST}:${REGISTRYSERVER_SERVICE_PORT}"
+repo=localhost:5000
 
 PULL_IMAGES='registry.access.redhat.com/rhel7.1:latest ce-registry.usersys.redhat.com/jboss-eap-6/eap:6.4 ce-registry.usersys.redhat.com/jboss-webserver-3/httpd:3.0 docker.io/postgres:9.4'
-
-export DOCKER_HOST=${DOCKER_PORT} 
-unset DOCKER_CERT_PATH 
-unset DOCKER_TLS_VERIFY
 
 # Pull all the images first
 for IMAGE in ${PULL_IMAGES}; do
@@ -26,8 +23,8 @@ done
 
 # Wait for the registry to be available
 
-echo "Checking for registry on http://$repo/v1/_ping."
-curl --output /dev/null --silent --head --fail http://$repo/v1/_ping
+echo "Checking for registry on http://$remote_repo/v1/_ping."
+curl --output /dev/null --silent --head --fail http://$remote_repo/v1/_ping
 echo "Registry is available."
 
 # Then push the images 

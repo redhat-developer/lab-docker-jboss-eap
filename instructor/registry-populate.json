@@ -14,7 +14,23 @@
                 {
                     "name": "registry-populate",
                     "image": "instructor/registry-populate",
-                    "privileged": true
+                    "volumeMounts": [
+                        {
+                            "name": "docker-sock", 
+                            "mountPath": "/var/run/docker.sock"
+                        }
+                    ]
+                }
+            ],
+            "volumes": [
+                {
+                    "name": "docker-sock",
+                    "source": 
+                    {
+                        "hostDir": {
+                            "path": "/var/run/docker.sock"
+                        }
+                    }
                 }
             ]
         }

@@ -14,7 +14,7 @@
                 {
                     "name": "www-populate",
                     "image": "instructor/www-populate",
-                    "privileged": true,
+                    "_privileged": true,
                     "volumeMounts": [
                         {
                             "name": "www-store", 

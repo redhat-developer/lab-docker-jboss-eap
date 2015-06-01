@@ -14,7 +14,7 @@
                 {
                     "name": "nexus-populate",
                     "image": "instructor/nexus-populate",
-                    "privileged": true
+                    "_privileged": true
                 }
             ]
         }
