@@ -21,7 +21,7 @@ The instructor has a GIT repository running on classroom.example.com.
 [source,shell,numbered]
 ----
 $ cd $HOME
-$ git clone http://classroom.example.com/ticket-monster.git
+$ git clone http://classroom.example.com:5002/ticket-monster.git
 $ cd ticket-monster
 ----
 
@@ -41,7 +41,7 @@ This step requires that the custom-jboss-eap container was built as part of exer
 +
 [source,shell]
 ----
-$ docker run -d -p 9080:8080 -p 9990:9990 -p 9999:9999 <your-alias>/jboss-eap:1.0
+$ docker run -i -p 9080:8080 -p 9990:9990 -p 9999:9999 <your-alias>/jboss-eap:1.0
 ----
 
 Step 4 - Verify access to the administration portal::
