@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -e
 regex='^([^\/]*)/(.*):(.*)$'
 repo="${REGISTRYSERVER_SERVICE_HOST}:${REGISTRYSERVER_SERVICE_PORT}"
 
@@ -25,8 +26,8 @@ done
 
 # Wait for the registry to be available
 
-echo "Checking for registry on http://$repo/v1/_ping. Press Ctrl-C twice to abort at any time."
-until $(curl --output /dev/null --silent --head --fail http://$repo/v1/_ping); do printf '.'; sleep 5; done
+echo "Checking for registry on http://$repo/v1/_ping."
+curl --output /dev/null --silent --head --fail http://$repo/v1/_ping
 echo "Registry is available."
 
 # Then push the images 

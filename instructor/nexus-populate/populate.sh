@@ -7,7 +7,7 @@ nexus="http://$repo/nexus/"
 git="http://${WWW_SERVICE_HOST}:${WWW_SERVICE_PORT}/ticket-monster.git"
 
 echo "Checking for git on $git. Press Ctrl-C twice to abort at any time."
-until $(curl --output /dev/null --silent --head --fail $git); do printf '.'; sleep 5; done
+curl --output /dev/null --silent --head --fail $git
 echo "Git is available."
 
 cd /tmp
@@ -19,8 +19,8 @@ sed s/classroom\.example\.com:8081/$repo/ < settings.xml > ~/.m2/settings.xml
 
 # Wait for Nexus to be available
 
-echo "Checking for Nexus on $nexus. Press Ctrl-C twice to abort at any time."
-until $(curl --output /dev/null --silent --head --fail $nexus); do printf '.'; sleep 5; done
+echo "Checking for Nexus on $nexus."
+curl --output /dev/null --silent --head --fail $nexus
 echo "Nexus is available."
 
 source /opt/rh/maven30/enable

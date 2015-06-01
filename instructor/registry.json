@@ -2,6 +2,9 @@
     "id": "registry",
     "kind": "Pod",
     "apiVersion": "v1beta1",
+    "labels": {
+        "name": "registry"
+    },
     "desiredState": {
         "manifest": {
             "id": "registry",

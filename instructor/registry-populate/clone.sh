@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 HTDOCS=/mnt/store/htdocs
 REPO=$HTDOCS/ticket-monster.git
 UPSTREAM=http://github.com/tqvarnst/docker-summit-lab-app.git
