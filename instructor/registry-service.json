@@ -1,10 +1,10 @@
 {
     "apiVersion": "v1beta1",
-    "id": "registry",
+    "id": "registryserver",
     "kind": "Service",
     "containerPort": 5000,
     "labels": {
-        "name": "registry"
+        "name": "registryserver"
     },
     "port": 5000,
     "selector": {

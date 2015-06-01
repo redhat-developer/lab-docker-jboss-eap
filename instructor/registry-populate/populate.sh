@@ -1,7 +1,7 @@
 #!/bin/bash
 
 regex='^([^\/]*)/(.*):(.*)$'
-repo="${REGISTRY_SERVICE_HOST}:${REGISTRY_SERVICE_PORT}"
+repo="${REGISTRYSERVER_SERVICE_HOST}:${REGISTRYSERVER_SERVICE_PORT}"
 
 PULL_IMAGES='registry.access.redhat.com/rhel7.1:latest ce-registry.usersys.redhat.com/jboss-eap-6/eap:6.4 ce-registry.usersys.redhat.com/jboss-webserver-3/httpd:3.0 docker.io/postgres:9.4'
 
