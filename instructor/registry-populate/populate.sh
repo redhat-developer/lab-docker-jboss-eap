@@ -6,6 +6,7 @@ remote_repo="${REGISTRYSERVER_SERVICE_HOST}:${REGISTRYSERVER_SERVICE_PORT}"
 repo=localhost:5000
 
 PULL_IMAGES='registry.access.redhat.com/rhel7.1:latest ce-registry.usersys.redhat.com/jboss-eap-6/eap:6.4 ce-registry.usersys.redhat.com/jboss-webserver-3/httpd:3.0 docker.io/postgres:9.4'
+PUSH_IMAGES="${PULL_IMAGES} lab/lab-base:latest"
 
 # Pull all the images first
 for IMAGE in ${PULL_IMAGES}; do
@@ -21,6 +22,11 @@ for IMAGE in ${PULL_IMAGES}; do
     fi
 done
 
+# Now build custom images
+
+cd /lab/base
+docker build -t lab/lab-base:latest .
+
 # Wait for the registry to be available
 
 echo "Checking for registry on http://$remote_repo/v1/_ping."
@@ -28,7 +34,7 @@ curl --output /dev/null --silent --head --fail http://$remote_repo/v1/_ping
 echo "Registry is available."
 
 # Then push the images 
-for IMAGE in ${PULL_IMAGES}; do
+for IMAGE in ${PUSH_IMAGES}; do
     if [[ $IMAGE =~ $regex ]]; then
         server=${BASH_REMATCH[1]}
         name=${BASH_REMATCH[2]}
@@ -38,7 +44,11 @@ for IMAGE in ${PULL_IMAGES}; do
     id_str=`docker inspect $IMAGE | grep Id`
     id=${id_str:11:-2}
 
-    docker tag -f $id $repo/$name:$tag
-    docker push $repo/$name:$tag
+    t=$repo/$name:$tag
+
+    echo "Attempting to push $t"
+    docker tag -f $id $t
+    docker push $t
 done
+
 

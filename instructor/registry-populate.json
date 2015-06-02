@@ -18,6 +18,9 @@
                         {
                             "name": "docker-sock", 
                             "mountPath": "/var/run/docker.sock"
+                        }, {
+                            "name": "lab",
+                            "mountPath": "/lab"
                         }
                     ]
                 }
@@ -29,6 +32,14 @@
                     {
                         "hostDir": {
                             "path": "/var/run/docker.sock"
+                        }
+                    }
+                }, {
+                    "name": "lab",
+                    "source":
+                    {
+                        "hostDir": {
+                            "path": "/mnt/lab/lab"
                         }
                     }
                 }
