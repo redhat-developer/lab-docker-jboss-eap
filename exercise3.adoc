@@ -155,12 +155,15 @@ First, bring up JBoss EAP. Add a `--link` option to allow the PostgreSQL contain
 ----
 docker run -i -p 8081:8080 -p 9990:9990 -p 9999:9999 --link ticket-monster-db:postgres <your-alias>/jboss-eap-postgres:1.0
 ----
-+
-The application seeds lots of dummy data when it starts; let's check the database and make sure it was used
-+
-----
-----
 
+Step 4 - Deploy TicketMonster to the application server and verify the use of PostgreSQL::
+
+TicketMonster comes with built in support for PostgreSQL, so all we have to do is build using the `postgresql` profile
++
+[source,bash]
+----
+$ mvn clean package -Ppostgresql jboss-as:deploy
+----
 
 ### Summary
 After the third exercise participant should start to feel comfortable with layering containers, linking containers, and understanding when, how and why you package your application in the container.
