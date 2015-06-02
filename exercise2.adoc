@@ -41,7 +41,7 @@ This step requires that the custom-jboss-eap container was built as part of exer
 +
 [source,bash]
 ----
-$ docker run -i -p 9080:8080 -p 9990:9990 -p 9999:9999 <your-alias>/jboss-eap:1.0
+$ docker run -i -p 8081:8080 -p 9990:9990 -p 9999:9999 <your-alias>/jboss-eap:1.0
 ----
 
 Step 4 - Verify access to the administration portal::

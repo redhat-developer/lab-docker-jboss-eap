@@ -93,16 +93,16 @@ Run the following to start JBoss EAP 6.4 as a daemon process:
 +
 [source,bash,numbered]
 ----
-$ docker run -d -p 8080:8080 -p 9990:9990 -p 9999:9999  jboss-eap-6/eap:6.4
+$ docker run -d -p 8081:8080 -p 9990:9990 -p 9999:9999  jboss-eap-6/eap:6.4
 3e336d31ce25cab777cf8ffd9c8779fbe0751455fa1e9c80cb30be69810ab8ae
 $ docker ps
 CONTAINER ID  IMAGE                 COMMAND                CREATED             STATUS              PORTS                     NAMES
-3e336d31ce25  jboss-eap-6/eap:6.4   "/opt/eap/bin/standa   16 seconds ago      Up 14 seconds       0.0.0.0:49154->8080/tcp   pensive_euclid
+3e336d31ce25  jboss-eap-6/eap:6.4   "/opt/eap/bin/standa   16 seconds ago      Up 14 seconds       0.0.0.0:8081->8080/tcp   pensive_euclid
 ----
 +
-The container running JBoss EAP is started add default public port 8080 is mapped to 49154 (mapped port may differ). Verify that the server responds by opening a browser to http://localhost:49154
+The container running JBoss EAP is started and the default public port 8080 is mapped to 8081. Verify that the server responds by opening a browser to http://localhost:8081
 +
-NOTE: Using -P option all the exposes port (for JBoss EAP 8080) are automatically mapped to an available port on the server.
+NOTE: If you use the -P option all the exposes port (for JBoss EAP 8080) are automatically mapped to an available port on the server.
 +
 The browser should now show the JBoss EAP Welcome Page.
 +
@@ -115,7 +115,7 @@ When starting containers in deamon mode they are running in the backgrund untill
 ----
 $ docker ps
 CONTAINER ID  IMAGE                 COMMAND                CREATED             STATUS              PORTS                     NAMES
-3e336d31ce25  jboss-eap-6/eap:6.4   "/opt/eap/bin/standa   16 seconds ago      Up 14 seconds       0.0.0.0:49154->8080/tcp   pensive_euclid
+3e336d31ce25  jboss-eap-6/eap:6.4   "/opt/eap/bin/standa   16 seconds ago      Up 14 seconds       0.0.0.0:8081->8080/tcp   pensive_euclid
 $ docker stop 3e336d31ce25
 3e336d31ce25
 ----
@@ -229,10 +229,10 @@ Now we have build our customized version of JBoss EAP container so then we can m
 +
 [source,bash]
 ----
-$ docker run -i -p 8080:8080 -p 9990:9990 -p 9999:9999 <your-alias>/jboss-eap:1.0
+$ docker run -i -p 8081:8080 -p 9990:9990 -p 9999:9999 <your-alias>/jboss-eap:1.0
 ----
 +
-Use `docker ps` to indentify which ports are mapped and make sure that both the web (8080 in the container) and the admin web (9990 in the container) port are responding on localhost.
+Use `docker ps` to indentify which ports are mapped and make sure that both the web (8081 in the container) and the admin web (9990 in the container) port are responding on localhost.
 
 ### Clean up and prepare for next exercise
 Before we move on to the next exercise the participant should stop any running containers and remove any stopped containers. This can be done with two simple commands:

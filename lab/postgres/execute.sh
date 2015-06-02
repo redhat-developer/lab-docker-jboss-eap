@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Usage: execute.sh [WildFly mode] [configuration file]
+# Usage: execute.sh [EAP mode] [configuration file]
 #
 # The default mode is 'standalone' and default configuration is based on the
 # mode. It can be 'standalone.xml' or 'domain.xml'.
 
-JBOSS_HOME=/opt/jboss/wildfly
+JBOSS_HOME=/opt/eap
 JBOSS_CLI=$JBOSS_HOME/bin/jboss-cli.sh
 JBOSS_MODE=${1:-"standalone"}
 JBOSS_CONFIG=${2:-"$JBOSS_MODE.xml"}
@@ -23,7 +23,7 @@ echo "Using Postgres Driver ${DRIVER_VERSION}"
 curl -L $DRIVER_URL > postgresql.jar
 
 
-echo "=> Starting WildFly server"
+echo "=> Starting JBoss EAP"
 $JBOSS_HOME/bin/$JBOSS_MODE.sh -b 0.0.0.0 -c $JBOSS_CONFIG &
 
 echo "=> Waiting for the server to boot"
@@ -53,12 +53,13 @@ module add --name=com.mysql --resources=postgresql.jar --dependencies=javax.api,
 run-batch
 EOF
 
-echo "=> Shutting down WildFly"
+echo "=> Shutting down JBoss EAP"
 if [ "$JBOSS_MODE" = "standalone" ]; then
   $JBOSS_CLI -c ":shutdown"
 else
   $JBOSS_CLI -c "/host=*:shutdown"
 fi
 
-echo "=> Restarting WildFly"
+echo "=> Restarting JBoss EAP"
 $JBOSS_HOME/bin/$JBOSS_MODE.sh -b 0.0.0.0 -c $JBOSS_CONFIG
+
