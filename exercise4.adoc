@@ -1,14 +1,12 @@
-## Exercise 4
+== Exercise 4 - Orchestrate your containers using Kubernetes
 
-Orchestrate your containers using Kubernetes
+NOTE: This is an advanced exercise.
 
-This is an advanced exercise.
-
-### What you will learn
+=== What you will learn
 Participants will learn how to orchestrate a cluster of EAP containers from your Docker image using Kubernetes. 
 Participants will also learn how to control how many replicas are created, and Kubernetes manages replication.
 
-### Prerequisites
+=== Prerequisites
 
 * Participants should successfully have executed exercise 2
 * Participatns should have cleaned up any running containers
@@ -22,7 +20,7 @@ docker stop $(docker ps -q) && docker rm $(docker ps -aq)
 ----
 ====
 
-### Motivation
+=== Motivation
 
 Docker containers are very powerful, especially when you link them together. However all those shell commands can get tiring to remember and and hard to maintain in a script. Additionally, you'll need to worry about getting the right docker containers on the right host, replicating containers and linking between containers on different hosts.
 
@@ -39,7 +37,7 @@ In Exercise 4 we'll orchestrate all the container we've created so far using Kub
 
 Before we start implementing the cluster, let's review the basic Kubernetes concepts.
 
-### Kubernetes
+=== Kubernetes
 
 kubernetes.io describes Kubernetes as:
 
@@ -263,6 +261,6 @@ Use the `docker stop` command you learnt about in Exercise 1 to try killing one 
 +
 It's out of the scope of this lab to add a load balancer such as mod_cluster, but having done that you would then be able to use each of your replicas.
 
-### Summary
+=== Summary
 After the fourth exercise participant should start to feel comfortable with the basics of orchestrating containers using Kubernetes.
 

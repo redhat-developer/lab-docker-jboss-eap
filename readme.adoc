@@ -1,92 +1,10 @@
-# Docker for JBoss EAP Developers
+# Docker and Kubernetes for JBoss EAP Developers
 
-## Environments
+This is a self-paced lab, aimed at developers using, or wanting to use, Red Hat JBoss Enterprise Middleware.
 
-### Lab machine
-* RHEL 7.1
-* Vagrant 1.7.2
-* virt-manager
-* Red Hat CDK (Container Development Kit)
-** RHEL Atomic Host 7.1
-*** Docker (preinstalled)
-*** Kubernetes (preinstalled)
-*** Pre-configured to use instructor machine registry
-* Checkout of lab git repo
+It is a "lab-in-box"; we hope that the lab can be reused by others who want to teach Docker and Kubernetes to others.
 
-### Instructor machine
+If you want to *try out* the lab, take a look at link:lab.adoc[].
 
-The instructor machine is a lab machine, with the `instructor` Vagrantbox running. It serves:
+If you want to *run* the lab, take a look at link:instructor/README.adoc[].
 
-* A docker registry on port `5000`
-* A docker registry UI on port `5001`
-* A nexus repository, which caches all requests, on port `80`
-* An HTTP webserver providing the lab instructions and any binaries needed on port `5080`
-
-### Bring your own laptop
-
-TODO
-
-## Setup
-
-### Instructor machine
-
-See link:instructor/README.adoc for more details.
-
-### Lab machine
-
-No setup is required, you are ready to go.
-
-### BYO laptop
-
-. Install VirtualBox (Mac/Windows) or virt-manager (Linux)
-. Install Vagrant
-. Install CDK
-. Run RHEL Atomic Host
-
-See link:byo.adoc for more details.
-
-## Exercises:
-
-. link:exercise1.adoc[Getting familar with containers]
-. link:exercise2.adoc[Deploy a Java EE application in a container]
-. link:exercise3.adoc[Understand layering and linking]
-. link:exercise4.adoc[Orchestration using containers and Kubernetes]
-
-
-# Extra material (This material is the base to the Exercises above)
-
-## Exercise 1: Your first `Dockerfile`
-
-The basic `Dockerfile` is located in the `lab/` directory. To build it, change in to the `lab` directory, then run:
-
-----
-docker build .
-----
-
-## Exercise 2: Deploy Ticket Monster
-
-https://github.com/rafabene/devops-demo
-
-## Deploy an application from JBoss Developer Studio
-
-http://blog.arungupta.me/deploy-wildfly-docker-eclipse/
-
-## Exercise 3: Cluster Ticket Monster using Kubernetes
-
-. https://github.com/rafabene/devops-demo
-. Docker Swarm: http://blog.arungupta.me/clustering-docker-swarm-techtip85/
-
-## Exercise 4: Understand and try OpenShift v3
-
-http://blog.arungupta.me/openshift-v3-getting-started-javaee7-wildfly-mysql/
-
-## Exercise 5: Get this working on your own machine
-
-# Appendix
-
-## Run this lab yourself
-
-## References
-
-. Docker EAP Images Registry
-. http://www.jboss.org/ticket-monster/[Ticket Monster]

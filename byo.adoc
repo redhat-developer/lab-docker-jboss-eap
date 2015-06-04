@@ -1,4 +1,18 @@
 [[byo]]
+
+## WORK IN PROGRESS
+### Use at your own risk!
+
+## Target environment
+* Vagrant 1.7.2
+* VirtualBox
+* Red Hat CDK (Container Development Kit)
+** RHEL Atomic Host 7.1
+*** Docker (preinstalled)
+*** Kubernetes (preinstalled)
+*** Pre-configured to use instructor machine registry
+* Checkout of lab git repo
+
 ## Instructions for bringing your own laptop
 
 ### Install Virtual Box or virt-manger

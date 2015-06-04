@@ -1,18 +1,18 @@
-# Exercise 2
+== Exercise 2 - Java EE Development with Docker containers
 
-Java EE Development with Docker containers
+NOTE: This is a beginner exercise.
 
-## What you will learn
+=== What you will learn
 Particpants will learn how to use combine Java EE Development with maven and nexus together with Docker containers. Participants will also learn how to use the Arquillian for testing in running containers.
 
-## Prerequisites
+=== Prerequisites
 
 * Participants should successfully have executed exercise 1
 * Participatns should have cleaned up any running containers
 
 NOTE: To clean up all the running container run the following command `docker stop $(docker ps -q) && docker rm $(docker ps -aq)`.
 
-### Compiling and deploying the project
+=== Compiling and deploying the project
 These steps are all done on the particpants desktop.
 
 Step 1 - Clone the project from the instructor git::
@@ -72,7 +72,7 @@ image::images/jboss-eap-welcome.png["JBoss EAP Welcome Page"]
 
 As we have seen in this steps it's we can use the containerized application almost as it was running directly on our desktop.
 
-### Testing applications with Arquillian
+=== Testing applications with Arquillian
 
 Step 1 - Run Arquillian tests::
 +
@@ -171,7 +171,7 @@ $ mvn clean package -Parq-jbossas-remote
 +
 This time we should have **SUCCESS**.
 
-### Clean up and prepare for next exercise
+=== Clean up and prepare for next exercise
 Before we move on to the next exercise the participant should stop any running containers and remove any stopped containers. This can be done with two simple commands:
 
 [source,bash]
@@ -180,5 +180,6 @@ $ docker stop $(docker ps -q)
 $ docker rm $(docker ps -aq)
 ----
 
-## Summary
+=== Summary
 After the second exercise participant should start to feel comfortable with manaing containers locally in a development environment. The most important benefit of running docker in a development environment like this is that the container can be almost identical with the target production environment. Lowering the complexity of Continious Delivery environment, and improving the quality.
+

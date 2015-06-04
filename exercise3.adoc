@@ -1,13 +1,13 @@
-## Exercise 3
+== Exercise 3 - Layering and linking Docker containers
 
-This is an intermediate exercise.
+NOTE: This is an intermediate exercise.
 
-### What you will learn
+=== What you will learn
 Particpants will learn how to switch to a production database such as Postgres. Participants will learn how to package their applications inside their container.
 
 One of the biggest benefits of a Docker container is that it allows you to work in an environment much closer to your production environment. Up until now we've been using the H2 in memory database, and deploying our application to the container from the command line. Of course, this isn't what happens for real projects, where you need to use a RDBMS, and you want to build your application in a reproducible fashion, tagging source and binaries as you go.
 
-### Prerequisites
+=== Prerequisites
 
 * Participants should successfully have executed exercise 2
 * Participatns should have cleaned up any running containers
@@ -21,7 +21,7 @@ docker stop $(docker ps -q) && docker rm $(docker ps -aq)`.
 ----
 ====
 
-### Switching to postgres
+=== Switching to postgres
 These steps are all done on the particpants desktop.
 
 Step 1 - Run the PostgreSQL container::
@@ -148,7 +148,7 @@ docker build -t <your-alias>/jboss-eap-postgres:1.0 -f custom-jboss-eap-postgres
 +
 Now, we'll use the customized JBoss EAP container, together with container linking, to make TicketMonster using Postgres.
 
-Step 5 - Start the application server, deploy your application and verify data is stored in Postgres::
+Step 4 - Start the application server, deploy your application and verify data is stored in Postgres::
 
 First, bring up JBoss EAP. Add a `--link` option to allow the PostgreSQL container to be accessed:
 +
@@ -156,7 +156,7 @@ First, bring up JBoss EAP. Add a `--link` option to allow the PostgreSQL contain
 docker run -i -p 8081:8080 -p 9990:9990 -p 9999:9999 --link ticket-monster-db:postgres <your-alias>/jboss-eap-postgres:1.0
 ----
 
-Step 4 - Deploy TicketMonster to the application server and verify the use of PostgreSQL::
+Step 5 - Deploy TicketMonster to the application server and verify the use of PostgreSQL::
 
 TicketMonster comes with built in support for PostgreSQL, so all we have to do is build using the `postgresql` profile
 +
@@ -169,7 +169,7 @@ Visit <http://localhost:8081/ticket-monster in your web browser and use the appl
 +
 Switch back to your psql console and execute `select * from venue;` to check that the postgres database is in use. TicketMonster seeds the application with data, so you should see five venues, assuming you didn't add any more!
 
-### Bundling the application the container
+=== Bundling the application the container
 
 Deploying your application from your host system is fine for development, but for staging and production you'll want to have a single deliverable which doesn't need anything other than a `docker run` to start. Docker makes this very easy - we just put the application in to another layer.
 
@@ -201,13 +201,14 @@ docker run -i -p 8081:8080 -p 9990:9990 -p 9999:9999 --link ticket-monster-db:po
 +
 Visit <http://localhost:8081/ticket-monster in your web browser and use the application to verify it deployed correctly.
 
-### Building the application in a container
+=== Building the application in a container
 
 Another thing you want from your builds is reproducibility - building the application on your host system doesn't really give you that - who knows what weird things you've fiddled with and forgotten about. You can also use Docker to do builds - let's create a Docker build for TicketMonster.
 
 Step 1 - Create the application build::
 
 This time we'll start with the base `lab/base` image we created for you - it container Java, Maven and Git. It looks like:
++
 ----
 FROM rhel7.1
 
@@ -244,7 +245,7 @@ VOLUME /target
 
 # Deploy the application to a container when the docker container is run
 CMD ["cp", "target/ticket-monster.war", "/target"]
----
+----
 +
 Having installed Java and Maven, we then clone the TicketMonster git repository, configure maven and then run a build. We also add a default command to run when the docker image is run - we'll come to that in just a minute. For now, build the docker container and watch TicketMonster get built:
 +
@@ -267,6 +268,7 @@ Voila, the `ticket-monster.war` is in `target`!
 NOTE: You may be wondering what the `sudo chcon` is all about - selinux is running on the host, so we need to tell it that docker container should be able to write to the host directory.
 +
 Now let's reuse the container we created earlier that bundles the application. We'll use the same Dockerfile, but change the context to the current directory so that we pick up the `ticket-monster.war` we just built in the container.
++
 ----
 mkdir -p ticket-monster
 cp ../ticket-monster/Dockerfile ticket-monster
@@ -281,6 +283,6 @@ docker run -i -p 8081:8080 -p 9990:9990 -p 9999:9999 --link ticket-monster-db:po
 +
 Visit <http://localhost:8081/ticket-monster in your web browser and use the application to verify it deployed correctly.
 
-### Summary
+=== Summary
 After the third exercise participant should start to feel comfortable with layering containers, linking containers, and understanding when, how and why you package your application in the container.
 

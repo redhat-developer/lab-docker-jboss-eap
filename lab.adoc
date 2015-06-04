@@ -1,7 +1,38 @@
 = Docker for Java Developers
 Pete Muir, Thomas Qvarnstrom, Arun Gupta, Burr Sutter
 
-A lab for Java Developers who want to use Docker and Kubernetes.
+[cols="1,4", options="header"]
+|===
+2+|  Docker for Java Developers Information 
+| Technology/Product | Red Hat JBoss Enterprise Application Platform
+| Difficulty | 2
+| Time | 2 hours
+| Prerequisites | An understanding of Java EE application development
+|===
+
+== Introduction
+
+This is a self-paced lab, aimed at developers using, or wanting to use, Red Hat JBoss Enterprise Middleware.
+
+This is the Lab participant guide, and will walk the particpant through the basics of Docker, and Kubernetes. It covers:
+
+* Docker basics
+* The Docker CLI
+* Starting interactive and daemon containers
+* Binding ports
+* Creating your first `Dockerfile`
+* Deploying Java EE applications to JBoss EAP running in a container
+* Testing your application in the container using Arquillian
+* Passing environment variables to the container
+* Linking containers
+* Mounting volumes in the container
+* Bundling your application inside the container
+* Creating reproducible builds using containers
+* Kubernetes basics
+* Orchestrating your containers using Kubernetes
+* Kubernetes resiliance
+
+The lab is composed of four exercises. Each exercise builds on the work done in the previous exercises, so we recommend completing them in order.
 
 include::exercise1.adoc[]
 include::exercise2.adoc[]
@@ -9,5 +40,6 @@ include::exercise3.adoc[]
 include::exercise4.adoc[]
 include::summary.adoc[]
 
-[appendix]
-include::byo.adoc[]
+// Comment out BYO for now, it's still a WIP and the CDK is not GA yet
+//[appendix]
+//include::byo.adoc[]

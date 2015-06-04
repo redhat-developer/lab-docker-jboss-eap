@@ -1,8 +1,26 @@
 # Instructor machine
 
-# Start the `instructor` Vagrantbox
+## Environment
 
-Having installed your virtualization environment, Vagrant and the CDK, setting up the registry is easy. The registry is packaged as a Vagrantbox, which in turn runs the Docker Registry, Docker Registry UI, Nexus proxy and HTTP server inside Docker containers orchestrated using Kubernetes. Docker and Kubernetes are brought up automatically by the Vagrantfile definition. The box exposes the Docker Registry on <http://0.0.0.0:5000>, the Docker Registry UI on <http://0.0.0.0:5001>, Nexus on <http://0.0.0.0:5003> and the HTTP server with lab assets on <http://0.0.0.0:5002>.
+The instructor machine is provided as a Vagrantbox. To run the Vagrantbox you will need:
+
+* Vagrant 1.7.2
+* VirtualBox/lib-virt
+* Red Hat CDK (Container Development Kit)
+* RHEL Atomic image
+* Checkout of lab git repo
+
+More details on installing Vagrant, VirtualBox, the CDK and the RHEL Atomic image are provided in link:../byo.adoc[].
+
+The Vagrantbox provides:
+
+* A docker registry on port `5000`
+* A docker registry UI on port `5001`
+* A nexus repository, which caches all requests, on port `5003`
+* An HTTP webserver providing the lab instructions, various git repos, and any binaries needed on port `5002`
+
+
+## Start the `instructor` Vagrantbox
 
 . Connect to the VPN or be on a Red Hat internal network.
 . Install the `vagrant-reload` plugin:
