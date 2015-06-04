@@ -3,9 +3,18 @@
 NOTE: This is a beginner exercise.
 
 === What you will learn
-Particpants will learn how to use Red Hat Container Development Kit (CDK) and to start developing Red Hat Enterprise Linux based containers.
+Particpants will learn how to to start developing Red Hat Enterprise Linux based containers.
 
 Participants will also learn how to use the Docker CLI to manage containers in a development environment.
+
+[TIP]
+====
+You can clone the sources by running:
+----
+git clone http://classroom.example.com:5002/docker-jboss-eap.git ~/docker-jboss-eap
+----
+All of the files you are asked to create in this tutorial are then located in ~/docker-jboss-eap/lab 
+====
 
 === Get familar with Docker CLI
 In this section you will learn the basic commands of the docker CLI so that you can manage and build containers
@@ -24,9 +33,9 @@ The command for starting a container is `docker run` and it has a couple of impo
 ::
 For more information on available options for the `run` command type `docker run --help` in a terminal.
 +
-Start a clean RHEL 7.1 container like this:
+Start a clean Red Hat Enterprise Linux (RHEL) 7.1 container like this:
 +
-[source,bash,numbered]
+[source,numbered]
 ----
 $ docker run -it rhel7.1 bash
 Unable to find image 'rhel7.1:latest' locally
@@ -40,7 +49,7 @@ NOTE: The output from the docker run command may differ and your hostname will d
 +
 Congratulations! you have succesfully started a container using Red Hat Enterprise Linux. This container has it's own file system, own process tree, own IP address and it's own hostname. Let's investigate a bit closer:
 +
-[source,bash,numbered]
+[source,numbered]
 ----
 [root@d67ea0f4a238 /]# uname -a
 Linux d67ea0f4a238 3.10.0-229.el7.x86_64 #1 SMP Thu Jan 29 18:37:38 EST 2015 x86_64 x86_64 x86_64 GNU/Linux
@@ -48,9 +57,9 @@ Linux d67ea0f4a238 3.10.0-229.el7.x86_64 #1 SMP Thu Jan 29 18:37:38 EST 2015 x86
 Red Hat Enterprise Linux Server release 7.1 (Maipo)
 ----
 +
-The RHEL container, provided by Red Hat, is on purpose kept very minimal, the idea is that each service based on a container will define and install the it's own dependencies. Tools like ps (used to list running processes) is not installed in the RHEL container, but can easily be installed using `yum`.
+The RHEL container is purposefully kept very minimal, the idea is that each service based on a container will define and install the it's own dependencies. Tools like ps (used to list running processes) is not installed in the RHEL container, but can easily be installed using `yum`.
 +
-IMPORTANT: Installing packages and changing configurations using the interactive console is strongly discouraged, since maintaining containers that requires manual setup is much harder than maintaining containers that are automated.
+IMPORTANT: Installing packages and changing configurations using the interactive console is strongly discouraged, since maintaining containers that require manual setup is much harder than maintaining containers that are automated.
 +
 Using the commands above we have started a bash shell in a container. From the prompt we can see that it is using a different hostname from your desktop. From `uname -a` and `cat /etc/redhat-release` we can see that it's a Red Hat Enterprise Linux Server release 7.1 and that is regardless of what desktop operating environment you are running. Additionally the container isolated from your host and will have separate process tree, network, storage etc. So testing application in container will not be affected by which binary you have installed on the Desktop.
 +
@@ -65,7 +74,7 @@ Often it's more useful to start a container as a daemon process. For example whe
 +
 Red Hat ships a pre-built docker image using JBoss EAP 6.4, you can run the following to start JBoss EAP 6.4 as a daemon process:
 +
-[source,bash,numbered]
+[source,numbered]
 ----
 $ docker run -d -p 9080:8080 jboss-eap-6/eap:6.4
 3e336d31ce25cab777cf8ffd9c8779fbe0751455fa1e9c80cb30be69810ab8ae
@@ -74,18 +83,18 @@ CONTAINER ID  IMAGE                 COMMAND                CREATED             S
 3e336d31ce25  jboss-eap-6/eap:6.4   "/opt/eap/bin/standa"  16 seconds ago      Up 14 seconds       0.0.0.0:9080->8080/tcp   pensive_euclid
 ----
 +
-The container running JBoss EAP is started and port 8080 in the container is mapped to 9080 on your host. Verify that the server responds by opening a browser to http://localhost:9080
+The container running JBoss EAP is started and port 8080 in the container is mapped to 9080 on your host. Verify that the server responds by opening a browser to <http://localhost:9080>.
 +
-NOTE: Using -P option all the exposed ports (for JBoss EAP 8080) are automatically mapped to an available port on the server.
+NOTE: As well as manually mapping containers, you can use the -P option to automically map all exposed ports to an available port on the host (e.g. for JBoss EAP 8080).
 +
-The browser should now show the JBoss EAP Welcome Page.
+The browser should now show the JBoss EAP Welcome Page when.
 +
 image::images/jboss-eap-welcome.png["JBoss EAP Welcome Page"]
 
 Step 3 - List, stop and delete containers::
 When starting containers in daemon mode they are running in the background until the main process of the container stops or until someone manually stops its. Let's stop the JBoss EAP container that we started in Step2.
 +
-[source,bash,numbered]
+[source,numbered]
 ----
 $ docker ps
 CONTAINER ID  IMAGE                 COMMAND                CREATED             STATUS              PORTS                     NAMES
@@ -94,9 +103,9 @@ $ docker stop <container-id>
 3e336d31ce25
 ----
 +
-Let's start a a couple of containers
+Let's start a a couple of containers:
 +
-[source,bash,numbered]
+[source,numbered]
 ----
 $ for x in {0..9}; do docker run -d --name="container-$x" rhel7.1 sleep 30; done
 e17a6426595b9daa91fda4573ecd7a58b1949e3343cd2b90db4720baf33e0afc
@@ -111,9 +120,9 @@ b001c6cf360b56eee532b3931a67465c6e203dac889ad1e905afc9648c9d7140
 6637273d947043d3cd7f5c777fd668b5746c6d08699bbd907f70c1eca1424918
 ----
 +
-Within 30 sec run `docker ps` to list the containers
+Within 30 sec run `docker ps` to list the containers:
 +
-[source,bash,numbered]
+[source,numbered]
 ----
 $ docker ps
 CONTAINER ID        IMAGE                                       COMMAND             CREATED             STATUS              PORTS               NAMES
@@ -136,19 +145,19 @@ TIP: To remove the all the containers and free up the storage it's using excute 
 Step 4 - Override the command::
 A container typically has a default command, for example the `jboss-eap-6/eap:6.4` container has a default command that looks like this `/opt/eap/bin/standalone.sh -b 0.0.0.0`. To override that command to for example to enable access to the administration console one have to add the option `-bmanagement 0.0.0.0`. This could look like this.
 +
-[source,bash,numbered]
+[source,numbered]
 ----
 $ docker run -d -p 9990:9990 jboss-eap-6/eap:6.4 /opt/eap/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0
 ----
 +
-Now open a browser to http://localhost:9990, which should give you the followig error page because we haven't added a admin user yet.
+Now open a browser to <http://localhost:9990>; as we which haven't added a admin user yet it should give you the following error page:
 +
 image::images/jboss-eap-error.png["JBoss EAP Error Page"]
 
 Step 5 - Executing commands in a runing container::
-We can execute commands directly to a running container using the `docker exec` command. To for example add a user one can run the following command.
+We can execute commands directly to a running container using the `docker exec` command. To for example add a user one can run the following command:
 +
-[source,bash,numbered]
+[source,numbered]
 ----
 $ docker exec <container-id_or_name> /opt/eap/bin/add-user.sh -g admin -u admin -p admin-123 -s
 ----
@@ -171,9 +180,19 @@ All the commands in the previous steps are useful to know and great for developm
 +
 ::
 +
-Customization is done in a specification file called Dockerfile. It contains a set of instructions on how to build an images. Below is an example of such a docker file, study it and make sure you understand the meaning of each line:
+Customization is done in a text file called a "Dockerfile". It contains a set of instructions on how to build an image. 
+Create a new directory `lab` and change in to it:
 +
-[source,bash]
+----
+$ mkdir -p lab
+$ cd lab
+----
++
+TIP: If you are in a Red Hat classroom, then we have installed the Atom editor for you. To edit a file run `atom <filename>` on the command line.
++
+Create a new file called `Dockerfile` with the following content:
++
+[source,Dockerfile]
 ----
 FROM jboss-eap-6/eap:6.4  #<1>
 
@@ -184,16 +203,19 @@ CMD $JBOSS_HOME/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0 #<3>
 EXPOSE 8080 9990 9999 #<4>
 ----
 +
-<1> Extending the JBoss EAP image that Red Hat provides
-<2> Adding and admin user to the container
+<1> Extend the JBoss EAP image that Red Hat provides
+<2> Add and admin user to the container
 <3> Override the start command to enable remote API
-<4> Expose Web, Admin Web and Remote Admin API.
+<4> Expose the Web, Admin Web and Remote Admin API ports.
 +
-Such a specification file are provided to you as part of the lab content and standing in the `lab` directory you can build the image by executing the following command (replace your-alias with a unique identifier):
+Now, build the image:
 +
-[source,bash]
+[source]
 ----
-$ docker build -t <your-alias>/jboss-eap:1.0 -f custom-jboss-eap/Dockerfile .
+$ docker build -t <your-alias>/jboss-eap:1.0 .
+----
++
+----
 $ docker images
 REPOSITORY                                   TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
 tqvarnst/jboss-eap                           1.0                 db4848085173        44 seconds ago      530.6 MB
@@ -201,28 +223,33 @@ classroom.example.com:5000/jboss-eap-6/eap   6.4                 7a89f0810450   
 classroom.example.com:5000/rhel7.1           latest              10acc31def5d        3 months ago        154.1 MB
 ----
 +
-Now we have build our customized version of JBoss EAP container so then we can much easier start container that have the configuration that we want.
+Now we have build our customized version of JBoss EAP container we can more easily start a JBoss EAP container that has our desired configuration.
 +
-[source,bash]
+[source]
 ----
 $ docker run -it -p 9080:8080 -p 9990:9990 -p 9999:9999 <your-alias>/jboss-eap:1.0
 ----
 +
-Try login in to the administation control by access http://localhost:9990 using admin/admin-123 as username/password.
+Try login in to the administation control by access <http://localhost:9990> using `admin` as the username and `admin-123` as the password.
 +
 Stop the container using `CTRL-C`
 
 Step 7 - Environment variables::
 +
-Building images that are customized is great, but sometimes you also need to interact with the container to add runtime behavior. For example: Currently the container that Red Hat provides for JBoss EAP uses 1.3 GB of memory. This might be a bit much in a development environment and to low in a production environment. We can do this by passing environment variables to the container overriding certain environmental settings.
+Building images that are customized is great, but sometimes you also need to provide information to the container when you run it. For example the container that Red Hat provides for JBoss EAP uses 1.3 GB of memory. This might be a bit much in a development environment and to low in a production environment. We can alter this by passing environment variables to the container that override the defaults.
 +
-Review the `jboss-dev.env` file in the `lab` directory. Record the values -Xms and -Xmx.
+Create a file called `jboss-dev.env`:
++
+----
+JAVA_OPTS=-client -XX:+TieredCompilation -XX:TieredStopAtLevel=1 -Xverify:none -Xms64m -Xmx256m -Dorg.apache.tomcat.util.LOW_MEMORY=true -XX:+UseCompressedOops -XX:+AggressiveOpts -XX:+DisableExplicitGC -Djava.net.preferIPv4Stack=true
+PRESERVE_JAVA_OPTS=true
+----
 +
 Start the container like this:
 +
-[source,bash]
+[source]
 ----
-docker run -it -p 9990:9990 --env-file=jboss-dev.env tqvarnst/jboss-eap:1.0
+docker run -it -p 9990:9990 --env-file=jboss-dev.env <your-alias>/jboss-eap:1.0
 ----
 +
 Investigate the terminal output and compare the values of -Xms and -Xmx.
@@ -230,14 +257,14 @@ Investigate the terminal output and compare the values of -Xms and -Xmx.
 Stop the container using `CTRL-C`
 
 === Clean up and prepare for next exercise
-Before we move on to the next exercise the participant should stop any running containers and remove any stopped containers. This can be done with two simple commands:
+Before we move on to the next exercise the participant should stop any running containers and remove any stopped containers:
 
 [source,bash]
 ----
-$ docker stop $(docker ps -q)
-$ docker rm $(docker ps -aq)
+$ docker rm -f $(docker ps -aq)
 ----
 
 === Summary
+
 After this exercise the participant should feel comfortalbe with starting, stoping and manage containers. The participant should be able to access a running container to check it's state, also should have basic understanding of networking (mapping ports etc). Further more the participant should gained an elementary knowledge on how to create custom images.
 
