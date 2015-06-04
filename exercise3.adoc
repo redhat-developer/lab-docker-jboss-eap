@@ -29,7 +29,7 @@ We're going to use the PostgreSQL container from the Docker registry. Launch the
 +
 [source,bash,numbered]
 ----
-docker run --name ticket-monster-db -e POSTGRES_PASSWORD=UsW4fznqLmGRh6 -d docker.io/postgres:9.4
+docker run --name ticket-monster-db -e POSTGRES_PASSWORD=UsW4fznqLmGRh6 -d postgres:9.4
 ----
 +
 The PostgreSQL Docker container comes with a couple of handy shortcuts. We can specify the password on the `docker run` command, and the container will then automatically create a database called `postgres`, using the `postgres` user, and the specified password.
@@ -87,8 +87,6 @@ When asked for a password enter `UsW4fznqLmGRh6`. You should now see the psql co
 +
 [source,bash,numbered]
 ----
-$ docker run -it --link ticket-monster-db:postgres --rm postgres:9.4 sh -c 'exec psql -h "$POSTGRES_PORT_5432_TCP_ADDR" -p "$POSTGRES_PORT_5432_TCP_PORT" -U postgres'
-Password for user postgres: 
 psql (9.4.2)
 Type "help" for help.
 
@@ -133,11 +131,13 @@ Create a new directory called `custom-jboss-eap-postgres/`, and add a `Dockerfil
 FROM <your-alias>/jboss-eap:1.0
 
 # Get the custom start script, which will install PostgreSQL. You can view this URL in your web browser if you are curious
-RUN mkdir -p /opt/jboss/eap/customization/
-RUN curl -L http://classroom.example.com/docker-jboss-eap/lab/postgres/execute.sh > /opt/jboss/eap/customization/
+RUN mkdir -p /opt/eap/customization/
+RUN curl -L http://classroom.example.com:5002/docker-jboss-eap/lab/postgres/execute.sh > /opt/eap/customization/execute.sh
+
+RUN chmod u+x /opt/eap/customization/execute.sh
 
 # Start JBoss EAP using the custom script
-CMD ["/opt/jboss/eap/customization/execute.sh"]
+CMD ["/opt/eap/customization/execute.sh"]
 ----
 +
 Of course, you need to replace <your-alias> with your name. Now, build your new docker container
@@ -153,14 +153,134 @@ Step 5 - Start the application server, deploy your application and verify data i
 First, bring up JBoss EAP. Add a `--link` option to allow the PostgreSQL container to be accessed:
 +
 ----
-docker run -i -p 8080:8080 -p 9990:9990 -p 9999:9999 --link ticket-monster-db:postgres <your-alias>/jboss-eap-postgres:1.0
-----
-+
-The application seeds lots of dummy data when it starts; let's check the database and make sure it was used
-+
-----
+docker run -i -p 8081:8080 -p 9990:9990 -p 9999:9999 --link ticket-monster-db:postgres <your-alias>/jboss-eap-postgres:1.0
 ----
 
+Step 4 - Deploy TicketMonster to the application server and verify the use of PostgreSQL::
+
+TicketMonster comes with built in support for PostgreSQL, so all we have to do is build using the `postgresql` profile
++
+[source,bash]
+----
+$ mvn clean package -Ppostgresql jboss-as:deploy
+----
++
+Visit <http://localhost:8081/ticket-monster in your web browser and use the application to verify it deployed correctly.
++
+Switch back to your psql console and execute `select * from venue;` to check that the postgres database is in use. TicketMonster seeds the application with data, so you should see five venues, assuming you didn't add any more!
+
+### Bundling the application the container
+
+Deploying your application from your host system is fine for development, but for staging and production you'll want to have a single deliverable which doesn't need anything other than a `docker run` to start. Docker makes this very easy - we just put the application in to another layer.
+
+Step 1 - Create the application layer::
+
+We start by creating a new `Dockerfile` that layers on top of the `<your-alias>/jboss-eap-postgres:1.0` container we created earlier in Exercise 3. In the `ticket-monster` directory, create a `Dockerfile`:
++
+----
+FROM <your-alias>/jboss-eap-postgres:1.0
+
+ADD target/ticket-monster.war /opt/eap/standalone/deployments/ticket-monster.war
+----
++
+As you can see, all we've done is copy in the built `ticket-monster.war` to the JBoss EAP `deployments` directory. Simple!
++
+Now, build the `Dockerfile`:
++
+----
+docker build -t <your-alias>/jboss-eap-postgres-ticket-monster:1.0 -f ticket-monster/Dockerfile .
+----
+
+Step 2 - Run the application server::
+
+And then run it:
++
+----
+docker run -i -p 8081:8080 -p 9990:9990 -p 9999:9999 --link ticket-monster-db:postgres <your-alias>/jboss-eap-postgres-ticket-monster:1.0
+----
++
+Visit <http://localhost:8081/ticket-monster in your web browser and use the application to verify it deployed correctly.
+
+### Building the application in a container
+
+Another thing you want from your builds is reproducibility - building the application on your host system doesn't really give you that - who knows what weird things you've fiddled with and forgotten about. You can also use Docker to do builds - let's create a Docker build for TicketMonster.
+
+Step 1 - Create the application build::
+
+This time we'll start with the base `lab/base` image we created for you - it container Java, Maven and Git. It looks like:
+----
+FROM rhel7.1
+
+MAINTAINER Pete Muir <pmuir@redhat.com
+
+USER root
+
+# Install Java JDK, Git and Maven
+
+RUN yum --enablerepo=rhel-server-rhscl-7-rpms -y install java-1.7.0-openjdk-devel maven30 git; yum clean all;
+ENV JAVA_HOME /usr/lib/jvm/jre
+----
++
+In order to avoid entitlement and slow speeds accessing the internet we pre-built this image and put it in our local registry. You could easily create this image yourself, or use the maven image from dockerhub.
++
+Create a new directory `~/ticket-monster-build` and put this `Dockerfile` in there:
++
+----
+FROM lab-base
+
+# Clone TicketMonster from our git repo
+RUN git clone http://classroom.example.com:5002/ticket-monster.git
+WORKDIR ticket-monster
+
+# Ask Maven to use the lab mirror, not the internet
+RUN mkdir -p ~/.m2
+RUN cp settings.xml ~/.m2/settings.xml
+
+# Run the build
+RUN /opt/rh/maven30/root/bin/mvn clean package -Ppostgresql 
+
+# Mount the target directory where we'll place the prebuild binary.
+VOLUME /target
+
+# Deploy the application to a container when the docker container is run
+CMD ["cp", "target/ticket-monster.war", "/target"]
+---
++
+Having installed Java and Maven, we then clone the TicketMonster git repository, configure maven and then run a build. We also add a default command to run when the docker image is run - we'll come to that in just a minute. For now, build the docker container and watch TicketMonster get built:
++
+----
+docker build -t <your-alias>/ticket-monster-postgres:1.0 -f ticket-monster-build/Dockerfile .
+----
+
+Step 2 - Use the application build::
+
+You saw that we mounted a volume in which we'll place the built binary. Let's run the container, and mount the volume:
++
+----
+mkdir -p target
+sudo chcon -Rt svirt_sandbox_file_t target
+docker -v target:/target run <your-alias>/ticket-monster-postgres:1.0
+----
++
+Voila, the `ticket-monster.war` is in `target`!
++
+NOTE: You may be wondering what the `sudo chcon` is all about - selinux is running on the host, so we need to tell it that docker container should be able to write to the host directory.
++
+Now let's reuse the container we created earlier that bundles the application. We'll use the same Dockerfile, but change the context to the current directory so that we pick up the `ticket-monster.war` we just built in the container.
+----
+mkdir -p ticket-monster
+cp ../ticket-monster/Dockerfile ticket-monster
+docker build -t <your-alias>/jboss-eap-postgres-ticket-monster:1.0 -f ticket-monster/Dockerfile .
+----
++
+Finally, of course, we need to run it:
++
+----
+docker run -i -p 8081:8080 -p 9990:9990 -p 9999:9999 --link ticket-monster-db:postgres <your-alias>/jboss-eap-postgres-ticket-monster:1.0
+----
++
+Visit <http://localhost:8081/ticket-monster in your web browser and use the application to verify it deployed correctly.
 
 ### Summary
 After the third exercise participant should start to feel comfortable with layering containers, linking containers, and understanding when, how and why you package your application in the container.
+

@@ -67,7 +67,7 @@ Red Hat ships a pre-built docker image using JBoss EAP 6.4, you can run the foll
 +
 [source,bash,numbered]
 ----
-$ docker run -d -p :8080 jboss-eap-6/eap:6.4
+$ docker run -d -p 9080:8080 jboss-eap-6/eap:6.4
 3e336d31ce25cab777cf8ffd9c8779fbe0751455fa1e9c80cb30be69810ab8ae
 $ docker ps
 CONTAINER ID  IMAGE                 COMMAND                CREATED             STATUS              PORTS                     NAMES

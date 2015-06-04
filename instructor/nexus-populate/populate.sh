@@ -27,6 +27,7 @@ source /opt/rh/maven30/enable
 mvn clean package
 mvn clean package -Parq-jbossas-remote -Dmaven.test.failure.ignore=true
 ! mvn clean package jboss-as:deploy
+mvn clean package -Ppostgresql 
 echo "Nexus cache should now be primed"
 exit 0
 
