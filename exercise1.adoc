@@ -67,14 +67,14 @@ Red Hat ships a pre-built docker image using JBoss EAP 6.4, you can run the foll
 +
 [source,bash,numbered]
 ----
-$ docker run -d -p 8081:8080 jboss-eap-6/eap:6.4
+$ docker run -d -p :8080 jboss-eap-6/eap:6.4
 3e336d31ce25cab777cf8ffd9c8779fbe0751455fa1e9c80cb30be69810ab8ae
 $ docker ps
 CONTAINER ID  IMAGE                 COMMAND                CREATED             STATUS              PORTS                     NAMES
-3e336d31ce25  jboss-eap-6/eap:6.4   "/opt/eap/bin/standa"  16 seconds ago      Up 14 seconds       0.0.0.0:8081->8080/tcp   pensive_euclid
+3e336d31ce25  jboss-eap-6/eap:6.4   "/opt/eap/bin/standa"  16 seconds ago      Up 14 seconds       0.0.0.0:9080->8080/tcp   pensive_euclid
 ----
 +
-The container running JBoss EAP is started and port 8080 in the container is mapped to 8081 on your host. Verify that the server responds by opening a browser to http://localhost:8081
+The container running JBoss EAP is started and port 8080 in the container is mapped to 9080 on your host. Verify that the server responds by opening a browser to http://localhost:9080
 +
 NOTE: Using -P option all the exposed ports (for JBoss EAP 8080) are automatically mapped to an available port on the server.
 +
@@ -89,7 +89,7 @@ When starting containers in daemon mode they are running in the background until
 ----
 $ docker ps
 CONTAINER ID  IMAGE                 COMMAND                CREATED             STATUS              PORTS                     NAMES
-3e336d31ce25  jboss-eap-6/eap:6.4   "/opt/eap/bin/standa"  16 seconds ago      Up 14 seconds       0.0.0.0:8081->8080/tcp    pensive_euclid
+3e336d31ce25  jboss-eap-6/eap:6.4   "/opt/eap/bin/standa"  16 seconds ago      Up 14 seconds       0.0.0.0:9080->8080/tcp    pensive_euclid
 $ docker stop <container-id>
 3e336d31ce25
 ----
@@ -205,7 +205,7 @@ Now we have build our customized version of JBoss EAP container so then we can m
 +
 [source,bash]
 ----
-$ docker run -it -p 8081:8080 -p 9990:9990 -p 9999:9999 <your-alias>/jboss-eap:1.0
+$ docker run -it -p 9080:8080 -p 9990:9990 -p 9999:9999 <your-alias>/jboss-eap:1.0
 ----
 +
 Try login in to the administation control by access http://localhost:9990 using admin/admin-123 as username/password.

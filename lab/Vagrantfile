@@ -50,13 +50,9 @@ Vagrant.configure('2') do |config|
     vagrant_host.vm.provision 'shell', inline: "echo 'Run:\n  export DOCKER_HOST=127.0.0.1:2375 && unset DOCKER_CERT_PATH && unset DOCKER_TLS_VERIFY\nto use docker on the host machine'"
 
     config.vm.network "forwarded_port", guest: 2375, host: 2375
-    config.vm.network "forwarded_port", guest: 8081, host: 8081, auto_correct: true
+    config.vm.network "forwarded_port", guest: 9080, host: 9080, auto_correct: true
     config.vm.network "forwarded_port", guest: 9990, host: 9990, auto_correct: true
     config.vm.network "forwarded_port", guest: 9999, host: 9999, auto_correct: true
-
-    for i in 49150..49500
-        config.vm.network :forwarded_port, guest: i, host: i, auto_correct: true
-    end
     # END
   end
 end
