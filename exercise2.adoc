@@ -13,7 +13,6 @@ Particpants will learn how to use combine Java EE Development with maven and nex
 TIP: To clean up all the running container run the following command `docker rm -f $(docker ps -aq)`.
 
 === Compiling and deploying the project
-These steps are all done on the particpants desktop.
 
 Step 1 - Clone the project from the instructor git::
 The instructor has a GIT repository running on classroom.example.com.
@@ -34,10 +33,16 @@ $ cp settings.xml ~/.m2
 $ mvn clean package
 ----
 +
-If everything built correctly, you should see:
+If everything built correctly, you should see something like:
 +
 ----
-TODO
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 2:49.143s
+[INFO] Finished at: Thu Jun 04 14:11:57 EDT 2015
+[INFO] Final Memory: 27M/117M
+[INFO] ------------------------------------------------------------------------
 ----
 
 Step 3 - Start the customized JBoss EAP container::
@@ -173,17 +178,16 @@ Run the test again to verify
 $ mvn clean package -Parq-jbossas-remote
 ----
 +
-This time we should have **SUCCESS**.
+This time we should have a `BUILD SUCCESS` message.
 
 === Clean up and prepare for next exercise
 Before we move on to the next exercise the participant should stop any running containers and remove any stopped containers. This can be done with two simple commands:
 
 [source,bash]
 ----
-$ docker stop $(docker ps -q)
-$ docker rm $(docker ps -aq)
+$ docker rm -f $(docker ps -aq)
 ----
 
 === Summary
-After the second exercise participant should start to feel comfortable with manaing containers locally in a development environment. The most important benefit of running docker in a development environment like this is that the container can be almost identical with the target production environment. Lowering the complexity of Continious Delivery environment, and improving the quality.
+After the second exercise participant should start to feel comfortable with running manaing containers locally in a development environment. The most important benefit of running docker in a development environment like this is that the container can be (almost) identical to the target production environment. This lowers the complexity of Continious Delivery environment, and improves the quality.
 

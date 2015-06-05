@@ -1,26 +1,26 @@
-apiVersion: v1beta1
+apiVersion: v1beta3
 id: jboss-eap-server-rc
 kind: ReplicationController
-labels: 
+metadata:
   name: jboss-eap-server
-  context: docker-jboss-eap-lab
-desiredState: 
+spec: 
   replicas: 1
-  replicaSelector: 
+  selector: 
     name: jboss-eap-server
-  podTemplate: 
-    labels: 
+  template:
+    metadata:
       name: jboss-eap-server
-      context: docker-jboss-eap-lab
-    desiredState: 
-      manifest: 
-        id: jboss-eap-server-rc
-        version: v1beta1
-        containers: 
-          - name: jboss-eap-server
-            image: pmuir/jboss-eap-postgres-ticket-monster:1.0
-            ports: 
-              - containerPort: 9990
-              - containerPort: 8080
-              - containerPort: 9999
-
+      labels: 
+        name: jboss-eap-server
+        context: docker-jboss-eap-lab
+    spec:
+      containers: 
+        - name: jboss-eap-server
+          image: pmuir/jboss-eap-postgres-ticket-monster:1.0
+          ports: 
+            - containerPort: 9990
+              hostPort: 9900
+            - containerPort: 8080
+              hostPort: 9080
+            - containerPort: 9999
+              hostPort: 9999

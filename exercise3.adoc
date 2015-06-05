@@ -10,24 +10,23 @@ One of the biggest benefits of a Docker container is that it allows you to work 
 === Prerequisites
 
 * Participants should successfully have executed exercise 2
-* Participatns should have cleaned up any running containers
+* Participants should have cleaned up any running containers
 
 [NOTE]
 ====
 To clean up all the running container run the following command:
 [source,bash]
 ----
-docker stop $(docker ps -q) && docker rm $(docker ps -aq)`.
+docker rm -f $(docker ps -aq)
 ----
 ====
 
 === Switching to postgres
-These steps are all done on the particpants desktop.
 
 Step 1 - Run the PostgreSQL container::
 We're going to use the PostgreSQL container from the Docker registry. Launch the container in the background as a daemon using the `-d` flag:
 +
-[source,bash,numbered]
+[source,numbered]
 ----
 docker run --name ticket-monster-db -e POSTGRES_PASSWORD=UsW4fznqLmGRh6 -d postgres:9.4
 ----
@@ -41,11 +40,11 @@ You may also be wondering why we don't just put the database server in the same 
 Step 2 - Verify PostgreSQL container::
 We'll use the `psql` command to interrogate the PostgreSQL container, and make sure it's working. `psql` isn't installed on your workstation so we'll use another docker container to run it, linking to the Postgres container.
 +
-The first concept we need to understand is how Docker allows linking containers. Creating a link between two containers creates a conduit between a source container and a target container and securely transfer information about source container to target container. In our case, the target container (psql) can see information about source container (PostgreSQL server). The important part to understand here is that none of this information needs to be publicly exposed by the source container, and is only made available to the target container.
+Before we try it, we need to understand how Docker links containers. Creating a link between two containers creates a conduit between a source container and a target container and securely transfer information about source container to target container. In our case, the target container (psql) can see information about source container (PostgreSQL server). The important part to understand here is that none of this information needs to be publicly exposed by the source container, and is only made available to the target container.
 +
 The magic switch to enable link is, intuitively, `--link`. So for example, if the PostgreSQL and the psql containers are run as shown above, then `--link ticket-monster-db:postgres` links the PostgreSQL container named `ticket-monster-db` with an alias `postgres` to the psql target container. This defines some environment variables, following the defined protocol, in the target container which can then be used to access information about the source container. For example, IP address, exposed ports, username, passwords, etc. The complete list of environment variables can be seen as:
 +
-[source,bash,numbered]
+[source,numbered]
 ----
 $ docker run -it --link ticket-monster-db:postgres --rm postgres:9.4 env
 POSTGRES_PORT=tcp://172.17.0.12:5432
@@ -78,14 +77,14 @@ Linking only works if all the containers are running on the same host.
 +
 Let's try it out. Run the following command to execute `psql` against the PostgreSQL server:
 +
-[source,bash,numbered]
+[source,numbered]
 ----
 docker run -it --link ticket-monster-db:postgres --rm postgres:9.4 sh -c 'exec psql -h "$POSTGRES_PORT_5432_TCP_ADDR" -p "$POSTGRES_PORT_5432_TCP_PORT" -U postgres'
 ----
 +
 When asked for a password enter `UsW4fznqLmGRh6`. You should now see the psql console:
 +
-[source,bash,numbered]
+[source,numbered]
 ----
 psql (9.4.2)
 Type "help" for help.
@@ -120,12 +119,20 @@ Step 3 - Modify the application server to use Postgres::
 
 We'll reuse the `Dockerfile` you created for Ticket Monster in Exercise 2, and modify it to support PostgreSQL. We have provided a bash script that will modify JBoss EAP on start to add the PostgreSQL driver and datasource. The script waits for EAP to start, runs some JBoss EAP CLI commands, and the restarts the server.
 +
-Now's a great time to introduce you to one of the core concepts in Docker - layering. A Docker image is made up of multiple layers where each layer provides some functionality, and a higher layer can add functionality on top of it. For example, Docker mounts the root filesystem as read-only layer and then adds a read-write layer on top of it. All these layers are combined together using Union Mount to provide application operating environment.
+Now's a great time to introduce you to another of the core concepts in Docker - layering. A Docker image is made up of multiple layers where each layer provides some functionality, and a higher layer can add functionality on top of it. For example, Docker mounts the root filesystem as read-only layer and then adds a read-write layer on top of it. All these layers are combined together using Union Mount to provide application operating environment.
 +
 We'll use the concept of layering to extend the `Dockerfile` you created in Exercise 2 to execute the bash script that adds Postgres.
 +
-Create a new directory called `custom-jboss-eap-postgres/`, and add a `Dockerfile` that looks like:
+Create a new directory called `custom-jboss-eap-postgres/` in `$HOME`:
 +
+----
+mkdir -p ~/custom-jboss-eap-postgres
+cd custom-jboss-eap-postgres
+----
++
+Add a `Dockerfile` that looks like:
++
+[source,Dockerfile]
 ----
 # The layer on which we will build
 FROM <your-alias>/jboss-eap:1.0
@@ -143,7 +150,7 @@ CMD ["/opt/eap/customization/execute.sh"]
 Of course, you need to replace <your-alias> with your name. Now, build your new docker container
 +
 ----
-docker build -t <your-alias>/jboss-eap-postgres:1.0 -f custom-jboss-eap-postgres/Dockerfile .
+docker build -t <your-alias>/jboss-eap-postgres:1.0 .
 ----
 +
 Now, we'll use the customized JBoss EAP container, together with container linking, to make TicketMonster using Postgres.
@@ -153,7 +160,7 @@ Step 4 - Start the application server, deploy your application and verify data i
 First, bring up JBoss EAP. Add a `--link` option to allow the PostgreSQL container to be accessed:
 +
 ----
-docker run -i -p 8081:8080 -p 9990:9990 -p 9999:9999 --link ticket-monster-db:postgres <your-alias>/jboss-eap-postgres:1.0
+docker run -i -p 9080:8080 -p 9990:9990 -p 9999:9999 --link ticket-monster-db:postgres <your-alias>/jboss-eap-postgres:1.0
 ----
 
 Step 5 - Deploy TicketMonster to the application server and verify the use of PostgreSQL::
@@ -165,11 +172,37 @@ TicketMonster comes with built in support for PostgreSQL, so all we have to do i
 $ mvn clean package -Ppostgresql jboss-as:deploy
 ----
 +
-Visit <http://localhost:8081/ticket-monster in your web browser and use the application to verify it deployed correctly.
+Visit <http://localhost:9080/ticket-monster> in your web browser and use the application to verify it deployed correctly.
 +
 Switch back to your psql console and execute `select * from venue;` to check that the postgres database is in use. TicketMonster seeds the application with data, so you should see five venues, assuming you didn't add any more!
 
-=== Bundling the application the container
+----
+# select * from venue;
+ id |  city   |  country  |          street          | capacity |                                               
+                                                description                                                     
+                                           |         name         | mediaitem_id 
+----+---------+-----------+--------------------------+----------+-----------------------------------------------
+----------------------------------------------------------------------------------------------------------------
+-------------------------------------------+----------------------+--------------
+  1 | Toronto | Canada    | 60 Simcoe Street         |    11000 | Roy Thomson Hall is the home of the Toronto Sy
+mphony Orchestra and the Toronto Mendelssohn Choir.                                                             
+                                           | Roy Thomson Hall     |            4
+  2 | Sydney  | Australia | Bennelong point          |    15030 | The Sydney Opera House is a multi-venue perfor
+ming arts centre in Sydney, New South Wales, Australia                                                          
+                                           | Sydney Opera House   |            3
+  3 | Toronto | Canada    | 170 Princes Boulevard    |    30000 | BMO Field is a Canadian soccer stadium located
+ in Exhibition Place in the city of Toronto.                                                                    
+                                           | BMO Field            |            5
+  4 | Paris   | France    | 8 Rue Scribe             |     1972 | The Palais Garnier is a 1,979-seat opera house
+, which was built from 1861 to 1875 for the Paris Opera.                                                        
+                                           | Opera Garnier        |           23
+  5 | Boston  | USA       | 301 Massachusetts Avenue |     1972 | Designed by McKim, Mead and White, it was buil
+t in 1900 for the Boston Symphony Orchestra, which continues to make the hall its home. The hall was designated 
+a U.S. National Historic Landmark in 1999. | Boston Symphony Hall |           24
+(5 rows)
+----
+
+=== Bundling the application in a container
 
 Deploying your application from your host system is fine for development, but for staging and production you'll want to have a single deliverable which doesn't need anything other than a `docker run` to start. Docker makes this very easy - we just put the application in to another layer.
 
@@ -188,18 +221,20 @@ As you can see, all we've done is copy in the built `ticket-monster.war` to the 
 Now, build the `Dockerfile`:
 +
 ----
-docker build -t <your-alias>/jboss-eap-postgres-ticket-monster:1.0 -f ticket-monster/Dockerfile .
+$ docker build -t <your-alias>/jboss-eap-postgres-ticket-monster:1.0 -f ticket-monster/Dockerfile .
 ----
+
+You should see a `BUILD SUCCESS` message.
 
 Step 2 - Run the application server::
 
 And then run it:
 +
 ----
-docker run -i -p 8081:8080 -p 9990:9990 -p 9999:9999 --link ticket-monster-db:postgres <your-alias>/jboss-eap-postgres-ticket-monster:1.0
+$ docker run -i -p 9080:8080 -p 9990:9990 -p 9999:9999 --link ticket-monster-db:postgres <your-alias>/jboss-eap-postgres-ticket-monster:1.0
 ----
 +
-Visit <http://localhost:8081/ticket-monster in your web browser and use the application to verify it deployed correctly.
+Visit <http://localhost:9080/ticket-monster> in your web browser and use the application to verify it deployed correctly.
 
 === Building the application in a container
 
@@ -250,39 +285,56 @@ CMD ["cp", "target/ticket-monster.war", "/target"]
 Having installed Java and Maven, we then clone the TicketMonster git repository, configure maven and then run a build. We also add a default command to run when the docker image is run - we'll come to that in just a minute. For now, build the docker container and watch TicketMonster get built:
 +
 ----
-docker build -t <your-alias>/ticket-monster-postgres:1.0 -f ticket-monster-build/Dockerfile .
+$ docker build -t <your-alias>/ticket-monster-build:1.0 .
 ----
++
+You should see a `BUILD SUCCESS` message followed by a `Succesfully built ...` message if everything went ok!
 
 Step 2 - Use the application build::
 
 You saw that we mounted a volume in which we'll place the built binary. Let's run the container, and mount the volume:
 +
 ----
-mkdir -p target
-sudo chcon -Rt svirt_sandbox_file_t target
-docker -v target:/target run <your-alias>/ticket-monster-postgres:1.0
+$ mkdir -p target
+$ sudo chcon -Rt svirt_sandbox_file_t target
+$ docker run -v `pwd`/ tararget:/target <your-alias>/ticket-monster-build:1.0
 ----
 +
 Voila, the `ticket-monster.war` is in `target`!
 +
 NOTE: You may be wondering what the `sudo chcon` is all about - selinux is running on the host, so we need to tell it that docker container should be able to write to the host directory.
 +
+NOTE: 
+===
+You will notice that Maven re-downloads all the dependencies each time you run this command. Don't worry, this is actually a good thing!
+
+When you are aiming for reprodcible builds, one of your biggest enemies is a bad local Maven repository. It's much safer to redownload from your master Maven repository each time. We would recommend running a caching repository, and mirroring all request via that. This will avoid you having to re-fetch from the internet each time.
+===
++
 Now let's reuse the container we created earlier that bundles the application. We'll use the same Dockerfile, but change the context to the current directory so that we pick up the `ticket-monster.war` we just built in the container.
 +
 ----
-mkdir -p ticket-monster
-cp ../ticket-monster/Dockerfile ticket-monster
-docker build -t <your-alias>/jboss-eap-postgres-ticket-monster:1.0 -f ticket-monster/Dockerfile .
+$ mkdir -p ticket-monster
+$ cp ../ticket-monster/Dockerfile ticket-monster
+$ docker build -t <your-alias>/jboss-eap-postgres-ticket-monster:1.0 -f ticket-monster/Dockerfile .
 ----
 +
 Finally, of course, we need to run it:
 +
 ----
-docker run -i -p 8081:8080 -p 9990:9990 -p 9999:9999 --link ticket-monster-db:postgres <your-alias>/jboss-eap-postgres-ticket-monster:1.0
+$ docker run -i -p 9080:8080 -p 9990:9990 -p 9999:9999 --link ticket-monster-db:postgres <your-alias>/jboss-eap-postgres-ticket-monster:1.0
 ----
 +
-Visit <http://localhost:8081/ticket-monster in your web browser and use the application to verify it deployed correctly.
+Visit <http://localhost:9080/ticket-monster in your web browser and use the application to verify it deployed correctly.
+
+=== Clean up and prepare for next exercise
+Before we move on to the next exercise the participant should stop any running containers and remove any stopped containers:
+
+[source,bash]
+----
+$ docker rm -f $(docker ps -aq)
+---
 
 === Summary
-After the third exercise participant should start to feel comfortable with layering containers, linking containers, and understanding when, how and why you package your application in the container.
+After the third exercise the participant should start to feel comfortable with layering containers, linking containers, and understanding when, how and why you package your application in the container.
 

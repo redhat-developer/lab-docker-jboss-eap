@@ -1,11 +1,4 @@
-FROM rhel7.1
-
-USER root
-
-# Install Java JDK and Maven
-
-RUN yum --enablerepo=rhel-server-rhscl-7-rpms -y install java-1.7.0-openjdk-devel maven30 git; yum clean all;
-ENV JAVA_HOME /usr/lib/jvm/jre
+FROM lab-base
 
 # Clone TicketMonster from our git repo
 RUN git clone http://classroom.example.com:5002/ticket-monster.git
@@ -15,12 +8,12 @@ WORKDIR ticket-monster
 RUN mkdir -p ~/.m2
 RUN cp settings.xml ~/.m2/settings.xml
 
-# Use Maven from Red Hat Software Collections
-RUN source /opt/rh/maven30/enable
-
 # Run the build
-RUN mvn clean package -Ppostgresql 
+RUN /opt/rh/maven30/root/bin/mvn clean package -Ppostgresql 
+
+# Mount the target directory where we'll place the prebuild binary.
+VOLUME /target
 
 # Deploy the application to a container when the docker container is run
-CMD ["mvn", "jboss-as:deploy"]
+CMD ["cp", "target/ticket-monster.war", "/target"]
 

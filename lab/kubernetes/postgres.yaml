@@ -1,27 +1,25 @@
-apiVersion: v1beta1
+apiVersion: v1beta3
 id: postgres-rc
 kind: ReplicationController
-labels: 
+metadata:
   name: postgres
-  context: docker-jboss-eap-lab
-desiredState: 
+spec: 
   replicas: 1
-  replicaSelector: 
+  selector: 
     name: postgres
-  podTemplate: 
-    labels: 
+  template: 
+    metadata:
       name: postgres
-      context: docker-jboss-eap-lab
-    desiredState: 
-      manifest: 
-        id: postgres-rc
-        version: v1beta1
-        containers: 
-          - name: postgres
-            image: postgres:9.4
-            env: 
-              - name: POSTGRES_PASSWORD
-                value: UsW4fznqLmGRh6
-            ports: 
-              - containerPort: 5432
-                hostPort: 5432
+      labels: 
+        name: postgres
+        context: docker-jboss-eap-lab
+    spec: 
+      containers: 
+        - name: postgres
+          image: postgres:9.4
+          env: 
+            - name: POSTGRES_PASSWORD
+              value: UsW4fznqLmGRh6
+          ports: 
+            - containerPort: 5432
+              hostPort: 5432

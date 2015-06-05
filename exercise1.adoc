@@ -11,7 +11,7 @@ Participants will also learn how to use the Docker CLI to manage containers in a
 ====
 You can clone the sources by running:
 ----
-git clone http://classroom.example.com:5002/docker-jboss-eap.git ~/docker-jboss-eap
+$ git clone http://classroom.example.com:5002/docker-jboss-eap.git ~/docker-jboss-eap
 ----
 All of the files you are asked to create in this tutorial are then located in ~/docker-jboss-eap/lab 
 ====
@@ -51,9 +51,9 @@ Congratulations! you have succesfully started a container using Red Hat Enterpri
 +
 [source,numbered]
 ----
-[root@d67ea0f4a238 /]# uname -a
+$ uname -a
 Linux d67ea0f4a238 3.10.0-229.el7.x86_64 #1 SMP Thu Jan 29 18:37:38 EST 2015 x86_64 x86_64 x86_64 GNU/Linux
-[root@d67ea0f4a238 /]# cat /etc/redhat-release
+$ cat /etc/redhat-release
 Red Hat Enterprise Linux Server release 7.1 (Maipo)
 ----
 +
@@ -249,7 +249,7 @@ Start the container like this:
 +
 [source]
 ----
-docker run -it -p 9990:9990 --env-file=jboss-dev.env <your-alias>/jboss-eap:1.0
+$ docker run -it -p 9990:9990 --env-file=jboss-dev.env <your-alias>/jboss-eap:1.0
 ----
 +
 Investigate the terminal output and compare the values of -Xms and -Xmx.

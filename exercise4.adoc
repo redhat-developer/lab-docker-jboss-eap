@@ -14,9 +14,9 @@ Participants will also learn how to control how many replicas are created, and K
 [NOTE]
 ====
 To clean up all the running container run the following command:
-[source,bash]
+[source]
 ----
-docker stop $(docker ps -q) && docker rm $(docker ps -aq)
+$ docker docker rm -f $(docker ps -aq)
 ----
 ====
 
@@ -75,36 +75,37 @@ The following steps show how to launch and test the pod:
 . Create a Web server pod file. Create a `jboss-eap.yaml` file that you will use to deploy the application server pod. Here is what it should contain:
 +
 ----
-apiVersion: v1beta1
+apiVersion: v1beta3
 id: jboss-eap-server-rc
 kind: ReplicationController
-labels: 
+metadata:
   name: jboss-eap-server
-  context: docker-jboss-eap-lab
-desiredState: 
+spec: 
   replicas: 1
-  replicaSelector: 
+  selector: 
     name: jboss-eap-server
-  podTemplate: 
-    labels: 
+  template:
+    metadata:
       name: jboss-eap-server
-      context: docker-jboss-eap-lab
-    desiredState: 
-      manifest: 
-        id: jboss-eap-server-rc
-        version: v1beta1
-        containers: 
-          - name: jboss-eap-server
-            image: pmuir/jboss-eap-postgres-ticket-monster:1.0
-            ports: 
-              - containerPort: 9990
-              - containerPort: 8080
-              - containerPort: 9999
+      labels: 
+        name: jboss-eap-server
+        context: docker-jboss-eap-lab
+    spec:
+      containers: 
+        - name: jboss-eap-server
+          image: pmuir/jboss-eap-postgres-ticket-monster:1.0
+          ports: 
+            - containerPort: 9990
+              hostPort: 9900
+            - containerPort: 8080
+              hostPort: 9080
+            - containerPort: 9999
+              hostPort: 9999
 ----
 +
 . Orchestrate the container with kubectl. With the yaml file in the current directory, run the following command to start the pod to begin running the container:
 +
-[source,bash,numbered]
+[source,numbered]
 ----
 $ kubectl create -f jboss-eap.yaml
 jboss-eap
@@ -112,7 +113,7 @@ jboss-eap
 +
 . Check the container. If the container is running you should be able to see the pods with the kubectl command:
 +
-[source,bash,numbered]
+[source,numbered]
 ----
 $ kubectl get pods
 ----
@@ -127,55 +128,49 @@ Run the following commands to see the state of your Kubernetes services, pods an
 +
 . Check out Kubernetes: Run the following commands to list information about the minion, replication controllers and running pods:
 +
-[source,bash,numbered]
+[source,numbered]
 ----
 $ kubectl get minions
-NAME                LABELS              STATUS
-127.0.0.1           <none>              Ready
+$ kubectl get minions
+NAME        LABELS        STATUS
+127.0.0.1   Schedulable   <none>    Ready
 ----
 +
-[source,bash,numbered]
+[source,numbered]
 ----
 $ kubectl get pods
-POD      IP          CONTAINER(S)    IMAGE(S)  HOST        LABELS                                         STATUS
-02f2...  172.17.0.2  apache-frontend webwithdb 127.0.0.1/  name=webserver,selectorname=webserver,uses=db  Running
-9c34...  172.17.0.3  db              dbforweb  127.0.0.1/  name=db,selectorname=db                        Running
+POD                      IP            CONTAINER(S)       IMAGE(S)                                      HOST                  LABELS                                               STATUS    CREATED
+jboss-eap-server-3wevn   172.17.0.16   jboss-eap-server   pmuir/jboss-eap-postgres-ticket-monster:1.0   127.0.0.1/127.0.0.1   context=docker-jboss-eap-lab,name=jboss-eap-server   Running   About a minute
+----
++
+[source,numbered]
+----
+$ kubectl get rc
+CONTROLLER         CONTAINER(S)       IMAGE(S)                                      SELECTOR                REPLICAS
+jboss-eap-server   jboss-eap-server   pmuir/jboss-eap-postgres-ticket-monster:1.0   name=jboss-eap-server   1
 ----
 +
 [source,bash,numbered]
 ----
-$ kubectl get replicationControllers
-CONTROLLER             CONTAINER(S)     IMAGE(S)  SELECTOR               REPLICAS
-webserver-controller   apache-frontend  webwithdb selectorname=webserver 1
-db-controller          db               dbforweb  selectorname=db        1
-----
-+
-[source,bash,numbered]
-----
-$ kubectl get services
-NAME            LABELS                                   SELECTOR    IP               PORT       
-kubernetes-ro   component=apiserver,provider=kubernetes  <none>      10.254.47.161    80
-kubernetes      component=apiserver,provider=kubernetes  <none>      10.254.153.242   443
+$ kubectl get service 
+NAME            LABELS                                    SELECTOR   IP           PORT(S)
+kubernetes      component=apiserver,provider=kubernetes   <none>     10.254.0.2   443/TCP
+kubernetes-ro   component=apiserver,provider=kubernetes   <none>     10.254.0.1   80/TCP
 ----
 +
 . Check the container logs: Run the following command (replacing the last argument with the pod ID of your pods).
 +
 ----
-$ kubectl log  
-2015-01-28T18:22:33.140266438Z 150128 13:22:33 mysqld_safe Logging to
-   '/var/log/mariadb/mariadb.log'.
-2015-01-28T18:22:33.397684509Z 150128 13:22:33 mysqld_safe 
-   Starting mysqld daemon with databases from /var/lib/mysql
-$ kubectl log 02f2115b-a71a-11e4-9fb3-525400374aa7
-2015-01-28T18:18:20.410816032Z AH00558: httpd: Could not reliably determine
-the server's fully qualified domain name, using 172.17.0.2. Set the
-'ServerName' directive globally to suppress this message
+$ kubectl log <container-name>
+...
 ----
++
+TIP: There is good command line completion for Kubernetes, including completing container ids, so try doing `kubectl log <TAB>`...
 +
 Restart the pod:
 +
 ----
-kubectl delete pods,rc -l name=jboss-eap-server && kubectl create -f jboss-eap.yaml
+$ kubectl delete pods,rc -l name=jboss-eap-server && kubectl create -f jboss-eap.yaml
 ----
 
 Step 3 - Create pods for Postgres ::
@@ -185,48 +180,47 @@ Now that we've got the hang of using Kubernetes, lets go ahead and create a pod 
 Create the Postgres pod. The docker community has created a Postgres docker image, so we can just reuse that. Create a `postgres.yaml` file that you will use to deploy the application server pod. Here is what it should contain:
 +
 ----
-apiVersion: v1beta1
+apiVersion: v1beta3
 id: postgres-rc
 kind: ReplicationController
-labels: 
+metadata:
   name: postgres
-  context: docker-jboss-eap-lab
-desiredState: 
+spec: 
   replicas: 1
-  replicaSelector: 
+  selector: 
     name: postgres
-  podTemplate: 
-    labels: 
+  template: 
+    metadata:
       name: postgres
-      context: docker-jboss-eap-lab
-    desiredState: 
-      manifest: 
-        id: postgres-rc
-        version: v1beta1
-        containers: 
-          - name: postgres
-            image: postgres:9.4
-            env: 
-              - name: POSTGRES_PASSWORD
-                value: UsW4fznqLmGRh6
-            ports: 
-              - containerPort: 5432
-                hostPort: 5432
+      labels: 
+        name: postgres
+        context: docker-jboss-eap-lab
+    spec: 
+      containers: 
+        - name: postgres
+          image: postgres:9.4
+          env: 
+            - name: POSTGRES_PASSWORD
+              value: UsW4fznqLmGRh6
+          ports: 
+            - containerPort: 5432
+              hostPort: 5432
 ----
 +
 Create the Postgres service. Create a postgres-service.yaml file that you will use to deploy the database pod. Here is what it should contain:
 +
 ----
-apiVersion: v1beta1
-id: postgres
+apiVersion: v1beta3
 kind: Service
-containerPort: 5432
-labels: 
+metadata:
   name: postgres
-  context: docker-jboss-eap-lab
-port: 5432
-selector: 
-  name: postgres
+spec:
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
+  selector: 
+    name: postgres
 ----
 +
 . Create the replication controller and the service with kubectl:
@@ -241,18 +235,18 @@ Check that the postgres pod and service have come up using `kubectl get pods` an
 +
 Restart the JBoss EAP pod to have it connect to postgres:
 ----
-kubectl delete pods,rc -l name=jboss-eap-server && kubectl create -f jboss-eap.yaml
+$ kubectl delete pods,rc -l name=jboss-eap-server && kubectl create -f jboss-eap.yaml
 ----
 +
 As the database is now up the application should be working, check by visiting <http://localhost:8081/ticket-monster>.
 
 Step 4 - Add some replicas and try killing them::
 
-Edit the `jboss-eap.yaml` file and change the line `replicas: 1` to `replicas: 4`, and remove all the `hostPort` lines - if we try to bind 4 container ports to 8081 we'll get port conflcits! Don't worry, we'll replace that with a service that will automatically deliver your traffic to a replica!
+Edit the `jboss-eap.yaml` file and change the line `replicas: 1` to `replicas: 4`, and remove all the `hostPort` lines - if we try to bind 4 container ports to 9080 we'll get port conflcits!
 +
 Restart the JBoss EAP pod:
 ----
-kubectl delete pods,rc -l name=jboss-eap-server && kubectl create -f jboss-eap.yaml
+$  kubectl delete pods,rc -l name=jboss-eap-server && kubectl create -f jboss-eap.yaml
 ----
 +
 Run `kubectl get pods` and `docker ps` to see 4 JBoss EAP containers created.

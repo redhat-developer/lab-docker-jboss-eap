@@ -1,10 +1,11 @@
-apiVersion: v1beta1
-id: postgres
+apiVersion: v1beta3
 kind: Service
-containerPort: 5432
-labels: 
+metadata:
   name: postgres
-  context: docker-jboss-eap-lab
-port: 5432
-selector: 
-  name: postgres
+spec:
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
+  selector: 
+    name: postgres
