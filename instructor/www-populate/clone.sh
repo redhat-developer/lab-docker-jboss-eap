@@ -2,7 +2,7 @@
 
 HTDOCS=/mnt/store/htdocs
 REPO=$HTDOCS/ticket-monster.git
-UPSTREAM=http://github.com/tqvarnst/docker-summit-lab-app.git
+UPSTREAM=http://github.com/pmuir/docker-summit-lab-app.git
 
 echo "Cloning TicketMonster repo from $UPSTREAM"
 rm -rf $REPO
