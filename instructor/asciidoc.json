@@ -1,0 +1,41 @@
+{
+    "id": "asciidoc",
+    "kind": "Pod",
+    "apiVersion": "v1beta3",
+    "metadata": {
+        "name": "asciidoc"
+    },
+    "spec": {
+        "restartPolicy": "OnFailure",
+        "containers": [
+            {
+                "name": "asciidoc",
+                "image": "instructor/asciidoc",
+                "volumeMounts": [
+                    {
+                        "name": "input", 
+                        "mountPath": "/documents"
+                    },
+                    {
+                        "name": "output", 
+                        "mountPath": "/output"
+                    }
+                ]
+            }
+        ],
+        "volumes": [
+            {
+                "name": "input",
+                "hostPath": {
+                    "path": "/mnt/lab"
+                }
+            },
+            {
+                "name": "output",
+                "hostPath": {
+                    "path": "/home/vagrant/store/htdocs/lab"
+                }
+            }
+        ]
+    }
+}
