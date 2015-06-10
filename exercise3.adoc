@@ -218,7 +218,7 @@ $ docker rm -f $(docker ps -aq)
 
 Deploying your application from your host system is fine for development, but for staging and production you'll want to have a single deliverable which doesn't need anything other than a `docker run` to start. Docker makes this very easy - we just put the application in to another layer.
 
-Step 1 - Create the application layer::
+Step 6 - Create the application layer::
 
 We start by creating a new `Dockerfile` that layers on top of the `<your-alias>/jboss-eap-postgres:1.0` container we created earlier in Exercise 3. In the `ticket-monster` directory, create a `Dockerfile`:
 +
@@ -238,7 +238,7 @@ $ docker build -t <your-alias>/jboss-eap-postgres-ticket-monster:1.0 .
 
 You should see a `BUILD SUCCESS` message.
 
-Step 2 - Run the application server::
+Step 7 - Run the application server::
 
 And then run it:
 +
@@ -249,7 +249,7 @@ $ docker run -i -p 9080:8080 -p 9990:9990 -p 9999:9999 --link ticket-monster-db:
 Visit <http://localhost:9080/ticket-monster> in your web browser and use the application to verify it deployed correctly.
 
 
-Step 3 - Clean up::
+Step 8 - Clean up::
 
 Before we move on to the next exercise the participant should stop any running containers and remove any stopped containers:
 +
@@ -262,7 +262,7 @@ $ docker rm -f $(docker ps -aq)
 
 Another thing you want from your builds is reproducibility - building the application on your host system doesn't really give you that - who knows what weird things you've fiddled with and forgotten about. You can also use Docker to do builds - let's create a Docker build for TicketMonster.
 
-Step 1 - Create the application build::
+Step 9 - Create the application build::
 
 This time we'll start with the base `lab/base` image we created for you - it contains Java, Maven and Git. It looks like:
 +
@@ -312,7 +312,7 @@ $ docker build -t <your-alias>/ticket-monster-build:1.0 .
 +
 You should see a `BUILD SUCCESS` message followed by a `Succesfully built ...` message if everything went ok!
 
-Step 2 - Use the application build::
+Step 10 - Use the application build::
 
 You saw that we mounted a volume in which we'll place the built binary. Let's run the container, and mount the volume:
 +
