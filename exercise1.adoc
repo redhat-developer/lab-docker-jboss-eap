@@ -61,7 +61,7 @@ The RHEL container is purposefully kept very minimal, the idea is that each serv
 +
 IMPORTANT: Installing packages and changing configurations using the interactive console is strongly discouraged, since maintaining containers that require manual setup is much harder than maintaining containers that are automated.
 +
-Using the commands above we have started a bash shell in a container. From the prompt we can see that it is using a different hostname from your desktop. From `uname -a` and `cat /etc/redhat-release` we can see that it's a Red Hat Enterprise Linux Server release 7.1 and that is regardless of what desktop operating environment you are running. Additionally the container isolated from your host and will have separate process tree, network, storage etc. So testing application in container will not be affected by which binary you have installed on the Desktop.
+Using the commands above we have started a bash shell in a container. From the prompt we can see that it is using a different hostname from your desktop. From `uname -a` and `cat /etc/redhat-release` we can see that it's a Red Hat Enterprise Linux Server release 7.1 and that is regardless of what desktop operating environment you are running. Additionally the container is isolated from your host and will have separate process tree, network, storage etc. So testing application in container will not be affected by which binary you have installed on the Desktop.
 +
 Stop the container by either pressing CTRL-D or by typing exit in the container prompt.
 +
