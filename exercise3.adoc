@@ -242,7 +242,7 @@ Another thing you want from your builds is reproducibility - building the applic
 
 Step 1 - Create the application build::
 
-This time we'll start with the base `lab/base` image we created for you - it container Java, Maven and Git. It looks like:
+This time we'll start with the base `lab/base` image we created for you - it contains Java, Maven and Git. It looks like:
 +
 ----
 FROM rhel7.1
