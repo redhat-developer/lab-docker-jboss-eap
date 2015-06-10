@@ -46,11 +46,11 @@ If everything built correctly, you should see something like:
 ----
 
 Step 3 - Start the customized JBoss EAP container::
-This step requires that the custom JBoss EAP container was built as part of exercise 1 and it also requires that you copy jboss-dev.env.
+This step requires that the custom JBoss EAP container was built as part of exercise 1. It also requires that you copy jboss-dev.env that you created in exercise1 or download one that we provide via the `curl` command below.
 +
 [source]
 ----
-$ cp ~/docker-jboss-eap/lab/jboss-dev.env .
+$ curl -L http://classroom.example.com:5002/docker-jboss-eap/lab/jboss-dev.env > jboss-dev.env
 $ docker run -it -p 9080:8080 -p 9990:9990 -p 9999:9999 --env-file=jboss-dev.env <your-alias>/jboss-eap:1.0
 ----
 
