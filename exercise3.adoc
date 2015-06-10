@@ -221,7 +221,7 @@ As you can see, all we've done is copy in the built `ticket-monster.war` to the 
 Now, build the `Dockerfile`:
 +
 ----
-$ docker build -t <your-alias>/jboss-eap-postgres-ticket-monster:1.0 -f ticket-monster/Dockerfile .
+$ docker build -t <your-alias>/jboss-eap-postgres-ticket-monster:1.0 .
 ----
 
 You should see a `BUILD SUCCESS` message.
