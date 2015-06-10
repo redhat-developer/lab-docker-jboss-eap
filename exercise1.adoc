@@ -92,7 +92,7 @@ The browser should now show the JBoss EAP Welcome Page when.
 image::images/jboss-eap-welcome.png["JBoss EAP Welcome Page"]
 
 Step 3 - List, stop and delete containers::
-When starting containers in daemon mode they are running in the background until the main process of the container stops or until someone manually stops its. Let's stop the JBoss EAP container that we started in Step2.
+When starting containers in daemon mode they are running in the background until the main process of the container stops or until someone manually stops it. Let's stop the JBoss EAP container that we started in Step2.
 +
 [source,numbered]
 ----
