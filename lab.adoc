@@ -40,6 +40,12 @@ include::exercise3.adoc[]
 include::exercise4.adoc[]
 include::summary.adoc[]
 
+== Troubleshooting
+
+=== Get a copy of the lab files
+
+If you think you might have an error in one of the files you've created, you can view sample files at link:http://classroom.example.com:5002/docker-jboss-eap/lab/[]. 
+
 // Comment out BYO for now, it's still a WIP and the CDK is not GA yet
 //[appendix]
 //include::byo.adoc[]

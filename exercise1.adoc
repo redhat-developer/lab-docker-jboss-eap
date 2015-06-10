@@ -7,15 +7,6 @@ Particpants will learn how to to start developing Red Hat Enterprise Linux based
 
 Participants will also learn how to use the Docker CLI to manage containers in a development environment.
 
-[TIP]
-====
-You can clone the sources by running:
-----
-$ git clone http://classroom.example.com:5002/docker-jboss-eap.git ~/docker-jboss-eap
-----
-All of the files you are asked to create in this tutorial are then located in ~/docker-jboss-eap/lab
-====
-
 === Get familar with Docker CLI
 In this section you will learn the basic commands of the docker CLI so that you can manage and build containers
 
