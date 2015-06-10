@@ -143,7 +143,7 @@ Wait 30 sec and then run `docker ps` again. This time no containers should be di
 TIP: To remove the all the containers and free up the storage it's using excute the following command `docker rm $(docker ps -aq)`.
 
 Step 4 - Override the command::
-A container typically has a default command, for example the `jboss-eap-6/eap:6.4` container has a default command that looks like this `/opt/eap/bin/standalone.sh -b 0.0.0.0`. To override that command to for example to enable access to the administration console one have to add the option `-bmanagement 0.0.0.0`. This could look like this.
+A container typically has a default command, for example the `jboss-eap-6/eap:6.4` container has a default command that looks like this `/opt/eap/bin/standalone.sh -b 0.0.0.0`. To override that command to, for example, enable access to the administration console, one has to add the option `-bmanagement 0.0.0.0`. This could look like this.
 +
 [source,numbered]
 ----
