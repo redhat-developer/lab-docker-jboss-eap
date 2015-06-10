@@ -150,7 +150,7 @@ A container typically has a default command, for example the `jboss-eap-6/eap:6.
 $ docker run -d -p 9990:9990 jboss-eap-6/eap:6.4 /opt/eap/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0
 ----
 +
-Now open a browser to <http://localhost:9990>; as we which haven't added a admin user yet it should give you the following error page:
+Now open a browser to link:http://localhost:9990[]; as we which haven't added a admin user yet it should give you the following error page:
 +
 image::images/jboss-eap-error.png["JBoss EAP Error Page"]
 
