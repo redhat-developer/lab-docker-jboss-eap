@@ -95,7 +95,7 @@ By combining Docker with Arquillian one can run the integration in a platform th
 
 
 
-Step 1 - Run the Arquillian tests in a container::
+Step 6 - Run the Arquillian tests in a container::
 +
 Arquillian integrates with JBoss EAP by deploying the application and the Arquillian test harness. When using a remote JBoss EAP one must provide ip address (default 127.0.0.1), administration port (default 9999), username and password. These values are all configured in  `src/test/resources/arquillian.xml`. After deploying the application Arquillian uses a `Servlet` to communicate with the server and order it to run the test and send the report back to the client. For this we also need to configure which ip adress (default 127.0.0.1) and web port (default 8080) is used. The container we started uses port `9080`.
 +
@@ -132,7 +132,7 @@ Tests run: 15, Failures: 0, Errors: 0, Skipped: 1
 The `arq-jbossas-remote` profile enables Arquillian tests which are just like any old JUnit test; they run as part of the build process in maven. However these Arquillian tests are actually run inside JBoss EAP and can, for example, use CDI.
 
 
-Step 2 - Add a failing test::
+Step 7 - Add a failing test::
 To see how it may look when we get a failed test we can add a failing test on purpose. In the test test logic that we are using the number of shows is `6`. For the failing test we will assume that the expected value is `10`.
 +
 Open `src/test/java/org/jboss/examples/ticketmonster/test/rest/ShowServiceTest.java` in a text editor and add the following test method to it:
@@ -176,7 +176,7 @@ java.lang.AssertionError: expected:<10> but was:<6>
   ...
   ...
 ----
-Step 2 - Correct the test::
+Step 8 - Correct the test::
 +
 Looking at the error message we can see that expected number of shows was 10, but actual result was 6. Normally this would tell us that we have have a bug in our code. But since we purposely used the wrong expected value we can safely change the expected result to 6 and run the tests again.
 +
