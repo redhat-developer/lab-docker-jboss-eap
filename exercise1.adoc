@@ -154,7 +154,7 @@ Now open a browser to <http://localhost:9990>; as we which haven't added a admin
 +
 image::images/jboss-eap-error.png["JBoss EAP Error Page"]
 
-Step 5 - Executing commands in a runing container::
+Step 5 - Executing commands in a running container::
 We can execute commands directly to a running container using the `docker exec` command. To for example add a user one can run the following command:
 +
 [source,numbered]
