@@ -129,7 +129,7 @@ Results :
 Tests run: 15, Failures: 0, Errors: 0, Skipped: 1
 ----
 +
-The `arq-jbossas-remote` profile enables Arquillian tests which are just like any old JUnit test; the run as part of the build process in maven. However these Arquillian tests are actually run inside JBoss EAP and can, for example, use CDI.
+The `arq-jbossas-remote` profile enables Arquillian tests which are just like any old JUnit test; they run as part of the build process in maven. However these Arquillian tests are actually run inside JBoss EAP and can, for example, use CDI.
 
 
 Step 2 - Add a failing test::
