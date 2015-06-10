@@ -13,7 +13,7 @@ You can clone the sources by running:
 ----
 $ git clone http://classroom.example.com:5002/docker-jboss-eap.git ~/docker-jboss-eap
 ----
-All of the files you are asked to create in this tutorial are then located in ~/docker-jboss-eap/lab 
+All of the files you are asked to create in this tutorial are then located in ~/docker-jboss-eap/lab
 ====
 
 === Get familar with Docker CLI
@@ -180,7 +180,7 @@ All the commands in the previous steps are useful to know and great for developm
 +
 ::
 +
-Customization is done in a text file called a "Dockerfile". It contains a set of instructions on how to build an image. 
+Customization is done in a text file called a "Dockerfile". It contains a set of instructions on how to build an image.
 Create a new directory `lab` and change in to it:
 +
 ----
@@ -236,23 +236,23 @@ Stop the container using `CTRL-C`
 
 Step 7 - Environment variables::
 +
-Building images that are customized is great, but sometimes you also need to provide information to the container when you run it. For example the container that Red Hat provides for JBoss EAP uses 1.3 GB of memory. This might be a bit much in a development environment and to low in a production environment. We can alter this by passing environment variables to the container that override the defaults.
+Building images that are customized is great, but sometimes you also need to provide information to the container when you run it. For example: if you review the output on the console from Step 6, we can see that the container that Red Hat provides for JBoss EAP uses 1.3 GB of memory (look for -Xmx and -Xmx). This might be a bit high for a development environment and to low for a production environment. We can alter this by passing environment variables to the container that override the defaults. In this step we will override the DEFAULT jvm setting, but optimizing it for low memory and quick startup.
 +
-Create a file called `jboss-dev.env`:
+First create a file called `jboss-dev.env` and add the following lines to it:
 +
 ----
 JAVA_OPTS=-client -XX:+TieredCompilation -XX:TieredStopAtLevel=1 -Xverify:none -Xms64m -Xmx256m -Dorg.apache.tomcat.util.LOW_MEMORY=true -XX:+UseCompressedOops -XX:+AggressiveOpts -XX:+DisableExplicitGC -Djava.net.preferIPv4Stack=true
 PRESERVE_JAVA_OPTS=true
 ----
 +
-Start the container like this:
+Next start the container and provide the environment file:
 +
 [source]
 ----
 $ docker run -it -p 9990:9990 --env-file=jboss-dev.env <your-alias>/jboss-eap:1.0
 ----
 +
-Investigate the terminal output and compare the values of -Xms and -Xmx.
+Investigate the terminal output and compare the values of -Xms and -Xmx compared with the out put.
 +
 Stop the container using `CTRL-C`
 
@@ -267,4 +267,3 @@ $ docker rm -f $(docker ps -aq)
 === Summary
 
 After this exercise the participant should feel comfortalbe with starting, stoping and manage containers. The participant should be able to access a running container to check it's state, also should have basic understanding of networking (mapping ports etc). Further more the participant should gained an elementary knowledge on how to create custom images.
-
