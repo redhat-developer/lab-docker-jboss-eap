@@ -169,7 +169,7 @@ TIP: Use the following command to get shell access to a running contianer `docke
 Stop the JBoss EAP container using `docker stop <container-id>`.
 
 Step 6 - Customize a container::
-All the commands in the previous steps are useful to know and great for development etc, but in a production environment you will most likely have a orchestration layer to manage start, stop, etc of containers. The build model of Docker allows us to extend existing containers and build our own customized versions. The benefits of build customized containers are:
+All the commands in the previous steps are useful to know and great for development etc, but in a production environment you will most likely have a orchestration layer to manage start, stop, etc of containers. The build model of Docker allows us to extend existing containers and build our own customized versions. The benefits of building customized containers are:
 +
 * Standardization of:
 ** Tools
