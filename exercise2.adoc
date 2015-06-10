@@ -180,7 +180,7 @@ Step 2 - Correct the test::
 +
 Looking at the error message we can see that expected number of shows was 10, but actual result was 6. Normally this would tell us that we have have a bug in our code. But since we purposely used the wrong expected value we can safely change the expected result to 6 and run the tests again.
 +
-Open `src/test/java/org/jboss/examples/ticketmonster/test/rest/ShowServiceand change expected result to 6, like this:
+Open `src/test/java/org/jboss/examples/ticketmonster/test/rest/ShowServiceTest.java` and change expected result to 6, like this:
 +
 [source,java]
 ----
