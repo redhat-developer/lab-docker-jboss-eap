@@ -53,6 +53,8 @@ This step requires that the custom JBoss EAP container was built as part of exer
 $ curl -L http://classroom.example.com:5002/docker-jboss-eap/lab/jboss-dev.env > jboss-dev.env
 $ docker run -it -p 9080:8080 -p 9990:9990 -p 9999:9999 --env-file=jboss-dev.env <your-alias>/jboss-eap:1.0
 ----
++
+As you started the JBoss EAP container in interactive mode, you'll need to create a new terminal window to run the next steps.
 
 Step 4 - Verify access to the admin console::
 Open a browser and go to http://localhost:9990 and login with username: `admin` and password: `admin-123`.
