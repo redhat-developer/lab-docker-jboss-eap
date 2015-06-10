@@ -204,6 +204,16 @@ a U.S. National Historic Landmark in 1999. | Boston Symphony Hall |           24
 (5 rows)
 ----
 
+
+Step 5 - Clean up::
+
+Before we move on to the next exercise the participant should stop any running containers and remove any stopped containers:
++
+[source,bash]
+----
+$ docker rm -f $(docker ps -aq)
+----
+
 === Bundling the application in a container
 
 Deploying your application from your host system is fine for development, but for staging and production you'll want to have a single deliverable which doesn't need anything other than a `docker run` to start. Docker makes this very easy - we just put the application in to another layer.
@@ -237,6 +247,16 @@ $ docker run -i -p 9080:8080 -p 9990:9990 -p 9999:9999 --link ticket-monster-db:
 ----
 +
 Visit <http://localhost:9080/ticket-monster> in your web browser and use the application to verify it deployed correctly.
+
+
+Step 3 - Clean up::
+
+Before we move on to the next exercise the participant should stop any running containers and remove any stopped containers:
++
+[source,bash]
+----
+$ docker rm -f $(docker ps -aq)
+----
 
 === Building the application in a container
 
