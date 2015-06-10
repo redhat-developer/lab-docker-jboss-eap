@@ -79,7 +79,7 @@ Verify that the application is deployed and working by opening a browser to <htt
 +
 image::images/jboss-eap-welcome.png["JBoss EAP Welcome Page"]
 
-As we have just seen running a containerized applications is very similar to running the application directly on the host!
+As we have just seen running a containerized application is very similar to running the application directly on the host!
 
 === Testing applications in container with Arquillian
 
@@ -87,11 +87,11 @@ No matter the development method your team prescribes, and no matter how rigidly
 
 Arquillian is an innovative and highly extensible testing platform for the JVM that enables developers to easily create automated integration, functional, and acceptance tests for Java middleware. Arquillian picks up where unit tests leave off, it handles all the plumbing of container management, deployment, and framework initialization, so you can focus on the business of writing test logic.
 
-Arquillian integrates seamlessly with familiar testing frameworks (e.g., JUnit 4, TestNG 5), allowing tests to be launched using existing IDE, Ant, and Maven test plug-ins—without any add-ons.
+Arquillian integrates seamlessly with familiar testing frameworks (e.g., JUnit 4, TestNG 5), allowing tests to be launched using existing IDE, Ant, and Maven test plug-ins — without any add-ons.
 
 image::images/arquillian_tutorial_junit_green_bar.png["Arquillian IDE/JUnit integration"]
 
-By combining Docker with Arquillian one can run the integration in a platform that are identical with the production platform.
+By combining Docker with Arquillian one can run the integration in a platform that is identical to the production platform.
 
 
 
