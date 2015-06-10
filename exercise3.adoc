@@ -304,12 +304,12 @@ Voila, the `ticket-monster.war` is in `target`!
 +
 NOTE: You may be wondering what the `sudo chcon` is all about - selinux is running on the host, so we need to tell it that docker container should be able to write to the host directory.
 +
-NOTE: 
-===
+[NOTE]
+====
 You will notice that Maven re-downloads all the dependencies each time you run this command. Don't worry, this is actually a good thing!
 
 When you are aiming for reprodcible builds, one of your biggest enemies is a bad local Maven repository. It's much safer to redownload from your master Maven repository each time. We would recommend running a caching repository, and mirroring all request via that. This will avoid you having to re-fetch from the internet each time.
-===
+====
 +
 Now let's reuse the container we created earlier that bundles the application. We'll use the same Dockerfile, but change the context to the current directory so that we pick up the `ticket-monster.war` we just built in the container.
 +
@@ -333,7 +333,7 @@ Before we move on to the next exercise the participant should stop any running c
 [source,bash]
 ----
 $ docker rm -f $(docker ps -aq)
----
+----
 
 === Summary
 After the third exercise the participant should start to feel comfortable with layering containers, linking containers, and understanding when, how and why you package your application in the container.

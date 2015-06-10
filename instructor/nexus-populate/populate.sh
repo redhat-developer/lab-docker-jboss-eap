@@ -15,7 +15,7 @@ rm -rf ticket-monster
 git clone $git 
 cd ticket-monster
 mkdir -p ~/.m2
-sed s/classroom\.example\.com:8081/$repo/ < settings.xml > ~/.m2/settings.xml
+sed s/classroom\.example\.com:5003/$repo/ < settings.xml > ~/.m2/settings.xml
 
 # Wait for Nexus to be available
 

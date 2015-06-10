@@ -57,17 +57,17 @@ $ cat /etc/redhat-release
 Red Hat Enterprise Linux Server release 7.1 (Maipo)
 ----
 +
-The RHEL container is purposefully kept very minimal, the idea is that each service based on a container will define and install the it's own dependencies. Tools like ps (used to list running processes) is not installed in the RHEL container, but can easily be installed using `yum`.
+The RHEL container is purposefully kept very minimal, the idea is that each service based on a container will define and install it's own dependencies. Tools like ps (used to list running processes) is not installed in the RHEL container, but can easily be installed using `yum`.
 +
 IMPORTANT: Installing packages and changing configurations using the interactive console is strongly discouraged, since maintaining containers that require manual setup is much harder than maintaining containers that are automated.
 +
-Using the commands above we have started a bash shell in a container. From the prompt we can see that it is using a different hostname from your desktop. From `uname -a` and `cat /etc/redhat-release` we can see that it's a Red Hat Enterprise Linux Server release 7.1 and that is regardless of what desktop operating environment you are running. Additionally the container isolated from your host and will have separate process tree, network, storage etc. So testing application in container will not be affected by which binary you have installed on the Desktop.
+Using the commands above we have started a bash shell in a container. From the prompt we can see that it is using a different hostname from your desktop. From `uname -a` and `cat /etc/redhat-release` we can see that it's a Red Hat Enterprise Linux Server release 7.1 and that is regardless of what desktop operating environment you are running. Additionally the container is isolated from your host and will have separate process tree, network, storage etc. So testing application in container will not be affected by which binary you have installed on the Desktop.
 +
 Stop the container by either pressing CTRL-D or by typing exit in the container prompt.
 +
  [root@d67ea0f4a238 /]# exit
 +
-TIP: The container that we stopped are not deleted. Using `docker ps -a` you can see the container and using `docker start -a <container-id>` you can start an reconnect to the container.
+TIP: The container that we stopped is not deleted. Using `docker ps -a` you can see the container and using `docker start -a <container-id>` you can start and reconnect to the container.
 
 Step 2 - Start a daemon container::
 Often it's more useful to start a container as a daemon process. For example when a container is built to provide a service, like an application server or a database.
@@ -92,7 +92,7 @@ The browser should now show the JBoss EAP Welcome Page when.
 image::images/jboss-eap-welcome.png["JBoss EAP Welcome Page"]
 
 Step 3 - List, stop and delete containers::
-When starting containers in daemon mode they are running in the background until the main process of the container stops or until someone manually stops its. Let's stop the JBoss EAP container that we started in Step2.
+When starting containers in daemon mode they are running in the background until the main process of the container stops or until someone manually stops it. Let's stop the JBoss EAP container that we started in Step2.
 +
 [source,numbered]
 ----
@@ -143,18 +143,18 @@ Wait 30 sec and then run `docker ps` again. This time no containers should be di
 TIP: To remove the all the containers and free up the storage it's using excute the following command `docker rm $(docker ps -aq)`.
 
 Step 4 - Override the command::
-A container typically has a default command, for example the `jboss-eap-6/eap:6.4` container has a default command that looks like this `/opt/eap/bin/standalone.sh -b 0.0.0.0`. To override that command to for example to enable access to the administration console one have to add the option `-bmanagement 0.0.0.0`. This could look like this.
+A container typically has a default command, for example the `jboss-eap-6/eap:6.4` container has a default command that looks like this `/opt/eap/bin/standalone.sh -b 0.0.0.0`. To override that command to, for example, enable access to the administration console, one has to add the option `-bmanagement 0.0.0.0`. This could look like this.
 +
 [source,numbered]
 ----
 $ docker run -d -p 9990:9990 jboss-eap-6/eap:6.4 /opt/eap/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0
 ----
 +
-Now open a browser to <http://localhost:9990>; as we which haven't added a admin user yet it should give you the following error page:
+Now open a browser to link:http://localhost:9990[]; as we which haven't added a admin user yet it should give you the following error page:
 +
 image::images/jboss-eap-error.png["JBoss EAP Error Page"]
 
-Step 5 - Executing commands in a runing container::
+Step 5 - Executing commands in a running container::
 We can execute commands directly to a running container using the `docker exec` command. To for example add a user one can run the following command:
 +
 [source,numbered]
@@ -169,7 +169,7 @@ TIP: Use the following command to get shell access to a running contianer `docke
 Stop the JBoss EAP container using `docker stop <container-id>`.
 
 Step 6 - Customize a container::
-All the commands in the previous steps are useful to know and great for development etc, but in a production environment you will most likely have a orchestration layer to manage start, stop, etc of containers. The build model of Docker allows us to extend existing containers and build our own customized versions. The benefits of build customized containers are:
+All the commands in the previous steps are useful to know and great for development etc, but in a production environment you will most likely have a orchestration layer to manage start, stop, etc of containers. The build model of Docker allows us to extend existing containers and build our own customized versions. The benefits of building customized containers are:
 +
 * Standardization of:
 ** Tools
@@ -223,7 +223,7 @@ classroom.example.com:5000/jboss-eap-6/eap   6.4                 7a89f0810450   
 classroom.example.com:5000/rhel7.1           latest              10acc31def5d        3 months ago        154.1 MB
 ----
 +
-Now we have build our customized version of JBoss EAP container we can more easily start a JBoss EAP container that has our desired configuration.
+Now we have built our customized version of JBoss EAP container we can more easily start a JBoss EAP container that has our desired configuration.
 +
 [source]
 ----
@@ -236,7 +236,7 @@ Stop the container using `CTRL-C`
 
 Step 7 - Environment variables::
 +
-Building images that are customized is great, but sometimes you also need to provide information to the container when you run it. For example: if you review the output on the console from Step 6, we can see that the container that Red Hat provides for JBoss EAP uses 1.3 GB of memory (look for -Xmx and -Xmx). This might be a bit high for a development environment and to low for a production environment. We can alter this by passing environment variables to the container that override the defaults. In this step we will override the DEFAULT jvm setting, but optimizing it for low memory and quick startup.
+Building images that are customized is great, but sometimes you also need to provide information to the container when you run it. For example: if you review the output from the console at Step 6, we can see that the container that Red Hat provides for JBoss EAP uses 1.3 GB of memory (look for -Xmx and -Xmx). This might be a bit high for a development environment and to low for a production environment. We can alter this by passing environment variables to the container that override the defaults. In this step we will override the DEFAULT jvm setting, with a value that is optimized for low memory and quick startup.
 +
 First create a file called `jboss-dev.env` and add the following lines to it:
 +
@@ -266,4 +266,4 @@ $ docker rm -f $(docker ps -aq)
 
 === Summary
 
-After this exercise the participant should feel comfortalbe with starting, stoping and manage containers. The participant should be able to access a running container to check it's state, also should have basic understanding of networking (mapping ports etc). Further more the participant should gained an elementary knowledge on how to create custom images.
+After this exercise the participant should feel comfortable with starting, stopping and managing containers. The participant should be able to access a running container to check it's state, also should have a basic understanding of networking (mapping ports etc). Further more the participant should have gained an elementary knowledge on how to create custom images.
