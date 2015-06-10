@@ -3,7 +3,7 @@
 NOTE: This is a beginner exercise.
 
 === What you will learn
-Particpants will learn how to use combine Java EE Development with maven and nexus together with Docker containers. Participants will also learn how to use the Arquillian for testing in running containers.
+Particpants will learn how to combine Java EE Development with maven and nexus together with Docker containers. Participants will also learn how to use Arquillian for testing in running containers.
 
 === Prerequisites
 
