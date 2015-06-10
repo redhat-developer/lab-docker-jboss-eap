@@ -236,7 +236,7 @@ Stop the container using `CTRL-C`
 
 Step 7 - Environment variables::
 +
-Building images that are customized is great, but sometimes you also need to provide information to the container when you run it. For example the container that Red Hat provides for JBoss EAP uses 1.3 GB of memory. This might be a bit much in a development environment and to low in a production environment. We can alter this by passing environment variables to the container that override the defaults.
+Building images that are customized is great, but sometimes you also need to provide information to the container when you run it. For example the container that Red Hat provides for JBoss EAP uses 1.3 GB of memory. This might be a bit much in a development environment and too low in a production environment. We can alter this by passing environment variables to the container that override the defaults.
 +
 Create a file called `jboss-dev.env`:
 +
