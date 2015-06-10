@@ -117,7 +117,7 @@ Leave this terminal running, and use another for the next steps - we'll want to 
 
 Step 3 - Modify the application server to use Postgres::
 
-We'll reuse the `Dockerfile` you created for Ticket Monster in Exercise 2, and modify it to support PostgreSQL. We have provided a bash script that will modify JBoss EAP on start to add the PostgreSQL driver and datasource. The script waits for EAP to start, runs some JBoss EAP CLI commands, and the restarts the server.
+We'll reuse the `Dockerfile` you created for Ticket Monster in Exercise 2, and modify it to support PostgreSQL. We have provided a bash script that will modify JBoss EAP on start to add the PostgreSQL driver and datasource. The script waits for EAP to start, runs some JBoss EAP CLI commands, and then restarts the server.
 +
 Now's a great time to introduce you to another of the core concepts in Docker - layering. A Docker image is made up of multiple layers where each layer provides some functionality, and a higher layer can add functionality on top of it. For example, Docker mounts the root filesystem as read-only layer and then adds a read-write layer on top of it. All these layers are combined together using Union Mount to provide application operating environment.
 +
