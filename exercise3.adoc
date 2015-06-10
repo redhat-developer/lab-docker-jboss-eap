@@ -33,7 +33,7 @@ docker run --name ticket-monster-db -e POSTGRES_PASSWORD=UsW4fznqLmGRh6 -d postg
 +
 The PostgreSQL Docker container comes with a couple of handy shortcuts. We can specify the password on the `docker run` command, and the container will then automatically create a database called `postgres`, using the `postgres` user, and the specified password.
 +
-If you've been paying attention, you'll notice that in addition to the usual port mappings, environment variables and container tag, we've specified a container name `ticket-monster-db`. We'll use this in just a minute to *link* the application server to the database server. We'll also use it just a minute when we verify the PostgreSQL server is working. 
+If you've been paying attention, you'll notice that in addition to the usual port mappings, environment variables and container tag, we've specified a container name `ticket-monster-db`. We'll use this in just a minute to *link* the application server to the database server. We'll also use it in a minute when we verify the PostgreSQL server is working. 
 +
 You may also be wondering why we don't just put the database server in the same container as the application server. Whilst you might be tempted to do this with a VM, containers are so lightweight there really is no need. The benefits of the isolation you get from using multiple containers vastly outweighs any complexity incurred.
 
