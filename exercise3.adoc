@@ -162,6 +162,8 @@ First, bring up JBoss EAP. Add a `--link` option to allow the PostgreSQL contain
 ----
 docker run -i -p 9080:8080 -p 9990:9990 -p 9999:9999 --link ticket-monster-db:postgres <your-alias>/jboss-eap-postgres:1.0
 ----
++
+As you started the JBoss EAP container in interactive mode, you'll need to create a new terminal window to run the next steps.
 
 Step 5 - Deploy TicketMonster to the application server and verify the use of PostgreSQL::
 
