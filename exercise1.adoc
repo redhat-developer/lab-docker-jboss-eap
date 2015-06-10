@@ -57,7 +57,7 @@ $ cat /etc/redhat-release
 Red Hat Enterprise Linux Server release 7.1 (Maipo)
 ----
 +
-The RHEL container is purposefully kept very minimal, the idea is that each service based on a container will define and install the it's own dependencies. Tools like ps (used to list running processes) is not installed in the RHEL container, but can easily be installed using `yum`.
+The RHEL container is purposefully kept very minimal, the idea is that each service based on a container will define and install it's own dependencies. Tools like ps (used to list running processes) is not installed in the RHEL container, but can easily be installed using `yum`.
 +
 IMPORTANT: Installing packages and changing configurations using the interactive console is strongly discouraged, since maintaining containers that require manual setup is much harder than maintaining containers that are automated.
 +
