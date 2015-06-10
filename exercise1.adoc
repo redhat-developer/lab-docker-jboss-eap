@@ -223,7 +223,7 @@ classroom.example.com:5000/jboss-eap-6/eap   6.4                 7a89f0810450   
 classroom.example.com:5000/rhel7.1           latest              10acc31def5d        3 months ago        154.1 MB
 ----
 +
-Now we have build our customized version of JBoss EAP container we can more easily start a JBoss EAP container that has our desired configuration.
+Now we have built our customized version of JBoss EAP container we can more easily start a JBoss EAP container that has our desired configuration.
 +
 [source]
 ----
