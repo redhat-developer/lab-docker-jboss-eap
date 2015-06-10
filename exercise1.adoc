@@ -67,7 +67,7 @@ Stop the container by either pressing CTRL-D or by typing exit in the container 
 +
  [root@d67ea0f4a238 /]# exit
 +
-TIP: The container that we stopped are not deleted. Using `docker ps -a` you can see the container and using `docker start -a <container-id>` you can start an reconnect to the container.
+TIP: The container that we stopped is not deleted. Using `docker ps -a` you can see the container and using `docker start -a <container-id>` you can start and reconnect to the container.
 
 Step 2 - Start a daemon container::
 Often it's more useful to start a container as a daemon process. For example when a container is built to provide a service, like an application server or a database.
