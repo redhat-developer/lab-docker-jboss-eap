@@ -22,7 +22,7 @@ In this section you will learn the basic commands of the docker CLI so that you 
 Step 1 - Start an interactive container::
 The command for starting a container is `docker run` and it has a couple of important options. below are the most important options:
 +
--i or --interactive=true::: Will start the container with an interactive terminal so that we can open even if we disconnect
+-i or --interactive=true::: Will start the container with an interactive terminal that remains connected to the container 
 -t::: Tells the run cammnd to allocate a pseudo TTY session
 -d or --detach=true::: Detached mode: run the container in the background and print the new container ID. This option can not be combined with `-i` or `-t`.
 -P or --publish-all=true::: Publish all exposed ports to random ports on the host interfaces
