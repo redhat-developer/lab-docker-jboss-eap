@@ -205,7 +205,7 @@ a U.S. National Historic Landmark in 1999. | Boston Symphony Hall |           24
 ----
 
 
-Step 5 - Clean up::
+Step 6 - Clean up::
 
 Before we move on to the next exercise the participant should stop any running containers and remove any stopped containers:
 +
