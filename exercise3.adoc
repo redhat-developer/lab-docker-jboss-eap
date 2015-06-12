@@ -349,7 +349,7 @@ Finally, of course, we need to run it:
 $ docker run -i -p 9080:8080 -p 9990:9990 -p 9999:9999 --link ticket-monster-db:postgres <your-alias>/jboss-eap-postgres-ticket-monster:1.0
 ----
 +
-Visit <http://localhost:9080/ticket-monster in your web browser and use the application to verify it deployed correctly.
+Visit http://localhost:9080/ticket-monster in your web browser and use the application to verify it deployed correctly.
 
 === Clean up and prepare for next exercise
 Before we move on to the next exercise the participant should stop any running containers and remove any stopped containers:
