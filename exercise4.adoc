@@ -111,6 +111,18 @@ $ kubectl create -f jboss-eap.yaml
 jboss-eap
 ----
 +
+[TIP]
+====
+If you get a connection error:
+----
+Error: Get http://localhost:8080/api/v1beta1/pods?namespace=default: dial tcp 127.0.0.1:8080: connection refused
+----
+Then try restart the Kubernetes API Server:
+----
+sudo systemctl restart kube-apiserver.service
+----
+====
++
 . Check the container. If the container is running you should be able to see the pods with the kubectl command:
 +
 [source,numbered]
