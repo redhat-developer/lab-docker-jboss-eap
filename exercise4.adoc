@@ -131,7 +131,6 @@ Run the following commands to see the state of your Kubernetes services, pods an
 [source,numbered]
 ----
 $ kubectl get minions
-$ kubectl get minions
 NAME        LABELS        STATUS
 127.0.0.1   Schedulable   <none>    Ready
 ----
