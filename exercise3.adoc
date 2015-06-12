@@ -319,8 +319,10 @@ You saw that we mounted a volume in which we'll place the built binary. Let's ru
 ----
 $ mkdir -p target
 $ sudo chcon -Rt svirt_sandbox_file_t target
-$ docker run -v `pwd`/ tararget:/target <your-alias>/ticket-monster-build:1.0
+$ docker run -v `pwd`/target:/target <your-alias>/ticket-monster-build:1.0
 ----
++
+TIP: Up until now we've created containers for long-running daemons - they don't exit until you stop them. In this step we've created a container that is short-lived; it exists only to copy the war to the volume. When you run it, it will exit quickly!
 +
 Voila, the `ticket-monster.war` is in `target`!
 +
