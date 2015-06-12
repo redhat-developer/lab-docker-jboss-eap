@@ -249,7 +249,7 @@ Restart the JBoss EAP pod to have it connect to postgres:
 ----
 $ kubectl delete pods,rc -l name=jboss-eap-server && kubectl create -f jboss-eap.yaml
 ----
-+
+
 As the database is now up the application should be working, check by visiting <http://localhost:9080/ticket-monster>.
 
 Step 4 - Add some replicas and try killing them::
@@ -260,11 +260,11 @@ Restart the JBoss EAP pod:
 ----
 $  kubectl delete pods,rc -l name=jboss-eap-server && kubectl create -f jboss-eap.yaml
 ----
-+
+
 Run `kubectl get pods` and `docker ps` to see 4 JBoss EAP containers created.
-+
+
 Use the `docker stop` command you learnt about in Exercise 1 to try killing one of the Docker containers and see what Kubernetes does.
-+
+
 It's out of the scope of this lab to add a load balancer such as mod_cluster, but having done that you would then be able to use each of your replicas.
 
 === Summary
