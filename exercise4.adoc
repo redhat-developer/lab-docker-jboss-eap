@@ -93,10 +93,10 @@ spec:
     spec:
       containers: 
         - name: jboss-eap-server
-          image: pmuir/jboss-eap-postgres-ticket-monster:1.0
+          image: <your-alias> /jboss-eap-postgres-ticket-monster:1.0
           ports: 
             - containerPort: 9990
-              hostPort: 9900
+              hostPort: 9990
             - containerPort: 8080
               hostPort: 9080
             - containerPort: 9999
@@ -132,7 +132,7 @@ $ kubectl get pods
 +
 You should also be able to see the container using `docker ps`
 +
-. The database isn't up yet, so the app failed to deploy, but check that JBoss EAP is up by visiting <http://localhost:8081>.
+. The database isn't up yet, so the app failed to deploy, but check that JBoss EAP is up by visiting <http://localhost:9080>.
 
 Step 2 - Exploring Kubernetes::
 
@@ -250,7 +250,7 @@ Restart the JBoss EAP pod to have it connect to postgres:
 $ kubectl delete pods,rc -l name=jboss-eap-server && kubectl create -f jboss-eap.yaml
 ----
 +
-As the database is now up the application should be working, check by visiting <http://localhost:8081/ticket-monster>.
+As the database is now up the application should be working, check by visiting <http://localhost:9080/ticket-monster>.
 
 Step 4 - Add some replicas and try killing them::
 
