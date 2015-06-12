@@ -171,6 +171,7 @@ TicketMonster comes with built in support for PostgreSQL, so all we have to do i
 +
 [source,bash]
 ----
+$ cd ticket-monster
 $ mvn clean package -Ppostgresql jboss-as:deploy
 ----
 +
