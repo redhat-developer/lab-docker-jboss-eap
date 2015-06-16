@@ -22,7 +22,7 @@ $ docker docker rm -f $(docker ps -aq)
 
 === Motivation
 
-Docker containers are very powerful, especially when you link them together. However all those shell commands can get tiring to remember and and hard to maintain in a script. Additionally, you'll need to worry about getting the right docker containers on the right host, replicating containers and linking between containers on different hosts.
+Docker containers are very powerful, especially when you link them together. However all those shell commands can get tiring to remember and hard to maintain in a script. Additionally, you'll need to worry about getting the right docker containers on the right host, replicating containers and linking between containers on different hosts.
 
 Luckily Kubernetes solves all of those problems. In this exercise we will create a cluster of Docker containers which are orchestrated by Kubernetes:
 
