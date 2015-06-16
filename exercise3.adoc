@@ -212,7 +212,7 @@ Before we move on to the next exercise the participant should stop any running c
 +
 [source,bash]
 ----
-$ docker rm -f $(docker ps -aq)
+$ docker ps -a | grep 'jboss-eap' | awk '{print $1}' | xargs --no-run-if-empty docker rm -f
 ----
 
 === Bundling the application in a container
