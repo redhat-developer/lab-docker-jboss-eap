@@ -16,7 +16,7 @@ Participants will also learn how to control how many replicas are created, and K
 To clean up all the running container run the following command:
 [source]
 ----
-$ docker docker rm -f $(docker ps -aq)
+$ docker rm -f $(docker ps -aq)
 ----
 ====
 
