@@ -246,6 +246,7 @@ $ kubectl create -f postgres-service.yaml
 Check that the postgres pod and service have come up using `kubectl get pods` and `kubectl get services`. If they show `Pending`, the images are still downloading or starting up. If they show `Running` then they are up.
 +
 Restart the JBoss EAP pod to have it connect to postgres:
++
 ----
 $ kubectl delete pods,rc -l name=jboss-eap-server && kubectl create -f jboss-eap.yaml
 ----
@@ -257,6 +258,7 @@ Step 4 - Add some replicas and try killing them::
 Edit the `jboss-eap.yaml` file and change the line `replicas: 1` to `replicas: 4`, and remove all the `hostPort` lines - if we try to bind 4 container ports to 9080 we'll get port conflcits!
 +
 Restart the JBoss EAP pod:
++
 ----
 $  kubectl delete pods,rc -l name=jboss-eap-server && kubectl create -f jboss-eap.yaml
 ----
