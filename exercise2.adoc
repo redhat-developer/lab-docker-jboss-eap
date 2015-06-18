@@ -214,3 +214,4 @@ $ docker rm -f $(docker ps -aq)
 
 === Summary
 After the second exercise the participant should start to feel comfortable with running and managing containers locally in a development environment. The most important benefit of running docker in a development environment like this is that the container can be (almost) identical to the target production environment. This lowers the complexity of a Continuous Delivery environment, and improves the quality.
+

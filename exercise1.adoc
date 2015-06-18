@@ -258,3 +258,4 @@ $ docker rm -f $(docker ps -aq)
 === Summary
 
 After this exercise the participant should feel comfortable with starting, stopping and managing containers. The participant should be able to access a running container to check it's state, also should have a basic understanding of networking (mapping ports etc). Further more the participant should have gained an elementary knowledge on how to create custom images.
+
