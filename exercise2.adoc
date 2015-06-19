@@ -80,7 +80,7 @@ image::images/jboss-eap-admin-deploy-tm.png["JBoss EAP Welcome Page"]
 +
 Verify that the application is deployed and working by opening a browser to <http://localhost:9080/ticket-monster>.
 +
-image::images/jboss-eap-welcome.png["JBoss EAP Welcome Page"]
+image::images/ticket-monster.png["Ticket Monster"]
 
 As we have just seen running a containerized application is very similar to running the application directly on the host!
 
