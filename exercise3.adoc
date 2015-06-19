@@ -127,7 +127,7 @@ Create a new directory called `custom-jboss-eap-postgres/` in `$HOME`:
 +
 ----
 mkdir -p ~/custom-jboss-eap-postgres
-cd custom-jboss-eap-postgres
+cd ~/custom-jboss-eap-postgres
 ----
 +
 Add a `Dockerfile` that looks like:
