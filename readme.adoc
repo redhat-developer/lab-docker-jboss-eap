@@ -1,4 +1,6 @@
-# Docker and Kubernetes for JBoss EAP Developers
+## Docker and Kubernetes for JBoss EAP Developers
+
+# This lab is still "Beta" quality for use at home. We plan to polish and test the instructions over the next few weeks and release a "GA" then.
 
 This is a self-paced lab, aimed at developers using, or wanting to use, Red Hat JBoss Enterprise Middleware.
 
